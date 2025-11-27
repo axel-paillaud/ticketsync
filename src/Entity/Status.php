@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\StatusRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[ORM\Entity(repositoryClass: StatusRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -113,5 +114,15 @@ class Status
     public function setCreatedAtValue(): void
     {
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function generateSlug(): void
+    {
+        if (!empty($this->name)) {
+            $slugger = new AsciiSlugger();
+            $this->slug = $slugger->slug($this->name)->lower();
+        }
     }
 }
