@@ -5,8 +5,10 @@ namespace App\Entity;
 use App\Repository\TicketRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
 #[ORM\Entity(repositoryClass: TicketRepository::class)]
+#[HasLifecycleCallbacks]
 class Ticket
 {
     #[ORM\Id]
@@ -156,5 +158,11 @@ class Ticket
         $this->priority = $priority;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
     }
 }
