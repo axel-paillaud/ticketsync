@@ -37,6 +37,14 @@ class Ticket
     #[ORM\ManyToOne(inversedBy: 'assignedTickets')]
     private ?User $assignedTo = null;
 
+    #[ORM\ManyToOne(inversedBy: 'tickets')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Status $status = null;
+
+    #[ORM\ManyToOne(inversedBy: 'tickets')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Priority $priority = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -122,6 +130,30 @@ class Ticket
     public function setAssignedTo(?User $assignedTo): static
     {
         $this->assignedTo = $assignedTo;
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?Status $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getPriority(): ?Priority
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(?Priority $priority): static
+    {
+        $this->priority = $priority;
 
         return $this;
     }
