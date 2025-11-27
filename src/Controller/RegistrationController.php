@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Organization;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
@@ -33,6 +35,24 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $organizationName = $form->get('organizationName')->getData();
+
+            $slugger = new AsciiSlugger();
+            $slug = $slugger->slug($organizationName)->lower();
+
+            $organization = $entityManager->getRepository(Organization::class)
+                ->findOneBy(['slug' => $slug]);
+
+            // if organization doesn't exist, create it
+            if (!$organization) {
+                $organization = new Organization();
+                $organization->setName($organizationName);
+                $organization->setIsActive(true);
+                $entityManager->persist($organization);
+            }
+
+            $user->setOrganization($organization);
+
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
