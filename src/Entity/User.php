@@ -53,9 +53,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'createdBy')]
     private Collection $tickets;
 
+    /**
+     * @var Collection<int, Ticket>
+     */
+    #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'assignedTo')]
+    private Collection $assignedTickets;
+
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
+        $this->assignedTickets = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -217,6 +224,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($ticket->getCreatedBy() === $this) {
                 $ticket->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ticket>
+     */
+    public function getAssignedTickets(): Collection
+    {
+        return $this->assignedTickets;
+    }
+
+    public function addAssignedTicket(Ticket $assignedTicket): static
+    {
+        if (!$this->assignedTickets->contains($assignedTicket)) {
+            $this->assignedTickets->add($assignedTicket);
+            $assignedTicket->setAssignedTo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssignedTicket(Ticket $assignedTicket): static
+    {
+        if ($this->assignedTickets->removeElement($assignedTicket)) {
+            // set the owning side to null (unless already changed)
+            if ($assignedTicket->getAssignedTo() === $this) {
+                $assignedTicket->setAssignedTo(null);
             }
         }
 
