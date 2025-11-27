@@ -6,6 +6,7 @@ use App\Repository\StatusRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StatusRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Status
 {
     #[ORM\Id]
@@ -27,6 +28,9 @@ class Status
 
     #[ORM\Column]
     private ?int $sortOrder = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
     {
@@ -91,5 +95,23 @@ class Status
         $this->sortOrder = $sortOrder;
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
     }
 }

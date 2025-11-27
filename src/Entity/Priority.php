@@ -6,6 +6,7 @@ use App\Repository\PriorityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PriorityRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Priority
 {
     #[ORM\Id]
@@ -24,6 +25,9 @@ class Priority
 
     #[ORM\Column(length: 1, nullable: true)]
     private ?string $label = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
     {
@@ -76,5 +80,23 @@ class Priority
         $this->label = $label;
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
     }
 }
