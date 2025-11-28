@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Status;
 use App\Entity\Ticket;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
@@ -26,6 +27,17 @@ final class TicketController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $ticket = new Ticket();
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $ticket->setOrganization($user->getOrganizations());
+        $ticket->setCreatedBy($user);
+
+        $defaultStatus = $entityManager->getRepository(Status::class)->findOneBy(['slug' => 'open']);
+        if ($defaultStatus) {
+            $ticket->setStatus($defaultStatus);
+        }
+
         $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
 
