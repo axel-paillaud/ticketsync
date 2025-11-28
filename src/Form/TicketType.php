@@ -18,7 +18,7 @@ class TicketType extends AbstractType
             ->add('description')
             ->add('priority', EntityType::class, [
                 'class' => Priority::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
         ;
     }
