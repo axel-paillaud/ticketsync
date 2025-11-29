@@ -66,6 +66,13 @@ final class TicketController extends AbstractController
     #[Route('/{id}', name: 'app_ticket_show', methods: ['GET'])]
     public function show(Ticket $ticket): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($ticket->getOrganization() !== $user->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot access this ticket.');
+        }
+
         return $this->render('ticket/show.html.twig', [
             'ticket' => $ticket,
         ]);
