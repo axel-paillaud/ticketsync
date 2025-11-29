@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Entity\Organization;
 use App\Entity\Priority;
@@ -23,17 +24,66 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
-        $slugger = new AsciiSlugger();
 
-        // Récupérer les Status et Priority depuis la DB
-        $statuses = $manager->getRepository(Status::class)->findAll();
-        $priorities = $manager->getRepository(Priority::class)->findAll();
+        // CREATE STATUS
+        $statusOpen = new Status();
+        $statusOpen->setName('Open');
+        $statusOpen->setSlug('open');
+        $statusOpen->setIsClosed(false);
+        $statusOpen->setSortOrder(1);
+        $manager->persist($statusOpen);
+
+        $statusInProgress = new Status();
+        $statusInProgress->setName('In Progress');
+        $statusInProgress->setSlug('in-progress');
+        $statusInProgress->setIsClosed(false);
+        $statusInProgress->setSortOrder(2);
+        $manager->persist($statusInProgress);
+
+        $statusResolved = new Status();
+        $statusResolved->setName('Resolved');
+        $statusResolved->setSlug('resolved');
+        $statusResolved->setIsClosed(true);
+        $statusResolved->setSortOrder(3);
+        $manager->persist($statusResolved);
+
+        $statusClosed = new Status();
+        $statusClosed->setName('Closed');
+        $statusClosed->setSlug('closed');
+        $statusClosed->setIsClosed(true);
+        $statusClosed->setSortOrder(4);
+        $manager->persist($statusClosed);
+
+        $statuses = [$statusOpen, $statusInProgress, $statusResolved, $statusClosed];
+
+        // CREATE PRIORITY
+        $priorityA = new Priority();
+        $priorityA->setName('Priority A');
+        $priorityA->setLevel(3);
+        $priorityA->setColor('#ff0000');
+        $manager->persist($priorityA);
+
+        $priorityB = new Priority();
+        $priorityB->setName('Priority B');
+        $priorityB->setLevel(2);
+        $priorityB->setColor('#ff9900');
+        $manager->persist($priorityB);
+
+        $priorityC = new Priority();
+        $priorityC->setName('Priority C');
+        $priorityC->setLevel(1);
+        $priorityC->setColor('#999999');
+        $manager->persist($priorityC);
+
+        $priorities = [$priorityA, $priorityB, $priorityC];
+
+        $slugger = new AsciiSlugger();
 
         $users = [];
         $organizations = [];
 
+        // CREATE ORGANIZATION
         for ($i = 0; $i < 3; $i++) {
-            // Create organization
             $org = new Organization();
             $companyName = $faker->company();
             $org->setName($companyName);
@@ -58,7 +108,7 @@ class AppFixtures extends Fixture
             }
         }
 
-        // Create 20 tickets
+        // CREATE 20 TICKETS
         for ($i = 0; $i < 20; $i++) {
             $ticket = new Ticket();
 
@@ -81,6 +131,22 @@ class AppFixtures extends Fixture
 
             $manager->persist($ticket);
         }
+
+        // CREATE COMMENTS
+        foreach ($manager->getRepository(Ticket::class)->findAll() as $ticket) {
+            $numComments = $faker->numberBetween(2, 6);
+
+            for ($i = 0; $i < $numComments; $i++) {
+                $comment = new Comment();
+                $comment->setContent($faker->paragraphs($faker->numberBetween(1, 3), true));
+                $comment->setTicket($ticket);
+
+                $orgUsers = array_filter($users, fn($u) => $u->getOrganization() === $ticket->getOrganization());
+                $comment->setAuthor($faker->randomElement($orgUsers));
+
+                $manager->persist($comment);
+            }
+        };
 
         $manager->flush();
     }
