@@ -81,6 +81,13 @@ final class TicketController extends AbstractController
     #[Route('/{id}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($ticket->getOrganization() !== $user->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot edit this ticket.');
+        }
+
         $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
 
