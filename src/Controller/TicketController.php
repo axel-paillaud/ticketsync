@@ -106,6 +106,13 @@ final class TicketController extends AbstractController
     #[Route('/{id}', name: 'app_ticket_delete', methods: ['POST'])]
     public function delete(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user->getOrganization() !== $ticket->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot delete this ticket.');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$ticket->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($ticket);
             $entityManager->flush();
