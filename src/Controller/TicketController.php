@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Attachment;
 use App\Entity\Comment;
 use App\Entity\Status;
 use App\Entity\User;
@@ -9,9 +10,11 @@ use App\Entity\Ticket;
 use App\Form\CommentType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -36,7 +39,7 @@ final class TicketController extends AbstractController
     }
 
     #[Route('/new', name: 'app_ticket_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         $ticket = new Ticket();
 
@@ -56,6 +59,28 @@ final class TicketController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($ticket);
             $entityManager->flush();
+
+            // Handle file upload
+            /** @var UploadedFile[] $attachmentFiles */
+            $attachmentFiles = $form->get('attachments')->getData();
+
+            if ($attachmentFiles) {
+                foreach ($attachmentFiles as $file) {
+                    $fileData = $fileUploader->upload($file);
+
+                    $attachment = new Attachment();
+                    $attachment->setFilename($fileData['filename']);
+                    $attachment->setStoredFilename($fileData['storedFilename']);
+                    $attachment->setMimeType($fileData['mimeType']);
+                    $attachment->setSize($fileData['size']);
+                    $attachment->setTicket($ticket);
+                    $attachment->setUploadedBy($user);
+
+                    $entityManager->persist($attachment);
+                }
+
+                $entityManager->flush();
+            }
 
             return $this->redirectToRoute('app_ticket_index', [], Response::HTTP_SEE_OTHER);
         }
