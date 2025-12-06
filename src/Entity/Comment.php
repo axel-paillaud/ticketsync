@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CommentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,17 @@ class Comment
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    /**
+     * @var Collection<int, Attachment>
+     */
+    #[ORM\OneToMany(targetEntity: Attachment::class, mappedBy: 'comment')]
+    private Collection $attachments;
+
+    public function __construct()
+    {
+        $this->attachments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -108,5 +121,35 @@ class Comment
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * @return Collection<int, Attachment>
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    public function addAttachment(Attachment $attachment): static
+    {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
+            $attachment->setComment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttachment(Attachment $attachment): static
+    {
+        if ($this->attachments->removeElement($attachment)) {
+            // set the owning side to null (unless already changed)
+            if ($attachment->getComment() === $this) {
+                $attachment->setComment(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -32,6 +32,9 @@ class Attachment
     #[ORM\JoinColumn(nullable: false)]
     private ?Ticket $ticket = null;
 
+    #[ORM\ManyToOne(inversedBy: 'attachments')]
+    private ?Comment $comment = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +108,18 @@ class Attachment
     public function setTicket(?Ticket $ticket): static
     {
         $this->ticket = $ticket;
+
+        return $this;
+    }
+
+    public function getComment(): ?Comment
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?Comment $comment): static
+    {
+        $this->comment = $comment;
 
         return $this;
     }
