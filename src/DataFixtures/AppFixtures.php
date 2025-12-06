@@ -132,6 +132,8 @@ class AppFixtures extends Fixture
             $manager->persist($ticket);
         }
 
+        $manager->flush();
+
         // CREATE COMMENTS
         foreach ($manager->getRepository(Ticket::class)->findAll() as $ticket) {
             $numComments = $faker->numberBetween(2, 6);
