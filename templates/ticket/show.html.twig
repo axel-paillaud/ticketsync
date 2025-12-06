@@ -48,15 +48,23 @@
                             {% endif %}
 
                             {% if app.user == comment.author %}
-                                <form method="post" action="{{ path('app_comment_delete', {
-                                    'ticketId': ticket.id,
-                                    'commentId': comment.id
-                                }) }}" style="display: inline;">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-comment-' ~ comment.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
-                                        Supprimer
-                                    </button>
-                                </form>
+                                <div>
+                                    <a href="{{ path('app_comment_edit', {
+                                        'ticketId': ticket.id,
+                                        'commentId': comment.id
+                                    }) }}" class="btn btn-sm btn-warning">
+                                        Modifier
+                                    </a>
+                                    <form method="post" action="{{ path('app_comment_delete', {
+                                        'ticketId': ticket.id,
+                                        'commentId': comment.id
+                                    }) }}" style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete-comment-' ~ comment.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </div>
                             {% endif %}
                         </div>
                         <p class="card-text">{{ comment.content|nl2br }}</p>
