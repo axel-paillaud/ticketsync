@@ -46,6 +46,18 @@
                             {% if comment.updatedAt > comment.createdAt %}
                                 <small class="text-muted">(modifié le {{ comment.updatedAt|date('d/m/Y à H:i') }})</small>
                             {% endif %}
+
+                            {% if app.user == comment.author %}
+                                <form method="post" action="{{ path('app_comment_delete', {
+                                    'ticketId': ticket.id,
+                                    'commentId': comment.id
+                                }) }}" style="display: inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-comment-' ~ comment.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            {% endif %}
                         </div>
                         <p class="card-text">{{ comment.content|nl2br }}</p>
                     </div>
