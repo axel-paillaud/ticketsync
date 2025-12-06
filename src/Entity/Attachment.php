@@ -35,6 +35,9 @@ class Attachment
     #[ORM\ManyToOne(inversedBy: 'attachments')]
     private ?Comment $comment = null;
 
+    #[ORM\ManyToOne(inversedBy: 'attachments')]
+    private ?User $uploadedBy = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +123,18 @@ class Attachment
     public function setComment(?Comment $comment): static
     {
         $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function getUploadedBy(): ?User
+    {
+        return $this->uploadedBy;
+    }
+
+    public function setUploadedBy(?User $uploadedBy): static
+    {
+        $this->uploadedBy = $uploadedBy;
 
         return $this;
     }

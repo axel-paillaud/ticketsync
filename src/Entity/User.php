@@ -70,11 +70,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'author')]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, Attachment>
+     */
+    #[ORM\OneToMany(targetEntity: Attachment::class, mappedBy: 'uploadedBy')]
+    private Collection $attachments;
+
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
         $this->assignedTickets = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->attachments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -308,6 +315,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($comment->getAuthor() === $this) {
                 $comment->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Attachment>
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    public function addAttachment(Attachment $attachment): static
+    {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
+            $attachment->setUploadedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttachment(Attachment $attachment): static
+    {
+        if ($this->attachments->removeElement($attachment)) {
+            // set the owning side to null (unless already changed)
+            if ($attachment->getUploadedBy() === $this) {
+                $attachment->setUploadedBy(null);
             }
         }
 
