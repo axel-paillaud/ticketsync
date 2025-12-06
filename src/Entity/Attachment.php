@@ -6,6 +6,7 @@ use App\Repository\AttachmentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AttachmentRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Attachment
 {
     #[ORM\Id]
@@ -137,5 +138,11 @@ class Attachment
         $this->uploadedBy = $uploadedBy;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setUploadedAtValue(): void
+    {
+        $this->uploadedAt = new \DateTimeImmutable();
     }
 }
