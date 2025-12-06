@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Entity\Ticket;
+use App\Form\CommentType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -63,8 +65,8 @@ final class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_ticket_show', methods: ['GET'])]
-    public function show(Ticket $ticket): Response
+    #[Route('/{id}', name: 'app_ticket_show', methods: ['GET', 'POST'])]
+    public function show(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -73,8 +75,25 @@ final class TicketController extends AbstractController
             throw $this->createAccessDeniedException('You cannot access this ticket.');
         }
 
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setTicket($ticket);
+            $comment->setAuthor($user);
+
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Commentaire ajouté avec succès !');
+
+            return $this->redirectToRoute('app_ticket_show', ['id' => $ticket->getId()], Response::HTTP_SEE_OTHER);
+        }
+
         return $this->render('ticket/show.html.twig', [
             'ticket' => $ticket,
+            'commentForm' => $form,
         ]);
     }
 
