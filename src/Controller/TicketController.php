@@ -177,4 +177,48 @@ final class TicketController extends AbstractController
 
         return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{ticketId}/comment/{commentId}/edit', name: 'app_comment_edit', methods: ['GET', 'POST'])]
+    public function editComment(
+        Request $request,
+        int $ticketId,
+        #[MapEntity(id: 'commentId')] Comment $comment,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Check comment -> ticket association
+        if ($comment->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Comment does not belong to this ticket.');
+        }
+
+        // Check organization
+        if ($comment->getTicket()->getOrganization() !== $user->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot access this comment.');
+        }
+
+        // Check author
+        if ($comment->getAuthor() !== $user) {
+            throw $this->createAccessDeniedException('You can only delete your own comment.');
+        }
+
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Commentaire modifié avec succès !');
+
+            return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('comment/edit.html.twig', [
+            'comment' => $comment,
+            'ticket' => $comment->getTicket(),
+            'form' => $form,
+        ]);
+    }
 }
