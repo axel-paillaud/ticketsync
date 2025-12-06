@@ -30,6 +30,41 @@
         </tbody>
     </table>
 
+    {# Comment section #}
+    <hr>
+    <h2>Commentaires ({{ ticket.comments|length }})</h2>
+
+    {% if ticket.comments|length > 0 %}
+        <div class="comments-list">
+            {% for comment in ticket.comments %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                Par {{ comment.author.email }} - {{ comment.createdAt|date('d/m/Y à H:i') }}
+                            </h6>
+                            {% if comment.updatedAt > comment.createdAt %}
+                                <small class="text-muted">(modifié le {{ comment.updatedAt|date('d/m/Y à H:i') }})</small>
+                            {% endif %}
+                        </div>
+                        <p class="card-text">{{ comment.content|nl2br }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Aucun commentaire pour le moment.</p>
+    {% endif %}
+
+    {# Comment form #}
+    <div class="mt-4">
+        <h3>Ajouter un commentaire</h3>
+        {{ form_start(commentForm) }}
+            {{ form_row(commentForm.content) }}
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        {{ form_end(commentForm) }}
+    </div>
+
     <a href="{{ path('app_ticket_index') }}">back to list</a>
 
     <a href="{{ path('app_ticket_edit', {'id': ticket.id}) }}">edit</a>
