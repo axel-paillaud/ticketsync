@@ -28,6 +28,10 @@ class Attachment
     #[ORM\Column]
     private ?\DateTimeImmutable $uploadedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'attachments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Ticket $ticket = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -89,6 +93,18 @@ class Attachment
     public function setUploadedAt(\DateTimeImmutable $uploadedAt): static
     {
         $this->uploadedAt = $uploadedAt;
+
+        return $this;
+    }
+
+    public function getTicket(): ?Ticket
+    {
+        return $this->ticket;
+    }
+
+    public function setTicket(?Ticket $ticket): static
+    {
+        $this->ticket = $ticket;
 
         return $this;
     }
