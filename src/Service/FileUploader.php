@@ -19,6 +19,10 @@ class FileUploader
         $safeFilename = $this->slugger->slug($originalFilename);
         $storedFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
+        // Get file info BEFORE moving it
+        $mimeType = $file->getMimeType();
+        $size = $file->getSize();
+
         try {
             $file->move($this->targetDirectory, $storedFilename);
         } catch (FileException $e) {
@@ -28,8 +32,8 @@ class FileUploader
         return [
             'filename' => $file->getClientOriginalName(),
             'storedFilename' => $storedFilename,
-            'mimeType' => $file->getMimeType(),
-            'size' => $file->getSize(),
+            'mimeType' => $mimeType,
+            'size' => $size,
         ];
     }
 
