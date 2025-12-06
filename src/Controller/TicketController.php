@@ -10,6 +10,7 @@ use App\Form\CommentType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -138,5 +139,42 @@ final class TicketController extends AbstractController
         }
 
         return $this->redirectToRoute('app_ticket_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{ticketId}/comment/{commentId}/delete', name: 'app_comment_delete', methods: ['POST'])]
+    public function deleteComment(
+        Request $request,
+        int $ticketId,
+        #[MapEntity(id: 'commentId')] Comment $comment,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Check comment -> ticket association
+        if ($comment->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Comment does not belong to this ticket.');
+        }
+
+        // Check organization
+        if ($comment->getTicket()->getOrganization() !== $user->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot access this comment.');
+        }
+
+        // Check author
+        if ($comment->getAuthor() !== $user) {
+            throw $this->createAccessDeniedException('You can only delete your own comment.');
+        }
+
+        // Check CSRF token
+        if ($this->isCsrfTokenValid('delete-comment-'.$comment->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($comment);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Commentaire supprimé avec succès !');
+        }
+
+        return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
     }
 }
