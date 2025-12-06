@@ -37,7 +37,7 @@ class Comment
     /**
      * @var Collection<int, Attachment>
      */
-    #[ORM\OneToMany(targetEntity: Attachment::class, mappedBy: 'comment')]
+    #[ORM\OneToMany(targetEntity: Attachment::class, mappedBy: 'comment', orphanRemoval: true)]
     private Collection $attachments;
 
     public function __construct()
