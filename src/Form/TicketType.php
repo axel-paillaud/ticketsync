@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
 
 class TicketType extends AbstractType
@@ -31,21 +32,23 @@ class TicketType extends AbstractType
                     'accept' => 'image/*,.pdf,.doc,.docx,.txt,.xlsx,.odt,.zip,.rar',
                ],
                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'image/*',
-                            'application/pdf',
-                            'application/msword',
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                            'application/vnd.ms-excel',
-                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                            'application/vnd.oasis.opendocument.text',
-                            'text/plain',
-                            'application/zip',
-                            'application/x-rar-compressed'
-                        ],
-                        'mimeTypesMessage' => 'Veuillez uploader un fichier valide (image, PDF, Word, Excel, texte, archive)',
+                    new All([
+                        new File([
+                            'maxSize' => '10M',
+                            'mimeTypes' => [
+                                'image/*',
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/vnd.oasis.opendocument.text',
+                                'text/plain',
+                                'application/zip',
+                                'application/x-rar-compressed'
+                            ],
+                            'mimeTypesMessage' => 'Veuillez uploader un fichier valide (image, PDF, Word, Excel, texte, archive)',
+                        ])
                     ])
                ]
             ]);
