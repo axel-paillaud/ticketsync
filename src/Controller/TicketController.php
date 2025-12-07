@@ -124,7 +124,12 @@ final class TicketController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
+    public function edit(
+        Request $request,
+        Ticket $ticket,
+        EntityManagerInterface $entityManager,
+        FileUploader $fileUploader
+    ): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -138,6 +143,30 @@ final class TicketController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            // Handle new file uploads
+            /** @var UploadedFile[] $attachmentFiles */
+            $attachmentFiles = $form->get('attachments')->getData();
+
+            if ($attachmentFiles) {
+                foreach ($attachmentFiles as $file) {
+                    $fileData = $fileUploader->upload($file);
+
+                    $attachment = new Attachment();
+                    $attachment->setFilename($fileData['filename']);
+                    $attachment->setStoredFilename($fileData['storedFilename']);
+                    $attachment->setMimeType($fileData['mimeType']);
+                    $attachment->setSize($fileData['size']);
+                    $attachment->setTicket($ticket);
+                    $attachment->setUploadedBy($user);
+
+                    $entityManager->persist($attachment);
+                }
+
+                $entityManager->flush();
+            }
+
+            $this->addFlash('success', 'Ticket modifié avec succès !');
 
             return $this->redirectToRoute('app_ticket_index', [], Response::HTTP_SEE_OTHER);
         }
