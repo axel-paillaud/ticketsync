@@ -115,8 +115,8 @@ final class TicketController extends AbstractController
         // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
-        // Security check: ticket must belong to this organization
-        if ($ticket->getOrganization() !== $organization) {
+        // Security check: ticket must belong to this organization (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $ticket->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
@@ -183,8 +183,8 @@ final class TicketController extends AbstractController
         // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
-        // Security check: ticket must belong to this organization
-        if ($ticket->getOrganization() !== $organization) {
+        // Security check: ticket must belong to this organization (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $ticket->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
@@ -240,8 +240,8 @@ final class TicketController extends AbstractController
         // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
-        // Security check: ticket must belong to this organization
-        if ($ticket->getOrganization() !== $organization) {
+        // Security check: ticket must belong to this organization (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $ticket->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
@@ -273,8 +273,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Comment does not belong to this ticket.');
         }
 
-        // Check organization
-        if ($comment->getTicket()->getOrganization() !== $organization) {
+        // Check organization (only for non-admins, admins can access all organizations)
+        if (!$this->isGranted('ROLE_ADMIN') && $comment->getTicket()->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Comment not found in this organization.');
         }
 
@@ -316,8 +316,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Comment does not belong to this ticket.');
         }
 
-        // Check organization
-        if ($comment->getTicket()->getOrganization() !== $organization) {
+        // Check organization (only for non-admins, admins can access all organizations)
+        if (!$this->isGranted('ROLE_ADMIN') && $comment->getTicket()->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Comment not found in this organization.');
         }
 
