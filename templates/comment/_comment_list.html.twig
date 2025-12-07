@@ -20,8 +20,8 @@
                             <small class="text-muted">(modifié le {{ comment.updatedAt|date('d/m/Y à H:i') }})</small>
                         {% endif %}
 
-                        {% if app.user == comment.author %}
-                            <div>
+                        <div>
+                            {% if is_granted('COMMENT_EDIT', comment) %}
                                 <a href="{{ path('app_comment_edit', {
                                     'organizationSlug': currentOrganization.slug,
                                     'ticketId': ticket.id,
@@ -29,6 +29,9 @@
                                 }) }}" class="btn btn-sm btn-warning">
                                     Modifier
                                 </a>
+                            {% endif %}
+                            
+                            {% if is_granted('COMMENT_DELETE', comment) %}
                                 <form method="post" action="{{ path('app_comment_delete', {
                                     'organizationSlug': currentOrganization.slug,
                                     'ticketId': ticket.id,
@@ -39,8 +42,8 @@
                                         Supprimer
                                     </button>
                                 </form>
-                            </div>
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                     <p class="card-text">{{ comment.content|nl2br }}</p>
 

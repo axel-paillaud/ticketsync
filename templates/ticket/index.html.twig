@@ -26,7 +26,9 @@
                 <td>{{ ticket.updatedAt ? ticket.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('app_ticket_show', {'organizationSlug': currentOrganization.slug, 'ticketId': ticket.id}) }}">show</a>
-                    <a href="{{ path('app_ticket_edit', {'organizationSlug': currentOrganization.slug, 'ticketId': ticket.id}) }}">edit</a>
+                    {% if is_granted('TICKET_EDIT', ticket) %}
+                        <a href="{{ path('app_ticket_edit', {'organizationSlug': currentOrganization.slug, 'ticketId': ticket.id}) }}">edit</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}
