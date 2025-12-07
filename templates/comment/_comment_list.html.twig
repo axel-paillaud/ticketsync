@@ -23,12 +23,14 @@
                         {% if app.user == comment.author %}
                             <div>
                                 <a href="{{ path('app_comment_edit', {
+                                    'organizationSlug': currentOrganization.slug,
                                     'ticketId': ticket.id,
                                     'commentId': comment.id
                                 }) }}" class="btn btn-sm btn-warning">
                                     Modifier
                                 </a>
                                 <form method="post" action="{{ path('app_comment_delete', {
+                                    'organizationSlug': currentOrganization.slug,
                                     'ticketId': ticket.id,
                                     'commentId': comment.id
                                 }) }}" class="d-inline">

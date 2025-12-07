@@ -20,11 +20,13 @@
             <div class="position-absolute top-0 end-0 p-{{ size == 'large' ? '2' : '1' }}">
                 <form method="post" action="{{ commentId is defined 
                     ? path('app_comment_attachment_delete', {
+                        'organizationSlug': currentOrganization.slug,
                         'ticketId': ticketId,
                         'commentId': commentId,
                         'attachmentId': attachment.id
                     })
                     : path('app_attachment_delete', {
+                        'organizationSlug': currentOrganization.slug,
                         'ticketId': ticketId,
                         'attachmentId': attachment.id
                     })
@@ -41,22 +43,26 @@
         {% if attachment.isImage %}
             <a href="{{ commentId is defined 
                 ? path('app_comment_attachment_download', {
+                    'organizationSlug': currentOrganization.slug,
                     'ticketId': ticketId,
                     'commentId': commentId,
                     'attachmentId': attachment.id
                 })
                 : path('app_attachment_download', {
+                    'organizationSlug': currentOrganization.slug,
                     'ticketId': ticketId,
                     'attachmentId': attachment.id
                 })
             }}" target="_blank" class="overflow-hidden">
                 <img src="{{ commentId is defined 
                     ? path('app_comment_attachment_download', {
+                        'organizationSlug': currentOrganization.slug,
                         'ticketId': ticketId,
                         'commentId': commentId,
                         'attachmentId': attachment.id
                     })
                     : path('app_attachment_download', {
+                        'organizationSlug': currentOrganization.slug,
                         'ticketId': ticketId,
                         'attachmentId': attachment.id
                     })
@@ -98,11 +104,13 @@
             </p>
             <a href="{{ commentId is defined 
                 ? path('app_comment_attachment_download', {
+                    'organizationSlug': currentOrganization.slug,
                     'ticketId': ticketId,
                     'commentId': commentId,
                     'attachmentId': attachment.id
                 })
                 : path('app_attachment_download', {
+                    'organizationSlug': currentOrganization.slug,
                     'ticketId': ticketId,
                     'attachmentId': attachment.id
                 })

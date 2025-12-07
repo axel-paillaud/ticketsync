@@ -29,6 +29,7 @@
                                     {# Remove button #}
                                     <div class="position-absolute top-0 end-0 p-2">
                                         <form method="post" action="{{ path('app_attachment_delete', {
+                                            'organizationSlug': currentOrganization.slug,
                                             'ticketId': ticket.id,
                                             'attachmentId': attachment.id
                                         }) }}" class="d-inline">
@@ -41,10 +42,12 @@
 
                                     {% if attachment.isImage %}
                                         <a href="{{ path('app_attachment_download', {
+                                            'organizationSlug': currentOrganization.slug,
                                             'ticketId': ticket.id,
                                             'attachmentId': attachment.id
                                         }) }}" target="_blank" class="overflow-hidden">
                                             <img src="{{ path('app_attachment_download', {
+                                                'organizationSlug': currentOrganization.slug,
                                                 'ticketId': ticket.id,
                                                 'attachmentId': attachment.id
                                             }) }}" class="card-img-top object-fit-cover" alt="{{ attachment.filename }}" height="120">
@@ -84,8 +87,8 @@
         {% endif %}
 
         <div class="mt-3">
-            <a href="{{ path('app_ticket_show', {'id': ticket.id}) }}" class="btn btn-secondary">Retour au ticket</a>
-            <a href="{{ path('app_ticket_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_ticket_show', {'organizationSlug': currentOrganization.slug, 'id': ticket.id}) }}" class="btn btn-secondary">Retour au ticket</a>
+            <a href="{{ path('app_ticket_index', {'organizationSlug': currentOrganization.slug}) }}" class="btn btn-secondary">Retour à la liste</a>
         </div>
 
         {{ include('ticket/_delete_form.html.twig') }}
