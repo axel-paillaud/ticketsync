@@ -3,11 +3,91 @@
 {% block title %}Edit Ticket{% endblock %}
 
 {% block body %}
-    <h1>Edit Ticket</h1>
+    <div class="container mt-4">
+        <h1>Edit Ticket</h1>
 
-    {{ include('ticket/_form.html.twig', {'button_label': 'Update'}) }}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Informations du ticket</h5>
+            </div>
+            <div class="card-body">
+                {{ include('ticket/_form.html.twig', {'button_label': 'Update'}) }}
+            </div>
+        </div>
 
-    <a href="{{ path('app_ticket_index') }}">back to list</a>
+        {# Afficher les pièces jointes existantes #}
+        {% if ticket.attachments|length > 0 %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Pièces jointes actuelles ({{ ticket.attachments|length }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for attachment in ticket.attachments %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card">
+                                    {# Remove button #}
+                                    <div class="position-absolute top-0 end-0 p-2">
+                                        <form method="post" action="{{ path('app_attachment_delete', {
+                                            'ticketId': ticket.id,
+                                            'attachmentId': attachment.id
+                                        }) }}" style="display: inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete-attachment-' ~ attachment.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette pièce jointe ?')" title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
 
-    {{ include('ticket/_delete_form.html.twig') }}
+                                    {% if attachment.isImage %}
+                                        <a href="{{ path('app_attachment_download', {
+                                            'ticketId': ticket.id,
+                                            'attachmentId': attachment.id
+                                        }) }}" target="_blank">
+                                            <img src="{{ path('app_attachment_download', {
+                                                'ticketId': ticket.id,
+                                                'attachmentId': attachment.id
+                                            }) }}" class="card-img-top" alt="{{ attachment.filename }}" style="max-height: 120px; object-fit: cover;">
+                                        </a>
+                                    {% else %}
+                                        <div class="card-body text-center bg-light" style="min-height: 120px; display: flex; align-items: center; justify-content: center;">
+                                            {% if attachment.mimeType starts with 'application/pdf' %}
+                                                <i class="bi bi-file-pdf" style="font-size: 2.5rem; color: #dc3545;"></i>
+                                            {% elseif attachment.mimeType starts with 'application/vnd.ms-excel' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.spreadsheetml' %}
+                                                <i class="bi bi-file-excel" style="font-size: 2.5rem; color: #28a745;"></i>
+                                            {% elseif attachment.mimeType starts with 'application/msword' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.wordprocessingml' %}
+                                                <i class="bi bi-file-word" style="font-size: 2.5rem; color: #007bff;"></i>
+                                            {% elseif attachment.mimeType starts with 'application/zip' or attachment.mimeType starts with 'application/x-' %}
+                                                <i class="bi bi-file-zip" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                            {% elseif attachment.mimeType starts with 'text/' %}
+                                                <i class="bi bi-file-text" style="font-size: 2.5rem; color: #17a2b8;"></i>
+                                            {% else %}
+                                                <i class="bi bi-file-earmark" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="card-body p-2">
+                                        <p class="card-text small text-truncate mb-0" title="{{ attachment.filename }}">
+                                            <strong>{{ attachment.filename }}</strong>
+                                        </p>
+                                        <p class="card-text">
+                                            <small class="text-muted">{{ attachment.formattedSize }}</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="mt-3">
+            <a href="{{ path('app_ticket_show', {'id': ticket.id}) }}" class="btn btn-secondary">Retour au ticket</a>
+            <a href="{{ path('app_ticket_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+
+        {{ include('ticket/_delete_form.html.twig') }}
+    </div>
 {% endblock %}
