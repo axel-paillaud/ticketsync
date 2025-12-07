@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Attachment;
 use App\Entity\Comment;
+use App\Entity\Organization;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Entity\Ticket;
@@ -19,33 +20,44 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/')]
+#[Route('/{organizationSlug}')]
 final class TicketController extends AbstractController
 {
-    #[Route(name: 'app_ticket_index', methods: ['GET'])]
-    public function index(TicketRepository $ticketRepository): Response
+    #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
+    public function index(Organization $organization, TicketRepository $ticketRepository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
         $tickets = $ticketRepository->findBy(
-            ['organization' => $user->getOrganization()],
+            ['organization' => $organization],
             ['createdAt' => 'DESC'],
         );
 
         return $this->render('ticket/index.html.twig', [
             'tickets' => $tickets,
+            'organization' => $organization,
         ]);
     }
 
-    #[Route('/new', name: 'app_ticket_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
+    #[Route('/tickets/new', name: 'app_ticket_new', methods: ['GET', 'POST'])]
+    public function new(Organization $organization, Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
-        $ticket = new Ticket();
-
         /** @var User $user */
         $user = $this->getUser();
-        $ticket->setOrganization($user->getOrganization());
+
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
+        $ticket = new Ticket();
+        $ticket->setOrganization($organization);
         $ticket->setCreatedBy($user);
 
         $defaultStatus = $entityManager->getRepository(Status::class)->findOneBy(['slug' => 'open']);
@@ -82,17 +94,19 @@ final class TicketController extends AbstractController
                 $entityManager->flush();
             }
 
-            return $this->redirectToRoute('app_ticket_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ticket_index', ['organizationSlug' => $organization->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('ticket/new.html.twig', [
             'ticket' => $ticket,
             'form' => $form,
+            'organization' => $organization,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_ticket_show', methods: ['GET', 'POST'])]
+    #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET', 'POST'])]
     public function show(
+        Organization $organization,
         Request $request,
         Ticket $ticket,
         EntityManagerInterface $entityManager,
@@ -102,8 +116,14 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if ($ticket->getOrganization() !== $user->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot access this ticket.');
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
+        // Security check: ticket must belong to this organization
+        if ($ticket->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
         $comment = new Comment();
@@ -141,17 +161,22 @@ final class TicketController extends AbstractController
 
             $this->addFlash('success', 'Commentaire ajouté avec succès !');
 
-            return $this->redirectToRoute('app_ticket_show', ['id' => $ticket->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ticket_show', [
+                'organizationSlug' => $organization->getSlug(),
+                'id' => $ticket->getId()
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('ticket/show.html.twig', [
             'ticket' => $ticket,
             'commentForm' => $form,
+            'organization' => $organization,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
+    #[Route('/tickets/{id}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
     public function edit(
+        Organization $organization,
         Request $request,
         Ticket $ticket,
         EntityManagerInterface $entityManager,
@@ -161,8 +186,14 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if ($ticket->getOrganization() !== $user->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot edit this ticket.');
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
+        // Security check: ticket must belong to this organization
+        if ($ticket->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
         $form = $this->createForm(TicketType::class, $ticket);
@@ -195,23 +226,33 @@ final class TicketController extends AbstractController
 
             $this->addFlash('success', 'Ticket modifié avec succès !');
 
-            return $this->redirectToRoute('app_ticket_show', ['id' => $ticket->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ticket_show', [
+                'organizationSlug' => $organization->getSlug(),
+                'id' => $ticket->getId()
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('ticket/edit.html.twig', [
             'ticket' => $ticket,
             'form' => $form,
+            'organization' => $organization,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_ticket_delete', methods: ['POST'])]
-    public function delete(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
+    #[Route('/tickets/{id}', name: 'app_ticket_delete', methods: ['POST'])]
+    public function delete(Organization $organization, Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
-        if ($user->getOrganization() !== $ticket->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot delete this ticket.');
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
+        // Security check: ticket must belong to this organization
+        if ($ticket->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
         if ($this->isCsrfTokenValid('delete'.$ticket->getId(), $request->getPayload()->getString('_token'))) {
@@ -219,11 +260,12 @@ final class TicketController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_ticket_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_ticket_index', ['organizationSlug' => $organization->getSlug()], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{ticketId}/comment/{commentId}/delete', name: 'app_comment_delete', methods: ['POST'])]
+    #[Route('/tickets/{ticketId}/comment/{commentId}/delete', name: 'app_comment_delete', methods: ['POST'])]
     public function deleteComment(
+        Organization $organization,
         Request $request,
         int $ticketId,
         #[MapEntity(id: 'commentId')] Comment $comment,
@@ -233,14 +275,19 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
         // Check comment -> ticket association
         if ($comment->getTicket()->getId() !== $ticketId) {
             throw $this->createNotFoundException('Comment does not belong to this ticket.');
         }
 
         // Check organization
-        if ($comment->getTicket()->getOrganization() !== $user->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot access this comment.');
+        if ($comment->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Comment not found in this organization.');
         }
 
         // Check author
@@ -256,11 +303,15 @@ final class TicketController extends AbstractController
             $this->addFlash('success', 'Commentaire supprimé avec succès !');
         }
 
-        return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_ticket_show', [
+            'organizationSlug' => $organization->getSlug(),
+            'id' => $ticketId
+        ], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{ticketId}/comment/{commentId}/edit', name: 'app_comment_edit', methods: ['GET', 'POST'])]
+    #[Route('/tickets/{ticketId}/comment/{commentId}/edit', name: 'app_comment_edit', methods: ['GET', 'POST'])]
     public function editComment(
+        Organization $organization,
         Request $request,
         int $ticketId,
         #[MapEntity(id: 'commentId')] Comment $comment,
@@ -271,19 +322,24 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
         // Check comment -> ticket association
         if ($comment->getTicket()->getId() !== $ticketId) {
             throw $this->createNotFoundException('Comment does not belong to this ticket.');
         }
 
         // Check organization
-        if ($comment->getTicket()->getOrganization() !== $user->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot access this comment.');
+        if ($comment->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Comment not found in this organization.');
         }
 
         // Check author
         if ($comment->getAuthor() !== $user) {
-            throw $this->createAccessDeniedException('You can only delete your own comment.');
+            throw $this->createAccessDeniedException('You can only edit your own comment.');
         }
 
         $form = $this->createForm(CommentType::class, $comment);
@@ -316,18 +372,23 @@ final class TicketController extends AbstractController
 
             $this->addFlash('success', 'Commentaire modifié avec succès !');
 
-            return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ticket_show', [
+                'organizationSlug' => $organization->getSlug(),
+                'id' => $ticketId
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('comment/edit.html.twig', [
             'comment' => $comment,
             'ticket' => $comment->getTicket(),
             'form' => $form,
+            'organization' => $organization,
         ]);
     }
 
-    #[Route('/{ticketId}/attachment/{attachmentId}/download', name: 'app_attachment_download', methods: ['GET'])]
+    #[Route('/tickets/{ticketId}/attachment/{attachmentId}/download', name: 'app_attachment_download', methods: ['GET'])]
     public function downloadAttachment(
+        Organization $organization,
         int $ticketId,
         #[MapEntity(id: 'attachmentId')] Attachment $attachment,
         FileUploader $fileUploader
@@ -336,14 +397,19 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
         // Check attachment -> ticket association
         if ($attachment->getTicket()->getId() !== $ticketId) {
             throw $this->createNotFoundException('Attachment does not belong to this ticket.');
         }
 
         // Check organization access
-        if ($attachment->getTicket()->getOrganization() !== $user->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot access this attachment.');
+        if ($attachment->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Attachment not found in this organization.');
         }
 
         $filePath = $fileUploader->getTargetDirectory() . '/' . $attachment->getStoredFilename();
@@ -355,8 +421,9 @@ final class TicketController extends AbstractController
         return $this->file($filePath, $attachment->getFilename());
     }
 
-    #[Route('/{ticketId}/attachment/{attachmentId}/delete', name: 'app_attachment_delete', methods: ['POST'])]
+    #[Route('/tickets/{ticketId}/attachment/{attachmentId}/delete', name: 'app_attachment_delete', methods: ['POST'])]
     public function deleteAttachment(
+        Organization $organization,
         Request $request,
         int $ticketId,
         #[MapEntity(id: 'attachmentId')] Attachment $attachment,
@@ -367,12 +434,17 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
         if ($attachment->getTicket()->getId() !== $ticketId) {
             throw $this->createNotFoundException('Attachment does not belong to this ticket.');
         }
 
-        if ($attachment->getTicket()->getOrganization() !== $user->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot access this attachment.');
+        if ($attachment->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Attachment not found in this organization.');
         }
 
         if ($attachment->getUploadedBy() !== $user) {
@@ -393,11 +465,15 @@ final class TicketController extends AbstractController
             $this->addFlash('success', 'Pièce jointe supprimée avec succès !');
         }
 
-        return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_ticket_show', [
+            'organizationSlug' => $organization->getSlug(),
+            'id' => $ticketId
+        ], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{ticketId}/comment/{commentId}/attachment/{attachmentId}/download', name: 'app_comment_attachment_download', methods: ['GET'])]
+    #[Route('/tickets/{ticketId}/comment/{commentId}/attachment/{attachmentId}/download', name: 'app_comment_attachment_download', methods: ['GET'])]
     public function downloadCommentAttachment(
+        Organization $organization,
         int $ticketId,
         int $commentId,
         #[MapEntity(id: 'attachmentId')] Attachment $attachment,
@@ -407,6 +483,11 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
         if (!$attachment->getComment() || $attachment->getComment()->getId() !== $commentId) {
             throw $this->createNotFoundException('Attachment does not belong to this comment.');
         }
@@ -415,8 +496,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Comment does not belong to this ticket.');
         }
 
-        if ($attachment->getComment()->getTicket()->getOrganization() !== $user->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot access this attachment.');
+        if ($attachment->getComment()->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Attachment not found in this organization.');
         }
 
         $filePath = $fileUploader->getTargetDirectory() . '/' . $attachment->getStoredFilename();
@@ -428,8 +509,9 @@ final class TicketController extends AbstractController
         return $this->file($filePath, $attachment->getFilename());
     }
 
-    #[Route('/{ticketId}/comment/{commentId}/attachment/{attachmentId}/delete', name: 'app_comment_attachment_delete', methods: ['POST'])]
+    #[Route('/tickets/{ticketId}/comment/{commentId}/attachment/{attachmentId}/delete', name: 'app_comment_attachment_delete', methods: ['POST'])]
     public function deleteCommentAttachment(
+        Organization $organization,
         Request $request,
         int $ticketId,
         int $commentId,
@@ -441,6 +523,11 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        // Security check: user must belong to this organization
+        if ($user->getOrganization() !== $organization) {
+            throw $this->createAccessDeniedException('You cannot access this organization.');
+        }
+
         if (!$attachment->getComment() || $attachment->getComment()->getId() !== $commentId) {
             throw $this->createNotFoundException('Attachment does not belong to this comment.');
         }
@@ -449,8 +536,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Comment does not belong to this ticket.');
         }
 
-        if ($attachment->getComment()->getTicket()->getOrganization() !== $user->getOrganization()) {
-            throw $this->createAccessDeniedException('You cannot access this attachment.');
+        if ($attachment->getComment()->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Attachment not found in this organization.');
         }
 
         if ($this->isCsrfTokenValid('delete-comment-attachment-'.$attachment->getId(), $request->getPayload()->getString('_token'))) {
@@ -466,6 +553,9 @@ final class TicketController extends AbstractController
             $this->addFlash('success', 'Pièce jointe supprimée avec succès !');
         }
 
-        return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_ticket_show', [
+            'organizationSlug' => $organization->getSlug(),
+            'id' => $ticketId
+        ], Response::HTTP_SEE_OTHER);
     }
 }
