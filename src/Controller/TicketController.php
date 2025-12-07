@@ -246,4 +246,33 @@ final class TicketController extends AbstractController
             'form' => $form,
         ]);
     }
+
+    #[Route('/{ticketId}/attachment/{attachmentId}/download', name: 'app_attachment_download', methods: ['GET'])]
+    public function downloadAttachment(
+        int $ticketId,
+        #[MapEntity(id: 'attachmentId')] Attachment $attachment,
+        FileUploader $fileUploader
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Check attachment -> ticket association
+        if ($attachment->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Attachment does not belong to this ticket.');
+        }
+
+        // Check organization access
+        if ($attachment->getTicket()->getOrganization() !== $user->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot access this attachment.');
+        }
+
+        $filePath = $fileUploader->getTargetDirectory() . '/' . $attachment->getStoredFilename();
+
+        if (!file_exists($filePath)) {
+            throw $this->createNotFoundException('File not found.');
+        }
+
+        return $this->file($filePath, $attachment->getFilename());
+    }
 }
