@@ -1,20 +1,49 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AdminController!{% endblock %}
+{% block title %}Admin - All Tickets{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container mt-4">
+        <h1>Admin - All Tickets (All Organizations)</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/axel/Code/persos/TicketSync/ticketsync/src/Controller/AdminController.php</code></li>
-        <li>Your template at <code>/home/axel/Code/persos/TicketSync/ticketsync/templates/admin/index.html.twig</code></li>
-    </ul>
-</div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Organization</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.id }}</td>
+                    <td>
+                        <span class="badge bg-info">{{ ticket.organization.name }}</span>
+                    </td>
+                    <td>{{ ticket.title }}</td>
+                    <td>
+                        <span class="badge bg-secondary">{{ ticket.status.name }}</span>
+                    </td>
+                    <td>{{ ticket.createdBy.email }}</td>
+                    <td>{{ ticket.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>
+                        <a href="{{ path('app_ticket_show', {
+                            'organizationSlug': ticket.organization.slug,
+                            'id': ticket.id
+                        }) }}" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">No tickets found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
