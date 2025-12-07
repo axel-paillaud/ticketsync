@@ -372,4 +372,77 @@ final class TicketController extends AbstractController
 
         return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{ticketId}/comment/{commentId}/attachment/{attachmentId}/download', name: 'app_comment_attachment_download', methods: ['GET'])]
+    public function downloadCommentAttachment(
+        int $ticketId,
+        int $commentId,
+        #[MapEntity(id: 'attachmentId')] Attachment $attachment,
+        FileUploader $fileUploader
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$attachment->getComment() || $attachment->getComment()->getId() !== $commentId) {
+            throw $this->createNotFoundException('Attachment does not belong to this comment.');
+        }
+
+        if ($attachment->getComment()->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Comment does not belong to this ticket.');
+        }
+
+        if ($attachment->getComment()->getTicket()->getOrganization() !== $user->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot access this attachment.');
+        }
+
+        $filePath = $fileUploader->getTargetDirectory() . '/' . $attachment->getStoredFilename();
+
+        if (!file_exists($filePath)) {
+            throw $this->createNotFoundException('File not found.');
+        }
+
+        return $this->file($filePath, $attachment->getFilename());
+    }
+
+    #[Route('/{ticketId}/comment/{commentId}/attachment/{attachmentId}/delete', name: 'app_comment_attachment_delete', methods: ['POST'])]
+    public function deleteCommentAttachment(
+        Request $request,
+        int $ticketId,
+        int $commentId,
+        #[MapEntity(id: 'attachmentId')] Attachment $attachment,
+        EntityManagerInterface $entityManager,
+        FileUploader $fileUploader
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$attachment->getComment() || $attachment->getComment()->getId() !== $commentId) {
+            throw $this->createNotFoundException('Attachment does not belong to this comment.');
+        }
+
+        if ($attachment->getComment()->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Comment does not belong to this ticket.');
+        }
+
+        if ($attachment->getComment()->getTicket()->getOrganization() !== $user->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot access this attachment.');
+        }
+
+        if ($this->isCsrfTokenValid('delete-comment-attachment-'.$attachment->getId(), $request->getPayload()->getString('_token'))) {
+            try {
+                $fileUploader->delete($attachment->getStoredFilename());
+            } catch (\Exception $e) {
+                $this->addFlash('warning', 'Le fichier a été supprimé de la base mais pas du disque.');
+            }
+
+            $entityManager->remove($attachment);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Pièce jointe supprimée avec succès !');
+        }
+
+        return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
+    }
 }
