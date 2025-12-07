@@ -25,13 +25,13 @@
                     <div class="row">
                         {% for attachment in ticket.attachments %}
                             <div class="col-md-3 mb-3">
-                                <div class="card">
+                                <div class="card h-100">
                                     {# Remove button #}
                                     <div class="position-absolute top-0 end-0 p-2">
                                         <form method="post" action="{{ path('app_attachment_delete', {
                                             'ticketId': ticket.id,
                                             'attachmentId': attachment.id
-                                        }) }}" style="display: inline;">
+                                        }) }}" class="d-inline">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete-attachment-' ~ attachment.id) }}">
                                             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette pièce jointe ?')" title="Supprimer">
                                                 <i class="bi bi-trash"></i>
@@ -43,26 +43,26 @@
                                         <a href="{{ path('app_attachment_download', {
                                             'ticketId': ticket.id,
                                             'attachmentId': attachment.id
-                                        }) }}" target="_blank">
+                                        }) }}" target="_blank" class="overflow-hidden">
                                             <img src="{{ path('app_attachment_download', {
                                                 'ticketId': ticket.id,
                                                 'attachmentId': attachment.id
-                                            }) }}" class="card-img-top" alt="{{ attachment.filename }}" style="max-height: 120px; object-fit: cover;">
+                                            }) }}" class="card-img-top object-fit-cover" alt="{{ attachment.filename }}" height="120">
                                         </a>
                                     {% else %}
-                                        <div class="card-body text-center bg-light" style="min-height: 120px; display: flex; align-items: center; justify-content: center;">
+                                        <div class="card-body text-center bg-light d-flex align-items-center justify-content-center" style="min-height: 120px;">
                                             {% if attachment.mimeType starts with 'application/pdf' %}
-                                                <i class="bi bi-file-pdf" style="font-size: 2.5rem; color: #dc3545;"></i>
+                                                <i class="bi bi-file-pdf fs-1 text-danger"></i>
                                             {% elseif attachment.mimeType starts with 'application/vnd.ms-excel' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.spreadsheetml' %}
-                                                <i class="bi bi-file-excel" style="font-size: 2.5rem; color: #28a745;"></i>
+                                                <i class="bi bi-file-excel fs-1 text-success"></i>
                                             {% elseif attachment.mimeType starts with 'application/msword' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.wordprocessingml' %}
-                                                <i class="bi bi-file-word" style="font-size: 2.5rem; color: #007bff;"></i>
+                                                <i class="bi bi-file-word fs-1 text-primary"></i>
                                             {% elseif attachment.mimeType starts with 'application/zip' or attachment.mimeType starts with 'application/x-' %}
-                                                <i class="bi bi-file-zip" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                                <i class="bi bi-file-zip fs-1 text-secondary"></i>
                                             {% elseif attachment.mimeType starts with 'text/' %}
-                                                <i class="bi bi-file-text" style="font-size: 2.5rem; color: #17a2b8;"></i>
+                                                <i class="bi bi-file-text fs-1 text-info"></i>
                                             {% else %}
-                                                <i class="bi bi-file-earmark" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                                <i class="bi bi-file-earmark fs-1 text-secondary"></i>
                                             {% endif %}
                                         </div>
                                     {% endif %}
@@ -71,7 +71,7 @@
                                         <p class="card-text small text-truncate mb-0" title="{{ attachment.filename }}">
                                             <strong>{{ attachment.filename }}</strong>
                                         </p>
-                                        <p class="card-text">
+                                        <p class="card-text mb-0">
                                             <small class="text-muted">{{ attachment.formattedSize }}</small>
                                         </p>
                                     </div>
