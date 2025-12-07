@@ -92,7 +92,12 @@ final class TicketController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_ticket_show', methods: ['GET', 'POST'])]
-    public function show(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
+    public function show(
+        Request $request,
+        Ticket $ticket,
+        EntityManagerInterface $entityManager,
+        FileUploader $fileUploader
+    ): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -111,6 +116,28 @@ final class TicketController extends AbstractController
 
             $entityManager->persist($comment);
             $entityManager->flush();
+
+            // Handle file uploads
+            /** @var UploadedFile[] $attachmentFiles */
+            $attachmentFiles = $form->get('attachments')->getData();
+
+            if ($attachmentFiles) {
+                foreach ($attachmentFiles as $file) {
+                    $fileData = $fileUploader->upload($file);
+
+                    $attachment = new Attachment();
+                    $attachment->setFilename($fileData['filename']);
+                    $attachment->setStoredFilename($fileData['storedFilename']);
+                    $attachment->setMimeType($fileData['mimeType']);
+                    $attachment->setSize($fileData['size']);
+                    $attachment->setComment($comment);
+                    $attachment->setUploadedBy($user);
+
+                    $entityManager->persist($attachment);
+                }
+
+                $entityManager->flush();
+            }
 
             $this->addFlash('success', 'Commentaire ajouté avec succès !');
 
@@ -168,7 +195,7 @@ final class TicketController extends AbstractController
 
             $this->addFlash('success', 'Ticket modifié avec succès !');
 
-            return $this->redirectToRoute('app_ticket_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ticket_show', ['id' => $ticket->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('ticket/edit.html.twig', [
