@@ -4,9 +4,12 @@ namespace App\Form;
 
 use App\Entity\Comment;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\File;
 
 class CommentType extends AbstractType
 {
@@ -19,6 +22,37 @@ class CommentType extends AbstractType
                     'rows' => 4,
                     'placeholder' => 'Écrivez votre commentaire ...'
                 ]
+            ])
+            ->add('attachments', FileType::class, [
+                'label' => 'Pièces jointes (optionnel)',
+                'mapped' => false,
+                'required' => false,
+                'multiple' => true,
+                'attr' => [
+                    'accept' => 'image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar',
+                ],
+                'constraints' => [
+                    new All([
+                        new File([
+                            'maxSize' => '10M',
+                            'mimeTypes' => [
+                                'image/jpeg',
+                                'image/png',
+                                'image/gif',
+                                'image/webp',
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'text/plain',
+                                'application/zip',
+                                'application/x-rar-compressed',
+                            ],
+                            'mimeTypesMessage' => 'Veuillez uploader un fichier valide (image, PDF, Word, Excel, texte ou archive)',
+                        ])
+                    ])
+                ],
             ])
         ;
     }
