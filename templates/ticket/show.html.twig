@@ -30,6 +30,72 @@
         </tbody>
     </table>
 
+    {# Attachments section #}
+    {% if ticket.attachments|length > 0 %}
+        <hr>
+
+        <h2>Pièces jointes ({{ ticket.attachments|length }})</h2>
+        <div class="row">
+            {% for attachment in ticket.attachments %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        {% if attachment.isImage %}
+                            {# Afficher l'image directement #}
+                            <a href="{{ path('app_attachment_download', {
+                                'ticketId': ticket.id,
+                                'attachmentId': attachment.id
+                            }) }}" target="_blank">
+                                <img src="{{ path('app_attachment_download', {
+                                    'ticketId': ticket.id,
+                                    'attachmentId': attachment.id
+                                }) }}" class="card-img-top" alt="{{ attachment.filename }}" style="max-height: 200px; object-fit: cover;">
+                            </a>
+                        {% else %}
+                            <div class="card-body text-center bg-light" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                <div>
+                                    {% if attachment.mimeType starts with 'application/pdf' %}
+                                        <i class="bi bi-file-pdf" style="font-size: 4rem; color: #dc3545;"></i>
+                                    {% elseif attachment.mimeType starts with 'application/vnd.ms-excel' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.spreadsheetml' %}
+                                        <i class="bi bi-file-excel" style="font-size: 4rem; color: #28a745;"></i>
+                                    {% elseif attachment.mimeType starts with 'application/msword' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.wordprocessingml' %}
+                                        <i class="bi bi-file-word" style="font-size: 4rem; color: #007bff;"></i>
+                                    {% elseif attachment.mimeType starts with 'application/zip' or attachment.mimeType starts with 'application/x-' %}
+                                        <i class="bi bi-file-zip" style="font-size: 4rem; color: #6c757d;"></i>
+                                    {% elseif attachment.mimeType starts with 'text/' %}
+                                        <i class="bi bi-file-text" style="font-size: 4rem; color: #17a2b8;"></i>
+                                    {% else %}
+                                        <i class="bi bi-file-earmark" style="font-size: 4rem; color: #6c757d;"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h6 class="card-title text-truncate" title="{{ attachment.filename }}">
+                                {{ attachment.filename }}
+                            </h6>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    {{ attachment.formattedSize }}<br>
+                                    Uploadé le {{ attachment.uploadedAt|date('d/m/Y à H:i') }}
+                                    {% if attachment.uploadedBy %}
+                                        <br>par {{ attachment.uploadedBy.email }}
+                                    {% endif %}
+                                </small>
+                            </p>
+                            <a href="{{ path('app_attachment_download', {
+                                'ticketId': ticket.id,
+                                'attachmentId': attachment.id
+                            }) }}" class="btn btn-sm btn-primary w-100" download>
+                                <i class="bi bi-download"></i> Télécharger
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {# Comment section #}
     <hr>
     <h2>Commentaires ({{ ticket.comments|length }})</h2>
