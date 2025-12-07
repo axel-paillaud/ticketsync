@@ -104,11 +104,11 @@ final class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET', 'POST'])]
+    #[Route('/tickets/{ticketId}', name: 'app_ticket_show', methods: ['GET', 'POST'])]
     public function show(
         Organization $organization,
         Request $request,
-        Ticket $ticket,
+        #[MapEntity(id: 'ticketId')] Ticket $ticket,
         EntityManagerInterface $entityManager,
         FileUploader $fileUploader
     ): Response
@@ -174,11 +174,11 @@ final class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/tickets/{id}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
+    #[Route('/tickets/{ticketId}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
     public function edit(
         Organization $organization,
         Request $request,
-        Ticket $ticket,
+        #[MapEntity(id: 'ticketId')] Ticket $ticket,
         EntityManagerInterface $entityManager,
         FileUploader $fileUploader
     ): Response
@@ -239,8 +239,8 @@ final class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/tickets/{id}', name: 'app_ticket_delete', methods: ['POST'])]
-    public function delete(Organization $organization, Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
+    #[Route('/tickets/{ticketId}', name: 'app_ticket_delete', methods: ['POST'])]
+    public function delete(Organization $organization, Request $request, #[MapEntity(id: 'ticketId')] Ticket $ticket, EntityManagerInterface $entityManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
