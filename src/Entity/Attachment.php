@@ -145,4 +145,23 @@ class Attachment
     {
         $this->uploadedAt = new \DateTimeImmutable();
     }
+
+    public function isImage():bool
+    {
+        return str_starts_with($this->mimeType, 'image/');
+    }
+
+    public function getFormattedSize(): string
+    {
+        $units = ['o', 'Ko', 'Mo', 'Go'];
+        $size = $this->size;
+        $unit = 0;
+
+        while ($size >= 1024 && $unit < count($units) - 1) {
+            $size /= 1024;
+            $unit++;
+        }
+
+        return round($size, 2) . ' ' . $units[$unit];
+    }
 }
