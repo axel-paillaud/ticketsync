@@ -291,7 +291,7 @@ final class TicketController extends AbstractController
 
         return $this->redirectToRoute('app_ticket_show', [
             'organizationSlug' => $organization->getSlug(),
-            'id' => $ticketId
+            'ticketId' => $ticketId
         ], Response::HTTP_SEE_OTHER);
     }
 
