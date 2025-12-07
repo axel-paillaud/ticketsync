@@ -25,7 +25,7 @@
 
                 <div class="mt-3">
                     <button type="submit" class="btn btn-primary">Sauvegarder</button>
-                    <a href="{{ path('app_ticket_show', {'organizationSlug': currentOrganization.slug, 'id': ticket.id}) }}" class="btn btn-secondary">Annuler</a>
+                    <a href="{{ path('app_ticket_show', {'organizationSlug': currentOrganization.slug, 'ticketId': ticket.id}) }}" class="btn btn-secondary">Annuler</a>
                 </div>
             {{ form_end(form) }}
         </div>
