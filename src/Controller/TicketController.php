@@ -157,7 +157,7 @@ final class TicketController extends AbstractController
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
-                'id' => $ticket->getId()
+                'ticketId' => $ticket->getId()
             ], Response::HTTP_SEE_OTHER);
         }
 
@@ -220,7 +220,7 @@ final class TicketController extends AbstractController
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
-                'id' => $ticket->getId()
+                'ticketId' => $ticket->getId()
             ], Response::HTTP_SEE_OTHER);
         }
 
@@ -360,7 +360,7 @@ final class TicketController extends AbstractController
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
-                'id' => $ticketId
+                'ticketId' => $ticketId
             ], Response::HTTP_SEE_OTHER);
         }
 
@@ -449,7 +449,7 @@ final class TicketController extends AbstractController
 
         return $this->redirectToRoute('app_ticket_show', [
             'organizationSlug' => $organization->getSlug(),
-            'id' => $ticketId
+            'ticketId' => $ticketId
         ], Response::HTTP_SEE_OTHER);
     }
 
@@ -533,7 +533,7 @@ final class TicketController extends AbstractController
 
         return $this->redirectToRoute('app_ticket_show', [
             'organizationSlug' => $organization->getSlug(),
-            'id' => $ticketId
+            'ticketId' => $ticketId
         ], Response::HTTP_SEE_OTHER);
     }
 }
