@@ -30,9 +30,7 @@ final class TicketController extends AbstractController
         $user = $this->getUser();
 
         // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         $tickets = $ticketRepository->findBy(
             ['organization' => $organization],
@@ -52,9 +50,7 @@ final class TicketController extends AbstractController
         $user = $this->getUser();
 
         // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         $ticket = new Ticket();
         $ticket->setOrganization($organization);
@@ -117,9 +113,7 @@ final class TicketController extends AbstractController
         $user = $this->getUser();
 
         // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Security check: ticket must belong to this organization
         if ($ticket->getOrganization() !== $organization) {
@@ -187,9 +181,7 @@ final class TicketController extends AbstractController
         $user = $this->getUser();
 
         // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Security check: ticket must belong to this organization
         if ($ticket->getOrganization() !== $organization) {
@@ -245,10 +237,8 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        // Security check: user must belong to this organization, except admin
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Security check: ticket must belong to this organization
         if ($ticket->getOrganization() !== $organization) {
@@ -275,10 +265,8 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        // Security check: user must belong to this organization, except admin
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Check comment -> ticket association
         if ($comment->getTicket()->getId() !== $ticketId) {
@@ -322,10 +310,8 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        // Security check: user must belong to this organization, except admin
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Check comment -> ticket association
         if ($comment->getTicket()->getId() !== $ticketId) {
@@ -397,10 +383,8 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        // Security check: user must belong to this organization, except admin
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Check attachment -> ticket association
         if ($attachment->getTicket()->getId() !== $ticketId) {
@@ -434,10 +418,8 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        // Security check: user must belong to this organization, except admin
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         if ($attachment->getTicket()->getId() !== $ticketId) {
             throw $this->createNotFoundException('Attachment does not belong to this ticket.');
@@ -483,10 +465,8 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        // Security check: user must belong to this organization, except admin
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         if (!$attachment->getComment() || $attachment->getComment()->getId() !== $commentId) {
             throw $this->createNotFoundException('Attachment does not belong to this comment.');
@@ -523,10 +503,8 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Security check: user must belong to this organization
-        if ($user->getOrganization() !== $organization) {
-            throw $this->createAccessDeniedException('You cannot access this organization.');
-        }
+        // Security check: user must belong to this organization, except admin
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         if (!$attachment->getComment() || $attachment->getComment()->getId() !== $commentId) {
             throw $this->createNotFoundException('Attachment does not belong to this comment.');
