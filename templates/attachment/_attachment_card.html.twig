@@ -1,0 +1,114 @@
+{# 
+    Attachment card partial
+    Expected variables:
+    - attachment: the Attachment object
+    - ticketId: the ticket ID
+    - commentId: the comment ID (optional, if it's a comment attachment)
+    - size: 'large' (200px) or 'small' (100px) - default: 'large'
+#}
+
+{% set size = size|default('large') %}
+{% set imageHeight = size == 'large' ? 200 : 100 %}
+{% set minHeight = size == 'large' ? '200px' : '100px' %}
+{% set iconSize = size == 'large' ? 'fs-1' : 'fs-2' %}
+{% set colClass = size == 'large' ? 'col-md-4 mb-3' : 'col-md-3 mb-2' %}
+
+<div class="{{ colClass }}">
+    <div class="card h-100">
+        {# Delete button #}
+        {% if app.user == attachment.uploadedBy %}
+            <div class="position-absolute top-0 end-0 p-{{ size == 'large' ? '2' : '1' }}">
+                <form method="post" action="{{ commentId is defined 
+                    ? path('app_comment_attachment_delete', {
+                        'ticketId': ticketId,
+                        'commentId': commentId,
+                        'attachmentId': attachment.id
+                    })
+                    : path('app_attachment_delete', {
+                        'ticketId': ticketId,
+                        'attachmentId': attachment.id
+                    })
+                }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token((commentId is defined ? 'delete-comment-attachment-' : 'delete-attachment-') ~ attachment.id) }}">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette pièce jointe ?')" title="Supprimer">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+
+        {# Image or icon #}
+        {% if attachment.isImage %}
+            <a href="{{ commentId is defined 
+                ? path('app_comment_attachment_download', {
+                    'ticketId': ticketId,
+                    'commentId': commentId,
+                    'attachmentId': attachment.id
+                })
+                : path('app_attachment_download', {
+                    'ticketId': ticketId,
+                    'attachmentId': attachment.id
+                })
+            }}" target="_blank" class="overflow-hidden">
+                <img src="{{ commentId is defined 
+                    ? path('app_comment_attachment_download', {
+                        'ticketId': ticketId,
+                        'commentId': commentId,
+                        'attachmentId': attachment.id
+                    })
+                    : path('app_attachment_download', {
+                        'ticketId': ticketId,
+                        'attachmentId': attachment.id
+                    })
+                }}" class="card-img-top object-fit-cover" alt="{{ attachment.filename }}" height="{{ imageHeight }}">
+            </a>
+        {% else %}
+            <div class="card-body text-center bg-light d-flex align-items-center justify-content-center" style="min-height: {{ minHeight }};">
+                {% if attachment.mimeType starts with 'application/pdf' %}
+                    <i class="bi bi-file-pdf {{ iconSize }} text-danger"></i>
+                {% elseif attachment.mimeType starts with 'application/vnd.ms-excel' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.spreadsheetml' %}
+                    <i class="bi bi-file-excel {{ iconSize }} text-success"></i>
+                {% elseif attachment.mimeType starts with 'application/msword' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.wordprocessingml' %}
+                    <i class="bi bi-file-word {{ iconSize }} text-primary"></i>
+                {% elseif attachment.mimeType starts with 'application/zip' or attachment.mimeType starts with 'application/x-' %}
+                    <i class="bi bi-file-zip {{ iconSize }} text-secondary"></i>
+                {% elseif attachment.mimeType starts with 'text/' %}
+                    <i class="bi bi-file-text {{ iconSize }} text-info"></i>
+                {% else %}
+                    <i class="bi bi-file-earmark {{ iconSize }} text-secondary"></i>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {# File info and download button #}
+        <div class="card-body p-2">
+            <p class="card-text small text-truncate mb-0" title="{{ attachment.filename }}">
+                <strong>{{ attachment.filename }}</strong>
+            </p>
+            <p class="card-text {{ size == 'large' ? '' : 'mb-1' }}">
+                <small class="text-muted">
+                    {{ attachment.formattedSize }}
+                    {% if size == 'large' %}
+                        <br>Uploadé le {{ attachment.uploadedAt|date('d/m/Y à H:i') }}
+                        {% if attachment.uploadedBy %}
+                            <br>par {{ attachment.uploadedBy.email }}
+                        {% endif %}
+                    {% endif %}
+                </small>
+            </p>
+            <a href="{{ commentId is defined 
+                ? path('app_comment_attachment_download', {
+                    'ticketId': ticketId,
+                    'commentId': commentId,
+                    'attachmentId': attachment.id
+                })
+                : path('app_attachment_download', {
+                    'ticketId': ticketId,
+                    'attachmentId': attachment.id
+                })
+            }}" class="btn btn-sm btn-primary w-100" download>
+                <i class="bi bi-download"></i> Télécharger
+            </a>
+        </div>
+    </div>
+</div>

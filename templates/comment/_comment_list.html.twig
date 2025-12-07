@@ -1,0 +1,68 @@
+{#
+    Comment list partial
+    Expected variables:
+    - ticket: the Ticket object
+#}
+
+<hr>
+<h2>Commentaires ({{ ticket.comments|length }})</h2>
+
+{% if ticket.comments|length > 0 %}
+    <div class="comments-list">
+        {% for comment in ticket.comments %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            Par {{ comment.author.email }} - {{ comment.createdAt|date('d/m/Y à H:i') }}
+                        </h6>
+                        {% if comment.updatedAt > comment.createdAt %}
+                            <small class="text-muted">(modifié le {{ comment.updatedAt|date('d/m/Y à H:i') }})</small>
+                        {% endif %}
+
+                        {% if app.user == comment.author %}
+                            <div>
+                                <a href="{{ path('app_comment_edit', {
+                                    'ticketId': ticket.id,
+                                    'commentId': comment.id
+                                }) }}" class="btn btn-sm btn-warning">
+                                    Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_comment_delete', {
+                                    'ticketId': ticket.id,
+                                    'commentId': comment.id
+                                }) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-comment-' ~ comment.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <p class="card-text">{{ comment.content|nl2br }}</p>
+
+                    {# Display comment attachments #}
+                    {% if comment.attachments|length > 0 %}
+                        <hr>
+                        <h6 class="text-muted mb-3">
+                            <i class="bi bi-paperclip"></i> Pièces jointes ({{ comment.attachments|length }})
+                        </h6>
+                        <div class="row">
+                            {% for attachment in comment.attachments %}
+                                {% include 'attachment/_attachment_card.html.twig' with {
+                                    'attachment': attachment,
+                                    'ticketId': ticket.id,
+                                    'commentId': comment.id,
+                                    'size': 'small'
+                                } %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">Aucun commentaire pour le moment.</p>
+{% endif %}

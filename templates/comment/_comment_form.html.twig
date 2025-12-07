@@ -1,0 +1,14 @@
+{#
+    Comment form partial
+    Expected variables:
+    - commentForm: the comment form object
+#}
+
+<div class="mt-4">
+    <h3>Ajouter un commentaire</h3>
+    {{ form_start(commentForm) }}
+        {{ form_row(commentForm.content) }}
+        {{ form_row(commentForm.attachments) }}
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+    {{ form_end(commentForm) }}
+</div>
