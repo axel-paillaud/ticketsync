@@ -30,7 +30,7 @@ class Attachment
     private ?\DateTimeImmutable $uploadedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'attachments')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Ticket $ticket = null;
 
     #[ORM\ManyToOne(inversedBy: 'attachments')]
