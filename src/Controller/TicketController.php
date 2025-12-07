@@ -188,6 +188,9 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
+        // Security check: user must have permission to edit this ticket
+        $this->denyAccessUnlessGranted('TICKET_EDIT', $ticket);
+
         $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
 
@@ -234,16 +237,16 @@ final class TicketController extends AbstractController
     #[Route('/tickets/{ticketId}', name: 'app_ticket_delete', methods: ['POST'])]
     public function delete(Organization $organization, Request $request, #[MapEntity(id: 'ticketId')] Ticket $ticket, EntityManagerInterface $entityManager): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        // Security check: user must belong to this organization, except admin
+        // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Security check: ticket must belong to this organization
         if ($ticket->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Ticket not found in this organization.');
         }
+
+        // Security check: user must have permission to delete this ticket
+        $this->denyAccessUnlessGranted('TICKET_DELETE', $ticket);
 
         if ($this->isCsrfTokenValid('delete'.$ticket->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($ticket);
@@ -262,10 +265,7 @@ final class TicketController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        // Security check: user must belong to this organization, except admin
+        // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Check comment -> ticket association
@@ -278,10 +278,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Comment not found in this organization.');
         }
 
-        // Check author
-        if ($comment->getAuthor() !== $user) {
-            throw $this->createAccessDeniedException('You can only delete your own comment.');
-        }
+        // Security check: user must have permission to delete this comment
+        $this->denyAccessUnlessGranted('COMMENT_DELETE', $comment);
 
         // Check CSRF token
         if ($this->isCsrfTokenValid('delete-comment-'.$comment->getId(), $request->getPayload()->getString('_token'))) {
@@ -310,7 +308,7 @@ final class TicketController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Security check: user must belong to this organization, except admin
+        // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
         // Check comment -> ticket association
@@ -323,10 +321,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Comment not found in this organization.');
         }
 
-        // Check author
-        if ($comment->getAuthor() !== $user) {
-            throw $this->createAccessDeniedException('You can only edit your own comment.');
-        }
+        // Security check: user must have permission to edit this comment
+        $this->denyAccessUnlessGranted('COMMENT_EDIT', $comment);
 
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
