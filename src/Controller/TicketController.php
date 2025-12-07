@@ -264,7 +264,8 @@ final class TicketController extends AbstractController
         Request $request,
         int $ticketId,
         #[MapEntity(id: 'commentId')] Comment $comment,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        FileUploader $fileUploader
     ): Response
     {
         /** @var User $user */
@@ -290,6 +291,28 @@ final class TicketController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            // Handle new file uploads
+            /** @var UploadedFile[] $attachmentFiles */
+            $attachmentFiles = $form->get('attachments')->getData();
+
+            if ($attachmentFiles) {
+                foreach ($attachmentFiles as $file) {
+                    $fileData = $fileUploader->upload($file);
+
+                    $attachment = new Attachment();
+                    $attachment->setFilename($fileData['filename']);
+                    $attachment->setStoredFilename($fileData['storedFilename']);
+                    $attachment->setMimeType($fileData['mimeType']);
+                    $attachment->setSize($fileData['size']);
+                    $attachment->setComment($comment);
+                    $attachment->setUploadedBy($user);
+
+                    $entityManager->persist($attachment);
+                }
+
+                $entityManager->flush();
+            }
 
             $this->addFlash('success', 'Commentaire modifié avec succès !');
 
