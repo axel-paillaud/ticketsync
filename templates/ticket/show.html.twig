@@ -38,13 +38,13 @@
         <div class="row">
             {% for attachment in ticket.attachments %}
                 <div class="col-md-4 mb-3">
-                    <div class="card">
+                    <div class="card h-100">
                         {% if app.user == attachment.uploadedBy %}
                             <div class="position-absolute top-0 end-0 p-2">
                                 <form method="post" action="{{ path('app_attachment_delete', {
                                     'ticketId': ticket.id,
                                     'attachmentId': attachment.id
-                                }) }}" style="display: inline;">
+                                }) }}" class="d-inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete-attachment-' ~ attachment.id) }}">
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette pièce jointe ?')" title="Supprimer">
                                         <i class="bi bi-trash"></i>
@@ -57,29 +57,27 @@
                             <a href="{{ path('app_attachment_download', {
                                 'ticketId': ticket.id,
                                 'attachmentId': attachment.id
-                            }) }}" target="_blank">
+                            }) }}" target="_blank" class="overflow-hidden">
                                 <img src="{{ path('app_attachment_download', {
                                     'ticketId': ticket.id,
                                     'attachmentId': attachment.id
-                                }) }}" class="card-img-top" alt="{{ attachment.filename }}" style="max-height: 200px; object-fit: cover;">
+                                }) }}" class="card-img-top object-fit-cover" alt="{{ attachment.filename }}" height="200">
                             </a>
                         {% else %}
-                            <div class="card-body text-center bg-light" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
-                                <div>
-                                    {% if attachment.mimeType starts with 'application/pdf' %}
-                                        <i class="bi bi-file-pdf" style="font-size: 4rem; color: #dc3545;"></i>
-                                    {% elseif attachment.mimeType starts with 'application/vnd.ms-excel' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.spreadsheetml' %}
-                                        <i class="bi bi-file-excel" style="font-size: 4rem; color: #28a745;"></i>
-                                    {% elseif attachment.mimeType starts with 'application/msword' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.wordprocessingml' %}
-                                        <i class="bi bi-file-word" style="font-size: 4rem; color: #007bff;"></i>
-                                    {% elseif attachment.mimeType starts with 'application/zip' or attachment.mimeType starts with 'application/x-' %}
-                                        <i class="bi bi-file-zip" style="font-size: 4rem; color: #6c757d;"></i>
-                                    {% elseif attachment.mimeType starts with 'text/' %}
-                                        <i class="bi bi-file-text" style="font-size: 4rem; color: #17a2b8;"></i>
-                                    {% else %}
-                                        <i class="bi bi-file-earmark" style="font-size: 4rem; color: #6c757d;"></i>
-                                    {% endif %}
-                                </div>
+                            <div class="card-body text-center bg-light d-flex align-items-center justify-content-center" style="min-height: 200px;">
+                                {% if attachment.mimeType starts with 'application/pdf' %}
+                                    <i class="bi bi-file-pdf fs-1 text-danger"></i>
+                                {% elseif attachment.mimeType starts with 'application/vnd.ms-excel' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.spreadsheetml' %}
+                                    <i class="bi bi-file-excel fs-1 text-success"></i>
+                                {% elseif attachment.mimeType starts with 'application/msword' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.wordprocessingml' %}
+                                    <i class="bi bi-file-word fs-1 text-primary"></i>
+                                {% elseif attachment.mimeType starts with 'application/zip' or attachment.mimeType starts with 'application/x-' %}
+                                    <i class="bi bi-file-zip fs-1 text-secondary"></i>
+                                {% elseif attachment.mimeType starts with 'text/' %}
+                                    <i class="bi bi-file-text fs-1 text-info"></i>
+                                {% else %}
+                                    <i class="bi bi-file-earmark fs-1 text-secondary"></i>
+                                {% endif %}
                             </div>
                         {% endif %}
 
@@ -137,7 +135,7 @@
                                     <form method="post" action="{{ path('app_comment_delete', {
                                         'ticketId': ticket.id,
                                         'commentId': comment.id
-                                    }) }}" style="display: inline;">
+                                    }) }}" class="d-inline">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete-comment-' ~ comment.id) }}">
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
                                             Supprimer
@@ -147,6 +145,83 @@
                             {% endif %}
                         </div>
                         <p class="card-text">{{ comment.content|nl2br }}</p>
+
+                        {# Afficher les pièces jointes du commentaire #}
+                        {% if comment.attachments|length > 0 %}
+                            <hr>
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-paperclip"></i> Pièces jointes ({{ comment.attachments|length }})
+                            </h6>
+                            <div class="row">
+                                {% for attachment in comment.attachments %}
+                                    <div class="col-md-3 mb-2">
+                                        <div class="card h-100">
+                                            {# Bouton de suppression (seulement pour l'auteur) #}
+                                            {% if app.user == attachment.uploadedBy %}
+                                                <div class="position-absolute top-0 end-0 p-1">
+                                                    <form method="post" action="{{ path('app_comment_attachment_delete', {
+                                                        'ticketId': ticket.id,
+                                                        'commentId': comment.id,
+                                                        'attachmentId': attachment.id
+                                                    }) }}" class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete-comment-attachment-' ~ attachment.id) }}">
+                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette pièce jointe ?')" title="Supprimer">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            {% endif %}
+
+                                            {% if attachment.isImage %}
+                                                <a href="{{ path('app_comment_attachment_download', {
+                                                    'ticketId': ticket.id,
+                                                    'commentId': comment.id,
+                                                    'attachmentId': attachment.id
+                                                }) }}" target="_blank" class="overflow-hidden">
+                                                    <img src="{{ path('app_comment_attachment_download', {
+                                                        'ticketId': ticket.id,
+                                                        'commentId': comment.id,
+                                                        'attachmentId': attachment.id
+                                                    }) }}" class="card-img-top object-fit-cover" alt="{{ attachment.filename }}" height="100">
+                                                </a>
+                                            {% else %}
+                                                <div class="card-body text-center bg-light d-flex align-items-center justify-content-center" style="min-height: 100px;">
+                                                    {% if attachment.mimeType starts with 'application/pdf' %}
+                                                        <i class="bi bi-file-pdf fs-2 text-danger"></i>
+                                                    {% elseif attachment.mimeType starts with 'application/vnd.ms-excel' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.spreadsheetml' %}
+                                                        <i class="bi bi-file-excel fs-2 text-success"></i>
+                                                    {% elseif attachment.mimeType starts with 'application/msword' or attachment.mimeType starts with 'application/vnd.openxmlformats-officedocument.wordprocessingml' %}
+                                                        <i class="bi bi-file-word fs-2 text-primary"></i>
+                                                    {% elseif attachment.mimeType starts with 'application/zip' or attachment.mimeType starts with 'application/x-' %}
+                                                        <i class="bi bi-file-zip fs-2 text-secondary"></i>
+                                                    {% elseif attachment.mimeType starts with 'text/' %}
+                                                        <i class="bi bi-file-text fs-2 text-info"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-file-earmark fs-2 text-secondary"></i>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+
+                                            <div class="card-body p-2">
+                                                <p class="card-text small text-truncate mb-0" title="{{ attachment.filename }}">
+                                                    <strong>{{ attachment.filename }}</strong>
+                                                </p>
+                                                <p class="card-text mb-1">
+                                                    <small class="text-muted">{{ attachment.formattedSize }}</small>
+                                                </p>
+                                                <a href="{{ path('app_comment_attachment_download', {
+                                                    'ticketId': ticket.id,
+                                                    'commentId': comment.id,
+                                                    'attachmentId': attachment.id
+                                                }) }}" class="btn btn-sm btn-primary w-100" download>
+                                                    <i class="bi bi-download"></i> Télécharger
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -160,6 +235,7 @@
         <h3>Ajouter un commentaire</h3>
         {{ form_start(commentForm) }}
             {{ form_row(commentForm.content) }}
+            {{ form_row(commentForm.attachments) }}
             <button type="submit" class="btn btn-primary">Envoyer</button>
         {{ form_end(commentForm) }}
     </div>
