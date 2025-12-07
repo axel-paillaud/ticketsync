@@ -19,7 +19,6 @@ class FileUploader
         $safeFilename = $this->slugger->slug($originalFilename);
         $storedFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
-        // Get file info BEFORE moving it
         $mimeType = $file->getMimeType();
         $size = $file->getSize();
 
