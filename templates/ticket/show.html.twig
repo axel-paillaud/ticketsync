@@ -33,12 +33,25 @@
     {# Attachments section #}
     {% if ticket.attachments|length > 0 %}
         <hr>
-
         <h2>Pièces jointes ({{ ticket.attachments|length }})</h2>
+
         <div class="row">
             {% for attachment in ticket.attachments %}
                 <div class="col-md-4 mb-3">
                     <div class="card">
+                        {% if app.user == attachment.uploadedBy %}
+                            <div class="position-absolute top-0 end-0 p-2">
+                                <form method="post" action="{{ path('app_attachment_delete', {
+                                    'ticketId': ticket.id,
+                                    'attachmentId': attachment.id
+                                }) }}" style="display: inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-attachment-' ~ attachment.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette pièce jointe ?')" title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
                         {% if attachment.isImage %}
                             {# Afficher l'image directement #}
                             <a href="{{ path('app_attachment_download', {

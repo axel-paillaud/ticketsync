@@ -275,4 +275,45 @@ final class TicketController extends AbstractController
 
         return $this->file($filePath, $attachment->getFilename());
     }
+
+    #[Route('/{ticketId}/attachment/{attachmentId}/delete', name: 'app_attachment_delete', methods: ['POST'])]
+    public function deleteAttachment(
+        Request $request,
+        int $ticketId,
+        #[MapEntity(id: 'attachmentId')] Attachment $attachment,
+        EntityManagerInterface $entityManager,
+        FileUploader $fileUploader
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($attachment->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Attachment does not belong to this ticket.');
+        }
+
+        if ($attachment->getTicket()->getOrganization() !== $user->getOrganization()) {
+            throw $this->createAccessDeniedException('You cannot access this attachment.');
+        }
+
+        if ($attachment->getUploadedBy() !== $user) {
+            throw $this->createAccessDeniedException('You can only delete your own attachments.');
+        }
+
+        // Check CSRF
+        if ($this->isCsrfTokenValid('delete-attachment-'.$attachment->getId(), $request->getPayload()->getString('_token'))) {
+            try {
+                $fileUploader->delete($attachment->getStoredFilename());
+            } catch (\Exception $e) {
+                $this->addFlash('warning', 'Le fichier a été supprimé de la base mais pas du disque.');
+            }
+
+            $entityManager->remove($attachment);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Pièce jointe supprimée avec succès !');
+        }
+
+        return $this->redirectToRoute('app_ticket_show', ['id' => $ticketId], Response::HTTP_SEE_OTHER);
+    }
 }
