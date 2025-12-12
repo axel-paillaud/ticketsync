@@ -35,10 +35,7 @@ final class TicketController extends AbstractController
         // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
-        $tickets = $ticketRepository->findBy(
-            ['organization' => $organization],
-            ['createdAt' => 'DESC'],
-        );
+        $tickets = $ticketRepository->findByOrganizationOrderedByPriority($organization);
 
         return $this->render('ticket/index.html.twig', [
             'tickets' => $tickets,

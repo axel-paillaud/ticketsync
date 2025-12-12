@@ -16,28 +16,20 @@ class TicketRepository extends ServiceEntityRepository
         parent::__construct($registry, Ticket::class);
     }
 
-    //    /**
-    //     * @return Ticket[] Returns an array of Ticket objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Ticket
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Find tickets by organization, ordered by priority level (DESC) then creation date (DESC)
+     * 
+     * @return Ticket[] Returns an array of Ticket objects
+     */
+    public function findByOrganizationOrderedByPriority($organization): array
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.priority', 'p')
+            ->andWhere('t.organization = :organization')
+            ->setParameter('organization', $organization)
+            ->orderBy('p.level', 'DESC')
+            ->addOrderBy('t.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
