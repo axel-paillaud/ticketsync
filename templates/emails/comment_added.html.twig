@@ -1,0 +1,26 @@
+{% extends 'emails/_layout.html.twig' %}
+
+{% block title %}Nouveau commentaire sur ticket #{{ ticket.id }}{% endblock %}
+
+{% block content %}
+    <p class="greeting">Bonjour <strong>{{ recipient.name }}</strong>,</p>
+
+    <p>Un nouveau commentaire a été ajouté sur le ticket <strong>#{{ ticket.id }}</strong> dans l'organisation <strong>{{ ticket.organization.name }}</strong>.</p>
+
+    <div class="info-box">
+        <h2>Ticket #{{ ticket.id }} : {{ ticket.title }}</h2>
+        <p>
+            <strong>Statut :</strong>
+            <span class="badge badge-status">{{ ticket.status.name }}</span>
+        </p>
+        <p><strong>Auteur du commentaire :</strong> {{ comment.author.name }}</p>
+        <p><strong>Date :</strong> {{ comment.createdAt|date('d/m/Y à H:i') }}</p>
+
+        <p><strong>Commentaire :</strong></p>
+        <div class="description">{{ comment.content }}</div>
+    </div>
+
+    <a href="https://ticketsync.ddev.site/{{ ticket.organization.slug }}/tickets/{{ ticket.id }}" class="button">
+        Voir le ticket
+    </a>
+{% endblock %}

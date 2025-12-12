@@ -1,0 +1,35 @@
+{% extends 'emails/_layout.html.twig' %}
+
+{% block title %}Nouveau ticket #{{ ticket.id }}{% endblock %}
+
+{% block content %}
+    <p class="greeting">Bonjour <strong>{{ recipient.name }}</strong>,</p>
+
+    <p>Un nouveau ticket a été créé dans l'organisation <strong>{{ ticket.organization.name }}</strong>.</p>
+
+    <div class="info-box">
+        <h2>Ticket #{{ ticket.id }}</h2>
+        <p><strong>Titre :</strong> {{ ticket.title }}</p>
+        <p>
+            <strong>Statut :</strong>
+            <span class="badge badge-status">{{ ticket.status.name }}</span>
+        </p>
+        <p>
+            <strong>Priorité :</strong>
+            <span class="badge badge-priority">{{ ticket.priority.name }}</span>
+        </p>
+        <p><strong>Créé par :</strong> {{ ticket.createdBy.name }}</p>
+        {% if ticket.assignedTo %}
+            <p><strong>Assigné à :</strong> {{ ticket.assignedTo.name }}</p>
+        {% endif %}
+
+        {% if ticket.description %}
+            <p><strong>Description :</strong></p>
+            <div class="description">{{ ticket.description }}</div>
+        {% endif %}
+    </div>
+
+    <a href="https://ticketsync.ddev.site/{{ ticket.organization.slug }}/tickets/{{ ticket.id }}" class="button">
+        Voir le ticket
+    </a>
+{% endblock %}
