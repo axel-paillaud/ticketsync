@@ -16,10 +16,23 @@
                 {{ currentOrganization.name }}
             </p>
         </div>
-        <a href="{{ path('app_ticket_new', {'organizationSlug': currentOrganization.slug}) }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i>
-            New Ticket
-        </a>
+        <div class="d-flex gap-2">
+            {% if includeResolved %}
+                <a href="{{ path('app_ticket_index', {'organizationSlug': currentOrganization.slug}) }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-eye-slash me-1"></i>
+                    Hide Resolved
+                </a>
+            {% else %}
+                <a href="{{ path('app_ticket_index', {'organizationSlug': currentOrganization.slug, 'resolved': true}) }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-eye me-1"></i>
+                    Show Resolved
+                </a>
+            {% endif %}
+            <a href="{{ path('app_ticket_new', {'organizationSlug': currentOrganization.slug}) }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>
+                New Ticket
+            </a>
+        </div>
     </div>
 
     {% if tickets|length > 0 %}

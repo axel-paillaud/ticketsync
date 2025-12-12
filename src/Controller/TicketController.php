@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TicketController extends AbstractController
 {
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
-    public function index(Organization $organization, TicketRepository $ticketRepository): Response
+    public function index(Organization $organization, TicketRepository $ticketRepository, Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -35,11 +35,15 @@ final class TicketController extends AbstractController
         // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
-        $tickets = $ticketRepository->findByOrganizationOrderedByPriority($organization);
+        // Check if we should include resolved tickets (default: false)
+        $includeResolved = $request->query->getBoolean('resolved', false);
+
+        $tickets = $ticketRepository->findByOrganizationOrderedByPriority($organization, $includeResolved);
 
         return $this->render('ticket/index.html.twig', [
             'tickets' => $tickets,
             'organization' => $organization,
+            'includeResolved' => $includeResolved,
         ]);
     }
 
