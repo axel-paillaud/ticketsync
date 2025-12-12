@@ -3,86 +3,53 @@
 namespace App\DataFixtures;
 
 use App\Entity\Comment;
-use App\Entity\Ticket;
 use App\Entity\Organization;
 use App\Entity\Priority;
 use App\Entity\Status;
+use App\Entity\Ticket;
 use App\Entity\User;
-use Faker\Factory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\String\Slugger\AsciiSlugger;
 
-class AppFixtures extends Fixture
+/**
+ * Development fixtures - Test data for development environment
+ * Should NOT be loaded in production
+ */
+class DevFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher
     ) {
     }
 
+    public static function getGroups(): array
+    {
+        return ['dev'];
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            ProductionFixtures::class,
+        ];
+    }
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
 
-        // CREATE STATUS
-        $statusOpen = new Status();
-        $statusOpen->setName('Open');
-        $statusOpen->setSlug('open');
-        $statusOpen->setIsClosed(false);
-        $statusOpen->setSortOrder(1);
-        $manager->persist($statusOpen);
-
-        $statusInProgress = new Status();
-        $statusInProgress->setName('In Progress');
-        $statusInProgress->setSlug('in-progress');
-        $statusInProgress->setIsClosed(false);
-        $statusInProgress->setSortOrder(2);
-        $manager->persist($statusInProgress);
-
-        $statusWait = new Status();
-        $statusWait->setName('Wait');
-        $statusWait->setSlug('wait');
-        $statusWait->setIsClosed(false);
-        $statusWait->setSortOrder(3);
-        $manager->persist($statusWait);
-
-        $statusResolved = new Status();
-        $statusResolved->setName('Resolved');
-        $statusResolved->setSlug('resolved');
-        $statusResolved->setIsClosed(true);
-        $statusResolved->setSortOrder(4);
-        $manager->persist($statusResolved);
-
-        $statuses = [$statusOpen, $statusInProgress, $statusWait, $statusResolved];
-
-        // CREATE PRIORITY
-        $priorityA = new Priority();
-        $priorityA->setName('Priority A');
-        $priorityA->setLevel(3);
-        $priorityA->setColor('#ff0000');
-        $manager->persist($priorityA);
-
-        $priorityB = new Priority();
-        $priorityB->setName('Priority B');
-        $priorityB->setLevel(2);
-        $priorityB->setColor('#ff9900');
-        $manager->persist($priorityB);
-
-        $priorityC = new Priority();
-        $priorityC->setName('Priority C');
-        $priorityC->setLevel(1);
-        $priorityC->setColor('#999999');
-        $manager->persist($priorityC);
-
-        $priorities = [$priorityA, $priorityB, $priorityC];
-
-        $slugger = new AsciiSlugger();
+        // Get existing statuses and priorities from ProductionFixtures
+        $statuses = $manager->getRepository(Status::class)->findAll();
+        $priorities = $manager->getRepository(Priority::class)->findAll();
 
         $users = [];
         $organizations = [];
 
-        // CREATE ORGANIZATION
+        // CREATE ORGANIZATIONS
         for ($i = 0; $i < 3; $i++) {
             $org = new Organization();
             $companyName = $faker->company();
@@ -102,13 +69,17 @@ class AppFixtures extends Fixture
                 $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
                 $user->setOrganization($org);
                 $user->setRoles($j === 0 ? ['ROLE_ADMIN'] : ['ROLE_USER']);
+                $user->setFirstName($faker->firstName());
+                $user->setLastName($faker->lastName());
 
                 $manager->persist($user);
                 $users[] = $user;
             }
         }
 
-        // CREATE 20 TICKETS
+        $manager->flush();
+
+        // CREATE TICKETS
         for ($i = 0; $i < 20; $i++) {
             $ticket = new Ticket();
 
@@ -148,7 +119,7 @@ class AppFixtures extends Fixture
 
                 $manager->persist($comment);
             }
-        };
+        }
 
         $manager->flush();
     }
