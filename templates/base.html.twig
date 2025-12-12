@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}TicketSync{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎫</text></svg>">
         {% block stylesheets %}
         {% endblock %}
 
@@ -12,16 +13,81 @@
         {% endblock %}
     </head>
     <body>
-        <div class="container mt-3">
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {# Navigation #}
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand d-flex align-items-center" href="{{ path('app_home') }}">
+                    <span class="me-2">🎫</span>
+                    <span>TicketSync</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        {% if app.user %}
+                            {% if currentOrganization is defined and currentOrganization %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_ticket_index', {organizationSlug: currentOrganization.slug}) }}">
+                                        <i class="bi bi-ticket-perforated me-1"></i>
+                                        Tickets
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_ticket_new', {organizationSlug: currentOrganization.slug}) }}">
+                                        <i class="bi bi-plus-circle me-1"></i>
+                                        New Ticket
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <i class="bi bi-speedometer2 me-1"></i>
+                                        Admin
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    {{ app.user.name }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
                 </div>
+            </div>
+        </nav>
+
+        {# Flash Messages #}
+        <div class="container mt-3">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
         </div>
-        {% block body %}{% endblock %}
+
+        {# Main Content #}
+        <div class="content-wrapper">
+            {% block body %}{% endblock %}
+        </div>
     </body>
 </html>
