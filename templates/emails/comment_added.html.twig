@@ -20,7 +20,7 @@
         <div class="description">{{ comment.content }}</div>
     </div>
 
-    <a href="https://ticketsync.ddev.site/{{ ticket.organization.slug }}/tickets/{{ ticket.id }}" class="button">
+    <a href="{{ url('app_ticket_show', {organizationSlug: ticket.organization.slug, ticketId: ticket.id}) }}" class="button">
         Voir le ticket
     </a>
 {% endblock %}
