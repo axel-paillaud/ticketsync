@@ -1,0 +1,39 @@
+{% extends 'emails/_layout.html.twig' %}
+
+{% block title %}Ticket #{{ ticket.id }} status updated{% endblock %}
+
+{% block content %}
+    <p class="greeting">Hello <strong>{{ recipient.name }}</strong>,</p>
+
+    <p>The status of ticket <strong>#{{ ticket.id }}</strong> has been updated.</p>
+
+    <div class="info-box">
+        <h2>Ticket #{{ ticket.id }}: {{ ticket.title }}</h2>
+        <p><strong>Organization:</strong> {{ ticket.organization.name }}</p>
+        
+        <p><strong>Status changed:</strong></p>
+        <p>
+            <span class="badge badge-status">{{ oldStatus.name }}</span>
+            →
+            <span class="badge badge-status">{{ newStatus.name }}</span>
+        </p>
+
+        <p>
+            <strong>Priority:</strong>
+            <span class="badge badge-priority">{{ ticket.priority.name }}</span>
+        </p>
+
+        {% if ticket.assignedTo %}
+            <p><strong>Assigned to:</strong> {{ ticket.assignedTo.name }}</p>
+        {% endif %}
+
+        {% if ticket.description %}
+            <p><strong>Description:</strong></p>
+            <div class="description">{{ ticket.description }}</div>
+        {% endif %}
+    </div>
+
+    <a href="{{ url('app_ticket_show', {organizationSlug: ticket.organization.slug, ticketId: ticket.id}) }}" class="button">
+        View ticket
+    </a>
+{% endblock %}
