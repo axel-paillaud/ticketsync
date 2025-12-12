@@ -46,6 +46,19 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - Gestion lors de l'édition (tickets et commentaires)
 - Partial réutilisable `_attachment_card.html.twig`
 
+### Système de Notifications Email
+- **NotificationSubscriber**: EventSubscriber Doctrine écoutant `postPersist` et `postUpdate`
+- **EmailService**: Service centralisé pour l'envoi d'emails avec templates Twig
+- **Templates emails**: Layout réutilisable (`emails/_layout.html.twig`) + templates spécifiques
+- **Emails envoyés**:
+  - Nouveau ticket créé → Notifie admins + users de l'organization (sauf créateur)
+  - Nouveau commentaire → Notifie admins + users de l'organization (sauf auteur)
+  - Changement de status → Notifie admins + users de l'organization (sauf utilisateur qui modifie)
+- **Détection changements**: UnitOfWork Doctrine pour tracker les modifications (changeSet)
+- **Exclusion**: L'auteur de l'action est exclu des notifications (via `Security::getUser()`)
+- **URLs dynamiques**: Utilisation de `url()` Twig pour générer des liens absolus (emails)
+- **Langue**: Templates en anglais (cohérence avec l'app, traductions possibles plus tard)
+
 ## Structure du Projet
 
 ### Entités Principales
@@ -59,6 +72,10 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 
 ### Services
 - `FileUploader`: Gestion de l'upload de fichiers (slug + uniqid, validation MIME types)
+- `EmailService`: Service d'envoi d'emails avec Symfony Mailer et templates Twig
+
+### Event Subscribers
+- `NotificationSubscriber`: Écoute les événements Doctrine (`postPersist`, `postUpdate`) pour envoyer des emails automatiquement
 
 ### Security (Voters)
 - `OrganizationVoter`: Admins peuvent accéder à toutes les organizations
@@ -73,6 +90,12 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - `comment/_comment_list.html.twig`: Liste des commentaires
 - `comment/_comment_form.html.twig`: Formulaire d'ajout de commentaire
 
+### Templates Emails
+- `emails/_layout.html.twig`: Layout de base pour tous les emails (header, footer, styles inline)
+- `emails/ticket_created.html.twig`: Notification de création de ticket
+- `emails/comment_added.html.twig`: Notification d'ajout de commentaire
+- `emails/status_changed.html.twig`: Notification de changement de status
+
 ### Sécurité
 - Fichiers stockés hors de `public/` pour contrôle d'accès
 - Vérifications multi-niveaux (organization + voters)
@@ -82,11 +105,10 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 ## Prochaines Features Possibles
 
 ### Priorité Haute
-1. **Système d'emails**
-   - Notifications pour nouveaux tickets/commentaires/changements de status
-   - Templates d'emails Twig
-   - Configuration SMTP / Mailer Symfony
-   - EventSubscriber pour déclencher les emails
+1. **Design & UX** (en cours)
+   - Améliorer la navigation et le layout
+   - Styliser les pages principales (liste tickets, détail ticket)
+   - Dashboard utilisateur
 
 ### Améliorations
 2. Suppression physique automatique des fichiers lors de la suppression d'entités (Doctrine Listener)
@@ -115,3 +137,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - Partials Twig pour réutilisabilité du code
 - AssetMapper et ImportMap pour gestion des assets frontend
 - Bootstrap Icons intégration
+- EventSubscriber Doctrine pour déclencher des actions sur les événements du cycle de vie des entités
+- UnitOfWork pour tracker les changements sur les entités (changeSet)
+- Symfony Mailer avec TemplatedEmail pour emails HTML
+- Service Security pour récupérer l'utilisateur connecté
