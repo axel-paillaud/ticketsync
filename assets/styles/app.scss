@@ -199,14 +199,7 @@ $dropdown-link-hover-bg: $bg-soft;
     word-wrap: break-word;
 }
 
-// Ticket cards
-.ticket-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.ticket-card:hover {
-    transform: translateY(-2px);
-}
+// Ticket cards (no hover effect since only the title link is clickable)
 
 .ticket-id-badge {
     background: linear-gradient(135deg, $color-primary, $color-primary-dim);

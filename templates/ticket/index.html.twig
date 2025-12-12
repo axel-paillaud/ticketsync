@@ -32,9 +32,10 @@
                             <div class="row align-items-center">
                                 {# Ticket ID Badge #}
                                 <div class="col-auto">
-                                    <div class="ticket-id-badge">
+                                    <a href="{{ path('app_ticket_show', {'organizationSlug': currentOrganization.slug, 'ticketId': ticket.id}) }}" 
+                                       class="ticket-id-badge text-decoration-none">
                                         #{{ ticket.id }}
-                                    </div>
+                                    </a>
                                 </div>
 
                                 {# Ticket Info #}
@@ -56,26 +57,18 @@
                                             <i class="bi bi-exclamation-triangle-fill"></i>
                                             {{ ticket.priority.name }}
                                         </span>
-                                        {% if ticket.assignedTo %}
-                                            <span class="badge bg-secondary">
-                                                <i class="bi bi-person-fill"></i>
-                                                {{ ticket.assignedTo.name }}
-                                            </span>
-                                        {% endif %}
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-person-fill"></i>
+                                            {{ ticket.createdBy.name }}
+                                        </span>
                                     </div>
                                 </div>
 
                                 {# Metadata & Actions #}
                                 <div class="col-auto text-end">
                                     <div class="text-muted small mb-2">
-                                        <div>
-                                            <i class="bi bi-person"></i>
-                                            {{ ticket.createdBy.name }}
-                                        </div>
-                                        <div>
-                                            <i class="bi bi-clock"></i>
-                                            {{ ticket.createdAt|date('M d, Y') }}
-                                        </div>
+                                        <div>{{ ticket.createdBy.name }}</div>
+                                        <div>{{ ticket.createdAt|date('M d, Y') }}</div>
                                     </div>
                                     <div class="btn-group btn-group-sm">
                                         <a href="{{ path('app_ticket_show', {'organizationSlug': currentOrganization.slug, 'ticketId': ticket.id}) }}" 
