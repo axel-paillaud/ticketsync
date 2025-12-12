@@ -1,85 +1,61 @@
 /*
- * TicketSync - Gruvbox Light Theme
+ * TicketSync - Main Stylesheet
  * Bootstrap customization with Sass
  */
 
 // ==========================================
-// 1. Gruvbox Light Color Variables
+// 1. Import Theme Variables
 // ==========================================
 
-$gruvbox-bg: #fbf1c7;
-$gruvbox-bg-soft: #f2e5bc;
-$gruvbox-bg-hard: #f9f5d7;
-$gruvbox-fg: #3c3836;
-$gruvbox-fg-light: #504945;
-
-$gruvbox-red: #cc241d;
-$gruvbox-red-dim: #9d0006;
-$gruvbox-green: #98971a;
-$gruvbox-green-dim: #79740e;
-$gruvbox-yellow: #d79921;
-$gruvbox-yellow-dim: #b57614;
-$gruvbox-blue: #458588;
-$gruvbox-blue-dim: #076678;
-$gruvbox-purple: #b16286;
-$gruvbox-purple-dim: #8f3f71;
-$gruvbox-aqua: #689d6a;
-$gruvbox-aqua-dim: #427b58;
-$gruvbox-orange: #d65d0e;
-$gruvbox-orange-dim: #af3a03;
-$gruvbox-gray: #928374;
-$gruvbox-gray-light: #a89984;
-
-$border-color: #d5c4a1;
+@import 'variables';
 
 // ==========================================
 // 2. Bootstrap Variable Overrides
 // ==========================================
 
-// Colors
-$primary: $gruvbox-blue;
-$secondary: $gruvbox-gray;
-$success: $gruvbox-green;
-$danger: $gruvbox-red;
-$warning: $gruvbox-yellow;
-$info: $gruvbox-aqua;
-$light: $gruvbox-bg-hard;
-$dark: $gruvbox-fg;
+// Bootstrap semantic colors
+$primary: $color-primary;
+$secondary: $color-secondary;
+$success: $color-success;
+$danger: $color-danger;
+$warning: $color-warning;
+$info: $color-info;
+$light: $bg-hard;
+$dark: $fg;
 
-// Body (lightest background)
-$body-bg: $gruvbox-bg-hard;
-$body-color: $gruvbox-fg;
+// Body
+$body-bg: $bg-hard;
+$body-color: $fg;
 
 // Links
-$link-color: $gruvbox-blue;
-$link-hover-color: $gruvbox-blue-dim;
+$link-color: $color-primary;
+$link-hover-color: $color-primary-dim;
 
 // Typography
-$font-family-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-$line-height-base: 1.6;
+$font-family-sans-serif: $font-family-base;
+$line-height-base: $line-height-base;
 
 // Border
-$border-color: $border-color;
-$border-radius: 8px;
-$border-radius-sm: 6px;
-$border-radius-lg: 10px;
+$border-radius: $border-radius;
+$border-radius-sm: $border-radius-sm;
+$border-radius-lg: $border-radius-lg;
 
 // Shadows
-$box-shadow-sm: 0 2px 4px rgba(60, 56, 54, 0.1);
-$box-shadow: 0 4px 8px rgba(60, 56, 54, 0.15);
-$box-shadow-lg: 0 8px 16px rgba(60, 56, 54, 0.2);
+$box-shadow-sm: $box-shadow-sm;
+$box-shadow: $box-shadow;
+$box-shadow-lg: $box-shadow-lg;
 
-// Cards (elevated layer - warmer)
-$card-bg: $gruvbox-bg;
+// Cards
+$card-bg: $bg;
 $card-border-color: $border-color;
-$card-cap-bg: $gruvbox-bg-soft;
+$card-cap-bg: $bg-soft;
 $card-border-radius: $border-radius;
 
-// Forms (same as cards - elevated)
-$input-bg: $gruvbox-bg;
+// Forms
+$input-bg: $bg;
 $input-border-color: $border-color;
-$input-color: $gruvbox-fg;
-$input-focus-border-color: $gruvbox-blue;
+$input-color: $fg;
+$input-focus-border-color: $color-primary;
 $input-focus-box-shadow: 0 0 0 0.25rem rgba(69, 133, 136, 0.25);
 
 // Buttons
@@ -87,15 +63,15 @@ $btn-border-radius: 6px;
 $btn-font-weight: 500;
 
 // Navbar
-$navbar-light-color: $gruvbox-fg;
-$navbar-light-hover-color: $gruvbox-blue;
-$navbar-light-active-color: $gruvbox-blue;
-$navbar-light-brand-color: $gruvbox-orange;
-$navbar-light-brand-hover-color: $gruvbox-orange-dim;
+$navbar-light-color: $fg;
+$navbar-light-hover-color: $color-primary;
+$navbar-light-active-color: $color-primary;
+$navbar-light-brand-color: $color-accent;
+$navbar-light-brand-hover-color: $color-accent-dim;
 
 // Tables
-$table-color: $gruvbox-fg;
-$table-striped-bg: $gruvbox-bg-hard;
+$table-color: $fg;
+$table-striped-bg: $bg-hard;
 $table-border-color: $border-color;
 
 // Alerts
@@ -107,17 +83,17 @@ $badge-border-radius: 4px;
 $badge-padding-y: 0.35em;
 $badge-padding-x: 0.65em;
 
-// Modals (elevated)
-$modal-content-bg: $gruvbox-bg;
+// Modals
+$modal-content-bg: $bg;
 $modal-content-border-color: $border-color;
 $modal-header-border-color: $border-color;
 
-// Dropdowns (elevated)
-$dropdown-bg: $gruvbox-bg;
+// Dropdowns
+$dropdown-bg: $bg;
 $dropdown-border-color: $border-color;
-$dropdown-link-color: $gruvbox-fg;
-$dropdown-link-hover-color: $gruvbox-blue;
-$dropdown-link-hover-bg: $gruvbox-bg-soft;
+$dropdown-link-color: $fg;
+$dropdown-link-hover-color: $color-primary;
+$dropdown-link-hover-bg: $bg-soft;
 
 // ==========================================
 // 3. Import Bootstrap
@@ -126,23 +102,31 @@ $dropdown-link-hover-bg: $gruvbox-bg-soft;
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
 // ==========================================
-// 4. Custom Styles
+// 4. Custom CSS Variables (Runtime Access)
 // ==========================================
 
-// Custom CSS Variables (for runtime access)
 :root {
-    --gruvbox-bg: #{$gruvbox-bg};
-    --gruvbox-bg-soft: #{$gruvbox-bg-soft};
-    --gruvbox-bg-hard: #{$gruvbox-bg-hard};
-    --gruvbox-fg: #{$gruvbox-fg};
-    --gruvbox-orange: #{$gruvbox-orange};
-    --gruvbox-orange-dim: #{$gruvbox-orange-dim};
-    --gruvbox-blue: #{$gruvbox-blue};
-    --gruvbox-blue-dim: #{$gruvbox-blue-dim};
-    --gruvbox-gray: #{$gruvbox-gray};
+    // Base colors
+    --bg: #{$bg};
+    --bg-soft: #{$bg-soft};
+    --bg-hard: #{$bg-hard};
+    --fg: #{$fg};
+    
+    // Semantic colors
+    --color-primary: #{$color-primary};
+    --color-primary-dim: #{$color-primary-dim};
+    --color-accent: #{$color-accent};
+    --color-accent-dim: #{$color-accent-dim};
+    --color-muted: #{$color-muted};
+    
+    // Layout
     --border-color: #{$border-color};
-    --navbar-height: 60px;
+    --navbar-height: #{$navbar-height};
 }
+
+// ==========================================
+// 5. Custom Component Styles
+// ==========================================
 
 // Navigation
 .navbar {
@@ -179,29 +163,29 @@ $dropdown-link-hover-bg: $gruvbox-bg-soft;
     padding-bottom: 2rem;
 }
 
-// Info boxes (custom component - elevated)
+// Info boxes
 .info-box {
-    background: $gruvbox-bg-hard;
+    background: $bg-hard;
     padding: 1rem;
     border-radius: $border-radius;
-    border-left: 3px solid $gruvbox-blue;
+    border-left: 3px solid $color-primary;
 }
 
 .info-label {
     font-size: 0.875rem;
-    color: $gruvbox-gray;
+    color: $color-muted;
     font-weight: 500;
     margin-bottom: 0.25rem;
 }
 
 .info-value {
     font-weight: 600;
-    color: $gruvbox-fg;
+    color: $fg;
 }
 
-// Description content (lightest for readability)
+// Description content
 .description-content {
-    background: $gruvbox-bg-hard;
+    background: $bg-hard;
     padding: 1.25rem;
     border-radius: $border-radius;
     border: 1px solid $border-color;
@@ -220,8 +204,8 @@ $dropdown-link-hover-bg: $gruvbox-bg-soft;
 }
 
 .ticket-id-badge {
-    background: linear-gradient(135deg, $gruvbox-blue, $gruvbox-blue-dim);
-    color: $gruvbox-bg;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dim);
+    color: $bg;
     padding: 0.5rem 1rem;
     border-radius: $border-radius;
     font-weight: 700;
@@ -234,9 +218,9 @@ $dropdown-link-hover-bg: $gruvbox-bg-soft;
     line-height: 1.5;
 }
 
-// Attachment upload zone (lighter on hover for clarity)
+// Attachment upload zone
 .attachment-upload-zone {
-    background: $gruvbox-bg;
+    background: $bg;
     padding: 1.5rem;
     border-radius: $border-radius;
     border: 2px dashed $border-color;
@@ -244,12 +228,12 @@ $dropdown-link-hover-bg: $gruvbox-bg-soft;
 }
 
 .attachment-upload-zone:hover {
-    border-color: $gruvbox-blue;
-    background: $gruvbox-bg-hard;
+    border-color: $color-primary;
+    background: $bg-hard;
 }
 
 .upload-info {
-    color: $gruvbox-gray;
+    color: $color-muted;
 }
 
 // Attachment cards

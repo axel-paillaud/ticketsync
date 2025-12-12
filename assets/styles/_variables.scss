@@ -1,0 +1,63 @@
+/*
+ * TicketSync - Theme Variables
+ * Generic theme variables that can be reassigned to different color palettes
+ */
+
+// Import the active theme (change this line to switch themes)
+@import 'gruvbox-theme';
+
+// ==========================================
+// Generic Color Variables (Theme Mapping)
+// ==========================================
+
+// Base colors
+$bg: $gruvbox-bg;
+$bg-soft: $gruvbox-bg-soft;
+$bg-hard: $gruvbox-bg-hard;
+$fg: $gruvbox-fg;
+$fg-light: $gruvbox-fg-light;
+
+// Semantic colors
+$color-primary: $gruvbox-blue;
+$color-primary-dim: $gruvbox-blue-dim;
+$color-secondary: $gruvbox-gray;
+$color-success: $gruvbox-green;
+$color-success-dim: $gruvbox-green-dim;
+$color-danger: $gruvbox-red;
+$color-danger-dim: $gruvbox-red-dim;
+$color-warning: $gruvbox-yellow;
+$color-warning-dim: $gruvbox-yellow-dim;
+$color-info: $gruvbox-aqua;
+$color-info-dim: $gruvbox-aqua-dim;
+
+// Accent colors
+$color-accent: $gruvbox-orange;
+$color-accent-dim: $gruvbox-orange-dim;
+
+// Neutral colors
+$color-muted: $gruvbox-gray;
+$color-muted-light: $gruvbox-gray-light;
+
+// Border
+$border-color: $gruvbox-border;
+
+// ==========================================
+// Layout Variables
+// ==========================================
+
+// Border radius
+$border-radius: 8px;
+$border-radius-sm: 6px;
+$border-radius-lg: 10px;
+
+// Shadows
+$box-shadow-sm: 0 2px 4px rgba(60, 56, 54, 0.1);
+$box-shadow: 0 4px 8px rgba(60, 56, 54, 0.15);
+$box-shadow-lg: 0 8px 16px rgba(60, 56, 54, 0.2);
+
+// Spacing
+$navbar-height: 60px;
+
+// Typography
+$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$line-height-base: 1.6;
