@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Entity\User;
 use Symfony\Component\Mailer\MailerInterface;
@@ -50,4 +51,37 @@ class EmailService
 
          $this->mailer->send($email);
      }
+
+     /**
+      * Send a simple texte email when a comment is added
+      */
+      public function sendCommentAddedNotification(Comment $comment, User $recipient): void
+      {
+          $ticket = $comment->getTicket();
+
+          $body = sprintf(
+              "Bonjour %s,\n\n" .
+              "Un nouveau commentaire a été ajouté sur le ticket #%d :\n\n" .
+              "Ticket : %s\n" .
+              "Organisation : %s\n" .
+              "Auteur du commentaire : %s\n\n" .
+              "Commentaire :\n%s\n\n" .
+              "---\n" .
+              "Ceci est un email automatique de TicketSync.",
+              $recipient->getName(),
+              $ticket->getId(),
+              $ticket->getTitle(),
+              $ticket->getOrganization()->getName(),
+              $comment->getAuthor()->getName(),
+              $comment->getContent()
+          );
+
+          $email = (new Email())
+              ->from($this->fromAddress)
+              ->to($recipient->getEmail())
+              ->subject(sprintf('[TicketSync] Nouveau commentaire sur ticket #%d', $ticket->getId()))
+              ->text($body);
+
+          $this->mailer->send($email);
+      }
 }
