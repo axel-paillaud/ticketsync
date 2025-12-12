@@ -106,6 +106,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - Focus sur la simplicité et les fonctionnalités métier
 - Architecture multi-tenant avec isolation stricte par organization
 - Utilisation de patterns Symfony avancés (ValueResolver, Voters, Twig Extensions)
+- Si commentaire dans le code : doit être en anglais
 
 ## Apprentissages Récents
 - ValueResolver pour injection automatique d'entités depuis l'URL
