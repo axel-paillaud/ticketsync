@@ -11,6 +11,7 @@ use App\Entity\Ticket;
 use App\Form\CommentType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
+use App\Service\EmailService;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -18,6 +19,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+// Note : we can use this instead of $user = $this->getUser() everywhere
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/{organizationSlug}')]
