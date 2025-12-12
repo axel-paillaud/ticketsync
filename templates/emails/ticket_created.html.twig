@@ -5,10 +5,11 @@
 {% block content %}
     <p class="greeting">Bonjour <strong>{{ recipient.name }}</strong>,</p>
 
-    <p>Un nouveau ticket a été créé pour <strong>{{ ticket.organization.name }}</strong>.</p>
+    <p>Un nouveau ticket vient d'être créé.</p>
 
     <div class="info-box">
         <h2>Ticket #{{ ticket.id }}</h2>
+        <p><strong>Organisation :</strong> {{ ticket.organization.name }}</p>
         <p><strong>Titre :</strong> {{ ticket.title }}</p>
         <p>
             <strong>Statut :</strong>
