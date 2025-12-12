@@ -1,11 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Ticket{% endblock %}
+{% block title %}New Ticket - {{ currentOrganization.name }}{% endblock %}
 
 {% block body %}
-    <h1>Create new Ticket</h1>
+<div class="container py-4">
+    {# Back Button #}
+    <div class="mb-3">
+        <a href="{{ path('app_ticket_index', {'organizationSlug': currentOrganization.slug}) }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Tickets
+        </a>
+    </div>
 
-    {{ include('ticket/_form.html.twig') }}
+    {# Page Header #}
+    <div class="mb-4">
+        <h1>
+            <i class="bi bi-plus-circle text-primary"></i>
+            Create New Ticket
+        </h1>
+        <p class="text-muted">
+            <i class="bi bi-building"></i>
+            {{ currentOrganization.name }}
+        </p>
+    </div>
 
-    <a href="{{ path('app_ticket_index', {'organizationSlug': currentOrganization.slug}) }}">back to list</a>
+    {# Form Card #}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-file-text"></i>
+                Ticket Information
+            </h5>
+        </div>
+        <div class="card-body">
+            {{ include('ticket/_form.html.twig', {'button_label': 'Create Ticket'}) }}
+        </div>
+    </div>
+</div>
 {% endblock %}
