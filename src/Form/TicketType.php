@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Priority;
+use App\Entity\Status;
 use App\Entity\Ticket;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -19,6 +20,10 @@ class TicketType extends AbstractType
         $builder
             ->add('title')
             ->add('description')
+            ->add('status', EntityType::class, [
+                'class' => Status::class,
+                'choice_label' => 'name',
+            ])
             ->add('priority', EntityType::class, [
                 'class' => Priority::class,
                 'choice_label' => 'name',

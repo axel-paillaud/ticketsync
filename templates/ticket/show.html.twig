@@ -20,6 +20,14 @@
                 <td>{{ ticket.description }}</td>
             </tr>
             <tr>
+                <th>Status</th>
+                <td>{{ ticket.status.name }}</td>
+            </tr>
+            <tr>
+                <th>Priority</th>
+                <td>{{ ticket.priority.name }}</td>
+            </tr>
+            <tr>
                 <th>CreatedAt</th>
                 <td>{{ ticket.createdAt ? ticket.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
