@@ -10,7 +10,7 @@
     {# Content #}
     <div class="col-12">
         {{ form_label(commentForm.content, 'Your Comment', {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(commentForm.content, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Write your comment here...'}}) }}
+        {{ form_widget(commentForm.content, {'attr': {'class': 'form-control comment-textarea', 'rows': 4, 'placeholder': 'Write your comment here...'}}) }}
         {{ form_errors(commentForm.content) }}
     </div>
 

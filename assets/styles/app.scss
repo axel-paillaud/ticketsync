@@ -111,14 +111,14 @@ $dropdown-link-hover-bg: $bg-soft;
     --bg-soft: #{$bg-soft};
     --bg-hard: #{$bg-hard};
     --fg: #{$fg};
-    
+
     // Semantic colors
     --color-primary: #{$color-primary};
     --color-primary-dim: #{$color-primary-dim};
     --color-accent: #{$color-accent};
     --color-accent-dim: #{$color-accent-dim};
     --color-muted: #{$color-muted};
-    
+
     // Layout
     --border-color: #{$border-color};
     --navbar-height: #{$navbar-height};
@@ -145,16 +145,20 @@ $dropdown-link-hover-bg: $bg-soft;
 }
 
 // Cards
-.card {
-    transition: box-shadow 0.2s ease;
-}
-
-.card:hover {
-    box-shadow: $box-shadow;
-}
-
 .card-header {
     font-weight: 600;
+}
+
+// Buttons - ensure good text contrast on colored backgrounds
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-info {
+    color: $btn-light-text;
+}
+
+.btn-warning {
+    color: $btn-dark-text;
 }
 
 // Content wrapper
@@ -168,6 +172,7 @@ $dropdown-link-hover-bg: $bg-soft;
     background: $bg-hard;
     padding: 1rem;
     border-radius: $border-radius;
+    border: 1px solid $border-color;
     border-left: 3px solid $color-primary;
 }
 
@@ -243,6 +248,20 @@ $dropdown-link-hover-bg: $bg-soft;
 
 .attachment-card:hover {
     transform: translateY(-2px);
+}
+
+// Comment cards
+.comment-card {
+    background: $bg-hard;
+}
+
+// Comment textarea
+.comment-textarea {
+    background: $bg-hard;
+
+    &:focus {
+        background: $bg-hard;
+    }
 }
 
 // Page sections

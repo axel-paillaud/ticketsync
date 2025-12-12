@@ -44,6 +44,10 @@ $gruvbox-gray-light: #a89984;
 // Borders
 $gruvbox-border: #d5c4a1;
 
+// Button text colors (for good contrast on colored backgrounds)
+$gruvbox-btn-light-text: #ffffff;
+$gruvbox-btn-dark-text: #3c3836;
+
 // ==========================================
 // Generic Theme Variable Mapping
 // ==========================================
@@ -70,3 +74,5 @@ $theme-orange-dim: $gruvbox-orange-dim;
 $theme-gray: $gruvbox-gray;
 $theme-gray-light: $gruvbox-gray-light;
 $theme-border: $gruvbox-border;
+$theme-btn-light-text: $gruvbox-btn-light-text;
+$theme-btn-dark-text: $gruvbox-btn-dark-text;

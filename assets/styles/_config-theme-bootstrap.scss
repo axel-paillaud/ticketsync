@@ -42,6 +42,10 @@ $bootstrap-gray-light: #adb5bd;
 // Borders
 $bootstrap-border: #dee2e6;
 
+// Button text colors (for good contrast on colored backgrounds)
+$bootstrap-btn-light-text: #ffffff;
+$bootstrap-btn-dark-text: #212529;
+
 // ==========================================
 // Generic Theme Variable Mapping
 // ==========================================
@@ -68,3 +72,5 @@ $theme-orange-dim: $bootstrap-orange-dim;
 $theme-gray: $bootstrap-gray;
 $theme-gray-light: $bootstrap-gray-light;
 $theme-border: $bootstrap-border;
+$theme-btn-light-text: $bootstrap-btn-light-text;
+$theme-btn-dark-text: $bootstrap-btn-dark-text;
