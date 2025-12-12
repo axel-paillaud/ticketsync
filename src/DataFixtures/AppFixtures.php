@@ -40,21 +40,21 @@ class AppFixtures extends Fixture
         $statusInProgress->setSortOrder(2);
         $manager->persist($statusInProgress);
 
+        $statusWait = new Status();
+        $statusWait->setName('Wait');
+        $statusWait->setSlug('wait');
+        $statusWait->setIsClosed(false);
+        $statusWait->setSortOrder(3);
+        $manager->persist($statusWait);
+
         $statusResolved = new Status();
         $statusResolved->setName('Resolved');
         $statusResolved->setSlug('resolved');
         $statusResolved->setIsClosed(true);
-        $statusResolved->setSortOrder(3);
+        $statusResolved->setSortOrder(4);
         $manager->persist($statusResolved);
 
-        $statusClosed = new Status();
-        $statusClosed->setName('Closed');
-        $statusClosed->setSlug('closed');
-        $statusClosed->setIsClosed(true);
-        $statusClosed->setSortOrder(4);
-        $manager->persist($statusClosed);
-
-        $statuses = [$statusOpen, $statusInProgress, $statusResolved, $statusClosed];
+        $statuses = [$statusOpen, $statusInProgress, $statusWait, $statusResolved];
 
         // CREATE PRIORITY
         $priorityA = new Priority();
