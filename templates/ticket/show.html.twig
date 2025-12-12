@@ -89,7 +89,7 @@
                     Description
                 </h5>
                 <div class="description-content">
-                    {{ ticket.description|nl2br }}
+                    {{ ticket.description|markdown_to_html|raw }}
                 </div>
             </div>
         </div>

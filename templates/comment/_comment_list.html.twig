@@ -54,7 +54,7 @@
 
                     {# Comment Content #}
                     <div class="comment-content">
-                        {{ comment.content|nl2br }}
+                        {{ comment.content|markdown_to_html|raw }}
                     </div>
 
                     {# Comment Attachments #}
