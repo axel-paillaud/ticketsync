@@ -3,43 +3,48 @@
  * Generic theme variables that can be reassigned to different color palettes
  */
 
-// Import the active theme (change this line to switch themes)
-@import 'gruvbox-theme';
+// ==========================================
+// Theme Selection
+// ==========================================
+// Uncomment ONE line to activate a theme:
+
+@import 'config-theme-gruvbox';      // Gruvbox Light theme (default)
+// @import 'config-theme-bootstrap';    // Bootstrap default theme
 
 // ==========================================
 // Generic Color Variables (Theme Mapping)
 // ==========================================
 
 // Base colors
-$bg: $gruvbox-bg;
-$bg-soft: $gruvbox-bg-soft;
-$bg-hard: $gruvbox-bg-hard;
-$fg: $gruvbox-fg;
-$fg-light: $gruvbox-fg-light;
+$bg: $theme-bg;
+$bg-soft: $theme-bg-soft;
+$bg-hard: $theme-bg-hard;
+$fg: $theme-fg;
+$fg-light: $theme-fg-light;
 
 // Semantic colors
-$color-primary: $gruvbox-blue;
-$color-primary-dim: $gruvbox-blue-dim;
-$color-secondary: $gruvbox-gray;
-$color-success: $gruvbox-green;
-$color-success-dim: $gruvbox-green-dim;
-$color-danger: $gruvbox-red;
-$color-danger-dim: $gruvbox-red-dim;
-$color-warning: $gruvbox-yellow;
-$color-warning-dim: $gruvbox-yellow-dim;
-$color-info: $gruvbox-aqua;
-$color-info-dim: $gruvbox-aqua-dim;
+$color-primary: $theme-blue;
+$color-primary-dim: $theme-blue-dim;
+$color-secondary: $theme-gray;
+$color-success: $theme-green;
+$color-success-dim: $theme-green-dim;
+$color-danger: $theme-red;
+$color-danger-dim: $theme-red-dim;
+$color-warning: $theme-yellow;
+$color-warning-dim: $theme-yellow-dim;
+$color-info: $theme-aqua;
+$color-info-dim: $theme-aqua-dim;
 
 // Accent colors
-$color-accent: $gruvbox-orange;
-$color-accent-dim: $gruvbox-orange-dim;
+$color-accent: $theme-orange;
+$color-accent-dim: $theme-orange-dim;
 
 // Neutral colors
-$color-muted: $gruvbox-gray;
-$color-muted-light: $gruvbox-gray-light;
+$color-muted: $theme-gray;
+$color-muted-light: $theme-gray-light;
 
 // Border
-$border-color: $gruvbox-border;
+$border-color: $theme-border;
 
 // ==========================================
 // Layout Variables

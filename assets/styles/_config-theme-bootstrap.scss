@@ -1,0 +1,70 @@
+/*
+ * Bootstrap Theme Configuration
+ * 
+ * This file defines the Bootstrap 5 default color palette and maps it to generic theme variables.
+ * The generic variables ($theme-*) are then used throughout the application.
+ * This allows easy theme switching by importing a different config file.
+ */
+
+// ==========================================
+// Bootstrap Default Color Palette
+// ==========================================
+
+// Backgrounds
+$bootstrap-bg: #ffffff;
+$bootstrap-bg-soft: #f8f9fa;
+$bootstrap-bg-hard: #ffffff;
+
+// Foregrounds
+$bootstrap-fg: #212529;
+$bootstrap-fg-light: #6c757d;
+
+// Accent Colors (Bootstrap semantic colors)
+$bootstrap-blue: #0d6efd;
+$bootstrap-blue-dim: #0a58ca;
+$bootstrap-red: #dc3545;
+$bootstrap-red-dim: #b02a37;
+$bootstrap-green: #198754;
+$bootstrap-green-dim: #146c43;
+$bootstrap-yellow: #ffc107;
+$bootstrap-yellow-dim: #cc9a06;
+$bootstrap-purple: #6f42c1;
+$bootstrap-purple-dim: #59359a;
+$bootstrap-aqua: #0dcaf0;
+$bootstrap-aqua-dim: #0aa2c0;
+$bootstrap-orange: #fd7e14;
+$bootstrap-orange-dim: #ca6510;
+
+// Grays
+$bootstrap-gray: #6c757d;
+$bootstrap-gray-light: #adb5bd;
+
+// Borders
+$bootstrap-border: #dee2e6;
+
+// ==========================================
+// Generic Theme Variable Mapping
+// ==========================================
+
+$theme-bg: $bootstrap-bg;
+$theme-bg-soft: $bootstrap-bg-soft;
+$theme-bg-hard: $bootstrap-bg-hard;
+$theme-fg: $bootstrap-fg;
+$theme-fg-light: $bootstrap-fg-light;
+$theme-red: $bootstrap-red;
+$theme-red-dim: $bootstrap-red-dim;
+$theme-green: $bootstrap-green;
+$theme-green-dim: $bootstrap-green-dim;
+$theme-yellow: $bootstrap-yellow;
+$theme-yellow-dim: $bootstrap-yellow-dim;
+$theme-blue: $bootstrap-blue;
+$theme-blue-dim: $bootstrap-blue-dim;
+$theme-purple: $bootstrap-purple;
+$theme-purple-dim: $bootstrap-purple-dim;
+$theme-aqua: $bootstrap-aqua;
+$theme-aqua-dim: $bootstrap-aqua-dim;
+$theme-orange: $bootstrap-orange;
+$theme-orange-dim: $bootstrap-orange-dim;
+$theme-gray: $bootstrap-gray;
+$theme-gray-light: $bootstrap-gray-light;
+$theme-border: $bootstrap-border;

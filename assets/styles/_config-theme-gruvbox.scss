@@ -1,0 +1,72 @@
+/*
+ * Gruvbox Theme Configuration
+ * 
+ * This file defines the Gruvbox Light color palette and maps it to generic theme variables.
+ * The generic variables ($theme-*) are then used throughout the application.
+ * This allows easy theme switching by importing a different config file.
+ * 
+ * Source: https://github.com/morhetz/gruvbox
+ */
+
+// ==========================================
+// Gruvbox Light Color Palette
+// ==========================================
+
+// Backgrounds
+$gruvbox-bg: #fbf1c7;
+$gruvbox-bg-soft: #f2e5bc;
+$gruvbox-bg-hard: #f9f5d7;
+
+// Foregrounds
+$gruvbox-fg: #3c3836;
+$gruvbox-fg-light: #504945;
+
+// Accent Colors
+$gruvbox-red: #cc241d;
+$gruvbox-red-dim: #9d0006;
+$gruvbox-green: #98971a;
+$gruvbox-green-dim: #79740e;
+$gruvbox-yellow: #d79921;
+$gruvbox-yellow-dim: #b57614;
+$gruvbox-blue: #458588;
+$gruvbox-blue-dim: #076678;
+$gruvbox-purple: #b16286;
+$gruvbox-purple-dim: #8f3f71;
+$gruvbox-aqua: #689d6a;
+$gruvbox-aqua-dim: #427b58;
+$gruvbox-orange: #d65d0e;
+$gruvbox-orange-dim: #af3a03;
+
+// Grays
+$gruvbox-gray: #928374;
+$gruvbox-gray-light: #a89984;
+
+// Borders
+$gruvbox-border: #d5c4a1;
+
+// ==========================================
+// Generic Theme Variable Mapping
+// ==========================================
+
+$theme-bg: $gruvbox-bg;
+$theme-bg-soft: $gruvbox-bg-soft;
+$theme-bg-hard: $gruvbox-bg-hard;
+$theme-fg: $gruvbox-fg;
+$theme-fg-light: $gruvbox-fg-light;
+$theme-red: $gruvbox-red;
+$theme-red-dim: $gruvbox-red-dim;
+$theme-green: $gruvbox-green;
+$theme-green-dim: $gruvbox-green-dim;
+$theme-yellow: $gruvbox-yellow;
+$theme-yellow-dim: $gruvbox-yellow-dim;
+$theme-blue: $gruvbox-blue;
+$theme-blue-dim: $gruvbox-blue-dim;
+$theme-purple: $gruvbox-purple;
+$theme-purple-dim: $gruvbox-purple-dim;
+$theme-aqua: $gruvbox-aqua;
+$theme-aqua-dim: $gruvbox-aqua-dim;
+$theme-orange: $gruvbox-orange;
+$theme-orange-dim: $gruvbox-orange-dim;
+$theme-gray: $gruvbox-gray;
+$theme-gray-light: $gruvbox-gray-light;
+$theme-border: $gruvbox-border;
