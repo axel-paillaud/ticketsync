@@ -1,36 +1,36 @@
 {% extends 'emails/_layout.html.twig' %}
 
-{% block title %}Nouveau ticket #{{ ticket.id }}{% endblock %}
+{% block title %}New ticket #{{ ticket.id }}{% endblock %}
 
 {% block content %}
-    <p class="greeting">Bonjour <strong>{{ recipient.name }}</strong>,</p>
+    <p class="greeting">Hello <strong>{{ recipient.name }}</strong>,</p>
 
-    <p>Un nouveau ticket vient d'être créé.</p>
+    <p>A new ticket has been created.</p>
 
     <div class="info-box">
         <h2>Ticket #{{ ticket.id }}</h2>
-        <p><strong>Organisation :</strong> {{ ticket.organization.name }}</p>
-        <p><strong>Titre :</strong> {{ ticket.title }}</p>
+        <p><strong>Organization:</strong> {{ ticket.organization.name }}</p>
+        <p><strong>Title:</strong> {{ ticket.title }}</p>
         <p>
-            <strong>Statut :</strong>
+            <strong>Status:</strong>
             <span class="badge badge-status">{{ ticket.status.name }}</span>
         </p>
         <p>
-            <strong>Priorité :</strong>
+            <strong>Priority:</strong>
             <span class="badge badge-priority">{{ ticket.priority.name }}</span>
         </p>
-        <p><strong>Créé par :</strong> {{ ticket.createdBy.name }}</p>
+        <p><strong>Created by:</strong> {{ ticket.createdBy.name }}</p>
         {% if ticket.assignedTo %}
-            <p><strong>Assigné à :</strong> {{ ticket.assignedTo.name }}</p>
+            <p><strong>Assigned to:</strong> {{ ticket.assignedTo.name }}</p>
         {% endif %}
 
         {% if ticket.description %}
-            <p><strong>Description :</strong></p>
+            <p><strong>Description:</strong></p>
             <div class="description">{{ ticket.description }}</div>
         {% endif %}
     </div>
 
     <a href="{{ url('app_ticket_show', {organizationSlug: ticket.organization.slug, ticketId: ticket.id}) }}" class="button">
-        Voir le ticket
+        View ticket
     </a>
 {% endblock %}

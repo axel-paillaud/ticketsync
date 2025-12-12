@@ -1,26 +1,27 @@
 {% extends 'emails/_layout.html.twig' %}
 
-{% block title %}Nouveau commentaire sur ticket #{{ ticket.id }}{% endblock %}
+{% block title %}New comment on ticket #{{ ticket.id }}{% endblock %}
 
 {% block content %}
-    <p class="greeting">Bonjour <strong>{{ recipient.name }}</strong>,</p>
+    <p class="greeting">Hello <strong>{{ recipient.name }}</strong>,</p>
 
-    <p>Un nouveau commentaire a été ajouté sur le ticket <strong>#{{ ticket.id }}</strong> ({{ ticket.organization.name }}).</p>
+    <p>A new comment has been added to ticket <strong>#{{ ticket.id }}</strong>.</p>
 
     <div class="info-box">
-        <h2>Ticket #{{ ticket.id }} : {{ ticket.title }}</h2>
+        <h2>Ticket #{{ ticket.id }}: {{ ticket.title }}</h2>
+        <p><strong>Organization:</strong> {{ ticket.organization.name }}</p>
         <p>
-            <strong>Statut :</strong>
+            <strong>Status:</strong>
             <span class="badge badge-status">{{ ticket.status.name }}</span>
         </p>
-        <p><strong>Auteur du commentaire :</strong> {{ comment.author.name }}</p>
-        <p><strong>Date :</strong> {{ comment.createdAt|date('d/m/Y à H:i') }}</p>
+        <p><strong>Comment author:</strong> {{ comment.author.name }}</p>
+        <p><strong>Date:</strong> {{ comment.createdAt|date('m/d/Y at H:i') }}</p>
 
-        <p><strong>Commentaire :</strong></p>
+        <p><strong>Comment:</strong></p>
         <div class="description">{{ comment.content }}</div>
     </div>
 
     <a href="{{ url('app_ticket_show', {organizationSlug: ticket.organization.slug, ticketId: ticket.id}) }}" class="button">
-        Voir le ticket
+        View ticket
     </a>
 {% endblock %}
