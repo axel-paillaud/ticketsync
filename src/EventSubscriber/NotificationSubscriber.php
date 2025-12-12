@@ -3,7 +3,9 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Comment;
+use App\Entity\Organization;
 use App\Entity\Ticket;
+use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\EmailService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
@@ -36,40 +38,11 @@ class NotificationSubscriber
         }
     }
 
-    private function notifyTicketCreated(Ticket $ticket): void
+    /**
+     * Get all recipients for notifications (admins + org users)
+     */
+    private function getNotificationRecipients(Organization $organization, User $exclude): array
     {
-        $organization = $ticket->getOrganization();
-        $creator = $ticket->getCreatedBy();
-
-        // Get all admins
-        $admins = $this->userRepository->findByRole('ROLE_ADMIN');
-
-        // get all users in the organization
-        $orgUsers = $organization->getUsers();
-
-        // Merge and deduplicate
-        $recipients = [];
-        foreach ($admins as $admin) {
-            $recipients[$admin->getId()] = $admin;
-        }
-        foreach ($orgUsers as $user) {
-            $recipients[$user->getId()] = $user;
-        }
-
-        // Send to everyone except the creator
-        foreach ($recipients as $recipient) {
-            if ($recipient->getId() !== $creator->getId()) {
-                $this->emailService->sendTicketCreatedNotification($ticket, $recipient);
-            }
-        }
-    }
-
-    private function notifyCommentAdded(Comment $comment): void
-    {
-        $ticket = $comment->getTicket();
-        $organization = $ticket->getOrganization();
-        $author = $comment->getAuthor();
-
         // Get all admins
         $admins = $this->userRepository->findByRole('ROLE_ADMIN');
 
@@ -85,11 +58,34 @@ class NotificationSubscriber
             $recipients[$user->getId()] = $user;
         }
 
-        // Send to everyone except the comment author
+        // Remove excluded user
+        unset($recipients[$exclude->getId()]);
+
+        return $recipients;
+    }
+
+    private function notifyTicketCreated(Ticket $ticket): void
+    {
+        $recipients = $this->getNotificationRecipients(
+            $ticket->getOrganization(),
+            $ticket->getCreatedBy()
+        );
+
         foreach ($recipients as $recipient) {
-            if ($recipient->getId() !== $author->getId()) {
-                $this->emailService->sendCommentAddedNotification($comment, $recipient);
-            }
+            $this->emailService->sendTicketCreatedNotification($ticket, $recipient);
         }
     }
+
+    private function notifyCommentAdded(Comment $comment): void
+    {
+        $recipients = $this->getNotificationRecipients(
+            $comment->getTicket()->getOrganization(),
+            $comment->getAuthor()
+        );
+
+        foreach ($recipients as $recipient) {
+            $this->emailService->sendCommentAddedNotification($comment, $recipient);
+        }
+    }
+
 }
