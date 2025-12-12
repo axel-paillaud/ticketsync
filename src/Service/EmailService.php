@@ -5,7 +5,9 @@ namespace App\Service;
 use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Entity\User;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
 class EmailService
@@ -17,70 +19,38 @@ class EmailService
     ) {}
 
     /**
-     * Send a simple text email when a ticket is created
+     * Send email when a new ticket is created
      */
      public function sendTicketCreatedNotification(Ticket $ticket, User $recipient): void
      {
-         $body = sprintf(
-             "Bonjour %s,\n\n" .
-             "Un nouveau ticket a été créé :\n\n" .
-             "Ticket #%d\n" .
-             "Titre : %s\n" .
-             "Organisation : %s\n" .
-             "Créé par : %s\n" .
-             "Statut : %s\n" .
-             "Priorité : %s\n\n" .
-             "Description :\n%s\n\n" .
-             "---\n" .
-             "Ceci est un email automatique de TicketSync.",
-             $recipient->getName(),
-             $ticket->getId(),
-             $ticket->getTitle(),
-             $ticket->getOrganization()->getName(),
-             $ticket->getCreatedBy()->getName(),
-             $ticket->getStatus()->getName(),
-             $ticket->getPriority()->getName(),
-             $ticket->getDescription()
-         );
-
-         $email = (new Email())
-            ->from($this->fromAddress)
-            ->to($recipient->getEmail())
-            ->subject(sprintf('[TicketSync] Nouveau ticket #%d', $ticket->getId()))
-            ->text($body);
+         $email = (new TemplatedEmail())
+             ->from(new Address($this->fromAddress, $this->fromName))
+             ->to($recipient->getEmail())
+             ->subject(sprintf('[TicketSync] Nouveau ticket #%d', $ticket->getId()))
+             ->htmlTemplate('emails/ticket_created.html.twig')
+             ->context([
+                 'ticket' => $ticket,
+                 'recipient' => $recipient,
+             ]);
 
          $this->mailer->send($email);
      }
 
      /**
-      * Send a simple texte email when a comment is added
+      * Send email when a new comment is added
       */
       public function sendCommentAddedNotification(Comment $comment, User $recipient): void
       {
-          $ticket = $comment->getTicket();
-
-          $body = sprintf(
-              "Bonjour %s,\n\n" .
-              "Un nouveau commentaire a été ajouté sur le ticket #%d :\n\n" .
-              "Ticket : %s\n" .
-              "Organisation : %s\n" .
-              "Auteur du commentaire : %s\n\n" .
-              "Commentaire :\n%s\n\n" .
-              "---\n" .
-              "Ceci est un email automatique de TicketSync.",
-              $recipient->getName(),
-              $ticket->getId(),
-              $ticket->getTitle(),
-              $ticket->getOrganization()->getName(),
-              $comment->getAuthor()->getName(),
-              $comment->getContent()
-          );
-
-          $email = (new Email())
-              ->from($this->fromAddress)
+          $email = (new TemplatedEmail())
+              ->from(new Address($this->fromAddress, $this->fromName))
               ->to($recipient->getEmail())
-              ->subject(sprintf('[TicketSync] Nouveau commentaire sur ticket #%d', $ticket->getId()))
-              ->text($body);
+              ->subject(sprintf('[TicketSync] Nouveau commentaire sur ticket #%d', $comment->getTicket()->getId()))
+              ->htmlTemplate('emails/comment_added.html.twig')
+              ->context([
+                  'comment' => $comment,
+                  'ticket' => $comment->getTicket(),
+                  'recipient' => $recipient,
+              ]);
 
           $this->mailer->send($email);
       }
