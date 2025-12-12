@@ -4,20 +4,25 @@ namespace App\EventSubscriber;
 
 use App\Entity\Comment;
 use App\Entity\Organization;
+use App\Entity\Status;
 use App\Entity\Ticket;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\EmailService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Events;
+use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsDoctrineListener(event: Events::postPersist)]
+#[AsDoctrineListener(event: Events::postUpdate)]
 class NotificationSubscriber
 {
     public function __construct(
         private EmailService $emailService,
         private UserRepository $userRepository,
+        private Security $security,
     ) {}
 
     /**
@@ -37,6 +42,27 @@ class NotificationSubscriber
             $this->notifyCommentAdded($entity);
         }
     }
+
+    /**
+     * Called after an entity is updated in database
+     */
+     public function postUpdate(PostUpdateEventArgs $args): void
+     {
+         $entity = $args->getObject();
+
+         if ($entity instanceof Ticket) {
+             $entityManager = $args->getObjectManager();
+             $uow = $entityManager->getUnitOfWork();
+             $changeSet = $uow->getEntityChangeSet($entity);
+
+             if (isset($changeSet['status'])) {
+                 $oldStatus = $changeSet['status'][0];
+                 $newStatus = $changeSet['status'][1];
+
+                 $this->notifyStatusChanged($entity, $oldStatus, $newStatus);
+             }
+         }
+     }
 
     /**
      * Get all recipients for notifications (admins + org users)
@@ -88,4 +114,18 @@ class NotificationSubscriber
         }
     }
 
+    private function notifyStatusChanged(Ticket $ticket, Status $oldStatus, Status $newStatus):void
+    {
+        $currentUser = $this->security->getUser();
+
+        if (!$currentUser instanceof User) {
+            return;
+        }
+
+        $recipients = $this->getNotificationRecipients($ticket->getOrganization(), $currentUser);
+
+        foreach ($recipients as $recipient) {
+            $this->emailService->sendStatusChangedNotification($ticket, $recipient, $oldStatus, $newStatus);
+        }
+    }
 }
