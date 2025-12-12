@@ -13,6 +13,7 @@
                     <th>Organization</th>
                     <th>Title</th>
                     <th>Status</th>
+                    <th>Priority</th>
                     <th>Created By</th>
                     <th>Created At</th>
                     <th>Actions</th>
@@ -27,20 +28,25 @@
                     </td>
                     <td>{{ ticket.title }}</td>
                     <td>
-                        <span class="badge bg-secondary">{{ ticket.status.name }}</span>
+                        <span class="badge bg-primary">{{ ticket.status.name }}</span>
                     </td>
-                    <td>{{ ticket.createdBy.email }}</td>
-                    <td>{{ ticket.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>
+                        <span class="badge priority-{{ ticket.priority.level }}">{{ ticket.priority.name }}</span>
+                    </td>
+                    <td>{{ ticket.createdBy.name }}</td>
+                    <td>{{ ticket.createdAt|date('M d, Y H:i') }}</td>
                     <td>
                         <a href="{{ path('app_ticket_show', {
                             'organizationSlug': ticket.organization.slug,
                             'ticketId': ticket.id
-                        }) }}" class="btn btn-sm btn-primary">View</a>
+                        }) }}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-eye"></i>
+                        </a>
                     </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="7" class="text-center">No tickets found</td>
+                    <td colspan="8" class="text-center">No tickets found</td>
                 </tr>
             {% endfor %}
             </tbody>
