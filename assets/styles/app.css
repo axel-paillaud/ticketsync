@@ -1,3 +1,280 @@
+/*
+ * TicketSync - Gruvbox Light Theme
+ * Professional & clean design with a warm vintage touch
+ */
+
+:root {
+    /* Gruvbox Light Palette */
+    --gruvbox-bg: #fbf1c7;
+    --gruvbox-bg-soft: #f2e5bc;
+    --gruvbox-bg-hard: #f9f5d7;
+    --gruvbox-fg: #3c3836;
+    --gruvbox-fg-light: #504945;
+    
+    --gruvbox-red: #cc241d;
+    --gruvbox-red-dim: #9d0006;
+    --gruvbox-green: #98971a;
+    --gruvbox-green-dim: #79740e;
+    --gruvbox-yellow: #d79921;
+    --gruvbox-yellow-dim: #b57614;
+    --gruvbox-blue: #458588;
+    --gruvbox-blue-dim: #076678;
+    --gruvbox-purple: #b16286;
+    --gruvbox-purple-dim: #8f3f71;
+    --gruvbox-aqua: #689d6a;
+    --gruvbox-aqua-dim: #427b58;
+    --gruvbox-orange: #d65d0e;
+    --gruvbox-orange-dim: #af3a03;
+    --gruvbox-gray: #928374;
+    --gruvbox-gray-light: #a89984;
+    
+    /* Bootstrap overrides */
+    --bs-body-bg: var(--gruvbox-bg);
+    --bs-body-color: var(--gruvbox-fg);
+    --bs-primary: var(--gruvbox-blue);
+    --bs-primary-rgb: 69, 133, 136;
+    --bs-secondary: var(--gruvbox-gray);
+    --bs-success: var(--gruvbox-green);
+    --bs-danger: var(--gruvbox-red);
+    --bs-warning: var(--gruvbox-yellow);
+    --bs-info: var(--gruvbox-aqua);
+    --bs-light: var(--gruvbox-bg-hard);
+    --bs-dark: var(--gruvbox-fg);
+    
+    /* Custom properties */
+    --navbar-height: 60px;
+    --border-color: #d5c4a1;
+    --shadow-sm: 0 2px 4px rgba(60, 56, 54, 0.1);
+    --shadow-md: 0 4px 8px rgba(60, 56, 54, 0.15);
+    --shadow-lg: 0 8px 16px rgba(60, 56, 54, 0.2);
+    --border-radius: 8px;
+}
+
+/* Global styles */
 body {
-    background-color: skyblue;
+    background-color: var(--gruvbox-bg);
+    color: var(--gruvbox-fg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* Links */
+a {
+    color: var(--gruvbox-blue);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--gruvbox-blue-dim);
+    text-decoration: underline;
+}
+
+/* Cards */
+.card {
+    background-color: var(--gruvbox-bg-hard);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    background-color: var(--gruvbox-bg-soft);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--gruvbox-blue);
+    border-color: var(--gruvbox-blue);
+    color: var(--gruvbox-bg);
+}
+
+.btn-primary:hover {
+    background-color: var(--gruvbox-blue-dim);
+    border-color: var(--gruvbox-blue-dim);
+}
+
+.btn-success {
+    background-color: var(--gruvbox-green);
+    border-color: var(--gruvbox-green);
+    color: var(--gruvbox-bg);
+}
+
+.btn-success:hover {
+    background-color: var(--gruvbox-green-dim);
+    border-color: var(--gruvbox-green-dim);
+}
+
+.btn-danger {
+    background-color: var(--gruvbox-red);
+    border-color: var(--gruvbox-red);
+    color: var(--gruvbox-bg);
+}
+
+.btn-danger:hover {
+    background-color: var(--gruvbox-red-dim);
+    border-color: var(--gruvbox-red-dim);
+}
+
+.btn-warning {
+    background-color: var(--gruvbox-yellow);
+    border-color: var(--gruvbox-yellow);
+    color: var(--gruvbox-fg);
+}
+
+.btn-warning:hover {
+    background-color: var(--gruvbox-yellow-dim);
+    border-color: var(--gruvbox-yellow-dim);
+}
+
+/* Forms */
+.form-control,
+.form-select {
+    background-color: var(--gruvbox-bg-hard);
+    border: 1px solid var(--border-color);
+    color: var(--gruvbox-fg);
+    border-radius: 6px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--gruvbox-bg-hard);
+    border-color: var(--gruvbox-blue);
+    color: var(--gruvbox-fg);
+    box-shadow: 0 0 0 0.25rem rgba(69, 133, 136, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--gruvbox-fg-light);
+}
+
+/* Tables */
+.table {
+    color: var(--gruvbox-fg);
+}
+
+.table th {
+    background-color: var(--gruvbox-bg-soft);
+    border-color: var(--border-color);
+    font-weight: 600;
+}
+
+.table td {
+    border-color: var(--border-color);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--gruvbox-bg-hard);
+}
+
+/* Alerts */
+.alert {
+    border-radius: var(--border-radius);
+    border: 1px solid;
+}
+
+.alert-success {
+    background-color: rgba(152, 151, 26, 0.1);
+    border-color: var(--gruvbox-green);
+    color: var(--gruvbox-green-dim);
+}
+
+.alert-danger {
+    background-color: rgba(204, 36, 29, 0.1);
+    border-color: var(--gruvbox-red);
+    color: var(--gruvbox-red-dim);
+}
+
+.alert-warning {
+    background-color: rgba(215, 153, 33, 0.1);
+    border-color: var(--gruvbox-yellow);
+    color: var(--gruvbox-yellow-dim);
+}
+
+.alert-info {
+    background-color: rgba(104, 157, 106, 0.1);
+    border-color: var(--gruvbox-aqua);
+    color: var(--gruvbox-aqua-dim);
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    border-radius: 4px;
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--gruvbox-bg-hard);
+    border-bottom: 2px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    min-height: var(--navbar-height);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--gruvbox-orange) !important;
+}
+
+.navbar-brand:hover {
+    color: var(--gruvbox-orange-dim) !important;
+}
+
+.nav-link {
+    color: var(--gruvbox-fg) !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--gruvbox-blue) !important;
+}
+
+.nav-link.active {
+    color: var(--gruvbox-blue) !important;
+}
+
+/* Utilities */
+.text-muted {
+    color: var(--gruvbox-gray) !important;
+}
+
+.border {
+    border-color: var(--border-color) !important;
+}
+
+/* Custom components */
+.page-header {
+    background-color: var(--gruvbox-bg-hard);
+    border-bottom: 2px solid var(--border-color);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    color: var(--gruvbox-fg);
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Content container */
+.content-wrapper {
+    min-height: calc(100vh - var(--navbar-height));
+    padding-bottom: 2rem;
 }
