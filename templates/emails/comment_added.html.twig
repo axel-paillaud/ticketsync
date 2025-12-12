@@ -5,7 +5,7 @@
 {% block content %}
     <p class="greeting">Bonjour <strong>{{ recipient.name }}</strong>,</p>
 
-    <p>Un nouveau commentaire a été ajouté sur le ticket <strong>#{{ ticket.id }}</strong> dans l'organisation <strong>{{ ticket.organization.name }}</strong>.</p>
+    <p>Un nouveau commentaire a été ajouté sur le ticket <strong>#{{ ticket.id }}</strong> ({{ ticket.organization.name }}).</p>
 
     <div class="info-box">
         <h2>Ticket #{{ ticket.id }} : {{ ticket.title }}</h2>
