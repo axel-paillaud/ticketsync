@@ -352,11 +352,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Get the full name of the user
+     * Get the full name of the user, fallback to email if name is empty
      */
     public function getName(): string
     {
-        return trim($this->firstName . ' ' . $this->lastName);
+        $name = trim($this->firstName . ' ' . $this->lastName);
+        return $name !== '' ? $name : $this->email;
     }
 
     public function __toString(): string
