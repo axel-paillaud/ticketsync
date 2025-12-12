@@ -46,8 +46,8 @@ $info: $gruvbox-aqua;
 $light: $gruvbox-bg-hard;
 $dark: $gruvbox-fg;
 
-// Body
-$body-bg: $gruvbox-bg;
+// Body (lightest background)
+$body-bg: $gruvbox-bg-hard;
 $body-color: $gruvbox-fg;
 
 // Links
@@ -69,14 +69,14 @@ $box-shadow-sm: 0 2px 4px rgba(60, 56, 54, 0.1);
 $box-shadow: 0 4px 8px rgba(60, 56, 54, 0.15);
 $box-shadow-lg: 0 8px 16px rgba(60, 56, 54, 0.2);
 
-// Cards
-$card-bg: $gruvbox-bg-hard;
+// Cards (elevated layer - warmer)
+$card-bg: $gruvbox-bg;
 $card-border-color: $border-color;
 $card-cap-bg: $gruvbox-bg-soft;
 $card-border-radius: $border-radius;
 
-// Forms
-$input-bg: $gruvbox-bg-hard;
+// Forms (same as cards - elevated)
+$input-bg: $gruvbox-bg;
 $input-border-color: $border-color;
 $input-color: $gruvbox-fg;
 $input-focus-border-color: $gruvbox-blue;
@@ -107,13 +107,13 @@ $badge-border-radius: 4px;
 $badge-padding-y: 0.35em;
 $badge-padding-x: 0.65em;
 
-// Modals
-$modal-content-bg: $gruvbox-bg-hard;
+// Modals (elevated)
+$modal-content-bg: $gruvbox-bg;
 $modal-content-border-color: $border-color;
 $modal-header-border-color: $border-color;
 
-// Dropdowns
-$dropdown-bg: $gruvbox-bg-hard;
+// Dropdowns (elevated)
+$dropdown-bg: $gruvbox-bg;
 $dropdown-border-color: $border-color;
 $dropdown-link-color: $gruvbox-fg;
 $dropdown-link-hover-color: $gruvbox-blue;
@@ -179,9 +179,9 @@ $dropdown-link-hover-bg: $gruvbox-bg-soft;
     padding-bottom: 2rem;
 }
 
-// Info boxes (custom component)
+// Info boxes (custom component - elevated)
 .info-box {
-    background: $gruvbox-bg-soft;
+    background: $gruvbox-bg-hard;
     padding: 1rem;
     border-radius: $border-radius;
     border-left: 3px solid $gruvbox-blue;
@@ -199,9 +199,9 @@ $dropdown-link-hover-bg: $gruvbox-bg-soft;
     color: $gruvbox-fg;
 }
 
-// Description content
+// Description content (lightest for readability)
 .description-content {
-    background: $gruvbox-bg-soft;
+    background: $gruvbox-bg-hard;
     padding: 1.25rem;
     border-radius: $border-radius;
     border: 1px solid $border-color;
@@ -234,9 +234,9 @@ $dropdown-link-hover-bg: $gruvbox-bg-soft;
     line-height: 1.5;
 }
 
-// Attachment upload zone
+// Attachment upload zone (lighter on hover for clarity)
 .attachment-upload-zone {
-    background: $gruvbox-bg-soft;
+    background: $gruvbox-bg;
     padding: 1.5rem;
     border-radius: $border-radius;
     border: 2px dashed $border-color;

@@ -111,38 +111,4 @@
         </div>
     {% endif %}
 </div>
-
-<style>
-    .ticket-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .ticket-card:hover {
-        transform: translateY(-2px);
-    }
-
-    .ticket-id-badge {
-        background: linear-gradient(135deg, var(--gruvbox-blue), var(--gruvbox-blue-dim));
-        color: var(--gruvbox-bg);
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        min-width: 60px;
-        text-align: center;
-    }
-
-    .ticket-description {
-        line-height: 1.5;
-    }
-
-    .card-title a {
-        color: var(--gruvbox-fg);
-        font-weight: 600;
-    }
-
-    .card-title a:hover {
-        color: var(--gruvbox-blue);
-    }
-</style>
 {% endblock %}
