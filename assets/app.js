@@ -5,8 +5,9 @@ import './stimulus_bootstrap.js';
  * This file will be included onto the page via the importmap() Twig function,
  * which should already be in your base.html.twig.
  */
-import './styles/app.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
+// CSS is now compiled via Sass and served from /build/app.css
+// Keep only Bootstrap Icons and Bootstrap JS
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap';
 

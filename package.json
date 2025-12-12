@@ -2,5 +2,9 @@
   "devDependencies": {
     "bootstrap": "^5.3.8",
     "sass": "^1.96.0"
+  },
+  "scripts": {
+    "sass": "sass assets/styles/app.scss:public/build/app.css --style=compressed",
+    "sass:watch": "sass assets/styles/app.scss:public/build/app.css --watch --style=compressed"
   }
 }

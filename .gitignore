@@ -19,4 +19,8 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
+###> sass ###
+/public/build/
+###< sass ###
+
 node_modules

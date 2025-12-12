@@ -1,0 +1,269 @@
+/*
+ * TicketSync - Gruvbox Light Theme
+ * Bootstrap customization with Sass
+ */
+
+// ==========================================
+// 1. Gruvbox Light Color Variables
+// ==========================================
+
+$gruvbox-bg: #fbf1c7;
+$gruvbox-bg-soft: #f2e5bc;
+$gruvbox-bg-hard: #f9f5d7;
+$gruvbox-fg: #3c3836;
+$gruvbox-fg-light: #504945;
+
+$gruvbox-red: #cc241d;
+$gruvbox-red-dim: #9d0006;
+$gruvbox-green: #98971a;
+$gruvbox-green-dim: #79740e;
+$gruvbox-yellow: #d79921;
+$gruvbox-yellow-dim: #b57614;
+$gruvbox-blue: #458588;
+$gruvbox-blue-dim: #076678;
+$gruvbox-purple: #b16286;
+$gruvbox-purple-dim: #8f3f71;
+$gruvbox-aqua: #689d6a;
+$gruvbox-aqua-dim: #427b58;
+$gruvbox-orange: #d65d0e;
+$gruvbox-orange-dim: #af3a03;
+$gruvbox-gray: #928374;
+$gruvbox-gray-light: #a89984;
+
+$border-color: #d5c4a1;
+
+// ==========================================
+// 2. Bootstrap Variable Overrides
+// ==========================================
+
+// Colors
+$primary: $gruvbox-blue;
+$secondary: $gruvbox-gray;
+$success: $gruvbox-green;
+$danger: $gruvbox-red;
+$warning: $gruvbox-yellow;
+$info: $gruvbox-aqua;
+$light: $gruvbox-bg-hard;
+$dark: $gruvbox-fg;
+
+// Body
+$body-bg: $gruvbox-bg;
+$body-color: $gruvbox-fg;
+
+// Links
+$link-color: $gruvbox-blue;
+$link-hover-color: $gruvbox-blue-dim;
+
+// Typography
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$line-height-base: 1.6;
+
+// Border
+$border-color: $border-color;
+$border-radius: 8px;
+$border-radius-sm: 6px;
+$border-radius-lg: 10px;
+
+// Shadows
+$box-shadow-sm: 0 2px 4px rgba(60, 56, 54, 0.1);
+$box-shadow: 0 4px 8px rgba(60, 56, 54, 0.15);
+$box-shadow-lg: 0 8px 16px rgba(60, 56, 54, 0.2);
+
+// Cards
+$card-bg: $gruvbox-bg-hard;
+$card-border-color: $border-color;
+$card-cap-bg: $gruvbox-bg-soft;
+$card-border-radius: $border-radius;
+
+// Forms
+$input-bg: $gruvbox-bg-hard;
+$input-border-color: $border-color;
+$input-color: $gruvbox-fg;
+$input-focus-border-color: $gruvbox-blue;
+$input-focus-box-shadow: 0 0 0 0.25rem rgba(69, 133, 136, 0.25);
+
+// Buttons
+$btn-border-radius: 6px;
+$btn-font-weight: 500;
+
+// Navbar
+$navbar-light-color: $gruvbox-fg;
+$navbar-light-hover-color: $gruvbox-blue;
+$navbar-light-active-color: $gruvbox-blue;
+$navbar-light-brand-color: $gruvbox-orange;
+$navbar-light-brand-hover-color: $gruvbox-orange-dim;
+
+// Tables
+$table-color: $gruvbox-fg;
+$table-striped-bg: $gruvbox-bg-hard;
+$table-border-color: $border-color;
+
+// Alerts
+$alert-border-radius: $border-radius;
+
+// Badges
+$badge-font-weight: 500;
+$badge-border-radius: 4px;
+$badge-padding-y: 0.35em;
+$badge-padding-x: 0.65em;
+
+// Modals
+$modal-content-bg: $gruvbox-bg-hard;
+$modal-content-border-color: $border-color;
+$modal-header-border-color: $border-color;
+
+// Dropdowns
+$dropdown-bg: $gruvbox-bg-hard;
+$dropdown-border-color: $border-color;
+$dropdown-link-color: $gruvbox-fg;
+$dropdown-link-hover-color: $gruvbox-blue;
+$dropdown-link-hover-bg: $gruvbox-bg-soft;
+
+// ==========================================
+// 3. Import Bootstrap
+// ==========================================
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+// ==========================================
+// 4. Custom Styles
+// ==========================================
+
+// Custom CSS Variables (for runtime access)
+:root {
+    --gruvbox-bg: #{$gruvbox-bg};
+    --gruvbox-bg-soft: #{$gruvbox-bg-soft};
+    --gruvbox-bg-hard: #{$gruvbox-bg-hard};
+    --gruvbox-fg: #{$gruvbox-fg};
+    --gruvbox-orange: #{$gruvbox-orange};
+    --gruvbox-orange-dim: #{$gruvbox-orange-dim};
+    --gruvbox-blue: #{$gruvbox-blue};
+    --gruvbox-blue-dim: #{$gruvbox-blue-dim};
+    --gruvbox-gray: #{$gruvbox-gray};
+    --border-color: #{$border-color};
+    --navbar-height: 60px;
+}
+
+// Navigation
+.navbar {
+    min-height: var(--navbar-height);
+    box-shadow: $box-shadow-sm;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+// Cards
+.card {
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: $box-shadow;
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+// Content wrapper
+.content-wrapper {
+    min-height: calc(100vh - var(--navbar-height));
+    padding-bottom: 2rem;
+}
+
+// Info boxes (custom component)
+.info-box {
+    background: $gruvbox-bg-soft;
+    padding: 1rem;
+    border-radius: $border-radius;
+    border-left: 3px solid $gruvbox-blue;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: $gruvbox-gray;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-weight: 600;
+    color: $gruvbox-fg;
+}
+
+// Description content
+.description-content {
+    background: $gruvbox-bg-soft;
+    padding: 1.25rem;
+    border-radius: $border-radius;
+    border: 1px solid $border-color;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+// Ticket cards
+.ticket-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ticket-card:hover {
+    transform: translateY(-2px);
+}
+
+.ticket-id-badge {
+    background: linear-gradient(135deg, $gruvbox-blue, $gruvbox-blue-dim);
+    color: $gruvbox-bg;
+    padding: 0.5rem 1rem;
+    border-radius: $border-radius;
+    font-weight: 700;
+    font-size: 1.1rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.ticket-description {
+    line-height: 1.5;
+}
+
+// Attachment upload zone
+.attachment-upload-zone {
+    background: $gruvbox-bg-soft;
+    padding: 1.5rem;
+    border-radius: $border-radius;
+    border: 2px dashed $border-color;
+    transition: all 0.2s ease;
+}
+
+.attachment-upload-zone:hover {
+    border-color: $gruvbox-blue;
+    background: $gruvbox-bg-hard;
+}
+
+.upload-info {
+    color: $gruvbox-gray;
+}
+
+// Attachment cards
+.attachment-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.attachment-card:hover {
+    transform: translateY(-2px);
+}
+
+// Page sections
+.description-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid $border-color;
+}
