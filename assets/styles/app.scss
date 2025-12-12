@@ -248,13 +248,33 @@ $dropdown-link-hover-bg: $bg-soft;
     background: $bg-hard;
 }
 
-// Comment textarea
-.comment-textarea {
+// Form inputs and textareas - use lighter background
+.form-control,
+.form-select {
     background: $bg-hard;
 
     &:focus {
         background: $bg-hard;
     }
+}
+
+// Priority badges (Orgmode-inspired color coding)
+// Level 3 = A (urgent/high) → Red
+.priority-3 {
+    background-color: $color-danger;
+    color: $btn-light-text;
+}
+
+// Level 2 = B (medium) → Yellow/Orange
+.priority-2 {
+    background-color: $color-warning;
+    color: $btn-dark-text;
+}
+
+// Level 1 = C (low) → Gray
+.priority-1 {
+    background-color: $color-secondary;
+    color: $btn-light-text;
 }
 
 // Page sections
