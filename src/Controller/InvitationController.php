@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator;
 
 class InvitationController extends AbstractController
 {
@@ -21,9 +19,7 @@ class InvitationController extends AbstractController
         Request $request,
         UserInvitationRepository $invitationRepository,
         EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher,
-        UserAuthenticatorInterface $userAuthenticator,
-        FormLoginAuthenticator $authenticator
+        UserPasswordHasherInterface $passwordHasher
     ): Response {
         $invitation = $invitationRepository->findValidByToken($token);
 
@@ -48,14 +44,9 @@ class InvitationController extends AbstractController
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Your password has been set successfully. You are now logged in.');
+            $this->addFlash('success', 'Your password has been set successfully. You can now log in with your credentials.');
 
-            // Authenticate the user
-            return $userAuthenticator->authenticateUser(
-                $user,
-                $authenticator,
-                $request
-            );
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('invitation/accept.html.twig', [
