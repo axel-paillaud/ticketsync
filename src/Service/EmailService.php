@@ -7,6 +7,7 @@ use App\Entity\Organization;
 use App\Entity\Status;
 use App\Entity\Ticket;
 use App\Entity\User;
+use App\Entity\UserInvitation;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -92,6 +93,27 @@ class EmailService
                     'organization' => $organization,
                     'currentTotal' => $currentTotal,
                     'threshold' => $threshold,
+                ]);
+
+            $this->mailer->send($email);
+        }
+
+        /**
+         * Send invitation email to a new user
+         */
+        public function sendUserInvitation(UserInvitation $invitation, string $invitationUrl): void
+        {
+            $user = $invitation->getUser();
+
+            $email = (new TemplatedEmail())
+                ->from(new Address($this->fromAddress, $this->fromName))
+                ->to($user->getEmail())
+                ->subject('[TicketSync] You have been invited to join TicketSync')
+                ->htmlTemplate('emails/user_invitation.html.twig')
+                ->context([
+                    'user' => $user,
+                    'invitation' => $invitation,
+                    'invitationUrl' => $invitationUrl,
                 ]);
 
             $this->mailer->send($email);
