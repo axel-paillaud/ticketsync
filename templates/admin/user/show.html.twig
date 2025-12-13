@@ -1,0 +1,209 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ user.name }} - Admin{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="mb-3">
+        <a href="{{ path('app_admin_user_index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Users
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">
+                <i class="bi bi-person-circle"></i>
+                {{ user.name }}
+            </h2>
+            <div class="btn-group">
+                {% if user.invitation and not user.invitation.isAccepted %}
+                    <form method="post" action="{{ path('app_admin_user_resend_invitation', {id: user.id}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('resend-invitation-' ~ user.id) }}">
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-envelope"></i>
+                            Resend Invitation
+                        </button>
+                    </form>
+                {% endif %}
+                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="bi bi-trash"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">
+                            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">
+                            {% if user.firstName or user.lastName %}
+                                {{ user.firstName }} {{ user.lastName }}
+                            {% else %}
+                                <span class="text-muted">Not set</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Organization</div>
+                        <div class="info-value">
+                            {% if user.organization %}
+                                <a href="{{ path('app_admin_organization_show', {id: user.organization.id}) }}">
+                                    {{ user.organization.name }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">Not assigned</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Role</div>
+                        <div class="info-value">
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="badge bg-danger">Admin</span>
+                            {% else %}
+                                <span class="badge bg-primary">User</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Account Status</div>
+                        <div class="info-value">
+                            {% if user.invitation and not user.invitation.isAccepted %}
+                                {% if user.invitation.isExpired %}
+                                    <span class="badge bg-danger">Invitation Expired</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending Invitation</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-success">Active</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Created At</div>
+                        <div class="info-value">{{ user.createdAt|date('M d, Y H:i') }}</div>
+                    </div>
+                </div>
+
+                {% if user.invitation %}
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="bi bi-envelope"></i>
+                                    Invitation Details
+                                </h5>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <strong>Created:</strong> {{ user.invitation.createdAt|date('M d, Y H:i') }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Expires:</strong> {{ user.invitation.expiresAt|date('M d, Y H:i') }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Status:</strong>
+                                        {% if user.invitation.isAccepted %}
+                                            <span class="badge bg-success">Accepted</span>
+                                            ({{ user.invitation.acceptedAt|date('M d, Y H:i') }})
+                                        {% elseif user.invitation.isExpired %}
+                                            <span class="badge bg-danger">Expired</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-ticket-perforated"></i>
+                        Created Tickets ({{ user.tickets|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user.tickets|length > 0 %}
+                        <p>This user has created {{ user.tickets|length }} ticket(s).</p>
+                    {% else %}
+                        <p class="text-muted mb-0">No tickets created yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat-left-text"></i>
+                        Comments ({{ user.comments|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user.comments|length > 0 %}
+                        <p>This user has posted {{ user.comments|length }} comment(s).</p>
+                    {% else %}
+                        <p class="text-muted mb-0">No comments posted yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Delete Modal #}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>{{ user.email }}</strong>?</p>
+                <p class="text-danger mb-0">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    This will also delete all associated tickets and data. This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i>
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

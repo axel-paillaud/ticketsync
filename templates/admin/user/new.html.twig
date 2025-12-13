@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Invite User - Admin{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="mb-3">
+        <a href="{{ path('app_admin_user_index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Users
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">
+                <i class="bi bi-person-plus"></i>
+                Invite New User
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info mb-4">
+                <i class="bi bi-info-circle"></i>
+                An invitation email will be sent to the user with a secure link to set their password.
+                The invitation link will expire in 48 hours.
+            </div>
+
+            {{ form_start(form) }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.email) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.organization) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.firstName) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.lastName) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_row(form.roles) }}
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ path('app_admin_user_index') }}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-envelope"></i>
+                        Send Invitation
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
