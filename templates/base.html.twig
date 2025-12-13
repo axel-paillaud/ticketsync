@@ -45,11 +45,31 @@
                             {% endif %}
 
                             {% if is_granted('ROLE_ADMIN') %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/admin">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
                                         <i class="bi bi-speedometer2 me-1"></i>
                                         Admin
                                     </a>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="{{ path('app_admin_index') }}">
+                                            <i class="bi bi-speedometer2 me-1"></i>
+                                            Dashboard
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ path('app_admin_organization_index') }}">
+                                            <i class="bi bi-building me-1"></i>
+                                            Organizations
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('app_admin_user_index') }}">
+                                            <i class="bi bi-people me-1"></i>
+                                            Users
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ path('app_admin_time_entries') }}">
+                                            <i class="bi bi-clock-history me-1"></i>
+                                            Time Tracking
+                                        </a></li>
+                                    </ul>
                                 </li>
                             {% endif %}
 
