@@ -63,6 +63,10 @@ task('docker:build', function () {
 
 desc('Start Docker containers');
 task('docker:up', function () {
+    // Stop existing containers (if any) before starting new ones
+    run('cd {{release_path}} && {{docker_compose_cmd}} down 2>/dev/null || true');
+
+    // Start containers from the new release
     run('cd {{release_path}} && {{docker_compose_cmd}} up -d');
 });
 
