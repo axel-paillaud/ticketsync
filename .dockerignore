@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker development files
+compose.override.yaml
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build artifacts
+/var/
+/public/build/
+/public/assets/
+
+# Environment files
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+
+# Tests
+/tests/
+phpunit.xml
+
+# Documentation
+README.md
+DEPLOY.md
+CLAUDE.md

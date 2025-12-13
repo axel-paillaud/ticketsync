@@ -11,7 +11,7 @@ set('keep_releases', 3);
 set('default_timeout', 300);
 
 // Docker configuration
-set('docker_compose_cmd', 'docker compose');
+set('docker_compose_cmd', 'docker compose -p ticketsync');
 set('docker_container', 'ticketsync_app');
 
 // Shared files/dirs between deploys
@@ -47,7 +47,7 @@ host('production')
 // Helper function to run commands in Docker container
 function docker_exec(string $command): string
 {
-    return "cd {{deploy_path}}/current && {{docker_compose_cmd}} exec -T {{docker_container}} sh -c 'cd /var/www/html && $command'";
+    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_container}} sh -c 'cd /var/www/html && $command'";
 }
 
 // Tasks
@@ -58,12 +58,12 @@ task('deploy:upload_env', function () {
 
 desc('Build Docker images');
 task('docker:build', function () {
-    run('cd {{deploy_path}}/current && {{docker_compose_cmd}} build --pull');
+    run('cd {{release_path}} && {{docker_compose_cmd}} build --pull');
 });
 
 desc('Start Docker containers');
 task('docker:up', function () {
-    run('cd {{deploy_path}}/current && {{docker_compose_cmd}} up -d');
+    run('cd {{release_path}} && {{docker_compose_cmd}} up -d');
 });
 
 desc('Restart Docker containers');
@@ -129,6 +129,7 @@ after('deploy:cache:clear', 'deploy:cache');
 before('database:migrate', 'database:prepare');
 after('deploy:cache', 'database:migrate');
 after('deploy:symlink', 'docker:restart');
+after('rollback', 'docker:restart');
 
 // Main deploy task
 desc('Deploy TicketSync');
@@ -140,16 +141,13 @@ task('deploy', [
     'deploy:publish',
 ]);
 
-// Rollback task
-desc('Rollback to previous release');
-task('rollback', [
-    'rollback:rollback',
-    'docker:restart',
-]);
-
 // First deploy task (includes .env upload)
 desc('First deploy with .env upload');
 task('deploy:first', [
+    'deploy:prepare',
     'deploy:upload_env',
-    'deploy',
+    'deploy:update_code',
+    'deploy:shared',
+    'deploy:cache:clear',
+    'deploy:publish',
 ]);
