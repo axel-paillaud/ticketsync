@@ -101,15 +101,30 @@ task('database:prepare', function () {
     // Create var directory if it doesn't exist
     run('mkdir -p {{deploy_path}}/shared/var');
 
-    // Create database file if it doesn't exist
-    run("test -f $dbPath || touch $dbPath");
+    // Check if database file exists and has content
+    $dbExists = test("[ -f $dbPath ] && [ -s $dbPath ]");
 
-    // Set proper permissions (readable/writable by container)
-    run("chmod 666 $dbPath");
+    if (!$dbExists) {
+        // First deploy: create empty file
+        run("touch $dbPath");
+        run("chmod 666 $dbPath");
+
+        // Create schema from scratch
+        writeln('<info>Creating database schema for first deployment...</info>');
+        run(docker_exec('APP_ENV=prod php bin/console doctrine:schema:create --env=prod'));
+
+        // Mark all migrations as executed (since schema is already created)
+        writeln('<info>Marking all migrations as executed...</info>');
+        run(docker_exec('APP_ENV=prod php bin/console doctrine:migrations:version --add --all --no-interaction --env=prod'));
+    } else {
+        // Database exists, just ensure permissions
+        run("chmod 666 $dbPath");
+    }
 });
 
 desc('Run database migrations');
 task('database:migrate', function () {
+    // Run migrations (Doctrine skips already executed migrations automatically)
     run(docker_exec('php bin/console doctrine:migrations:migrate --no-interaction'));
 });
 
@@ -140,9 +155,10 @@ after('docker:build', 'docker:up');
 after('docker:up', 'deploy:vendors');
 after('deploy:vendors', 'deploy:assets');
 before('deploy:shared', 'deploy:remove_var');
+after('deploy:shared', 'database:prepare');
+after('database:prepare', 'database:migrate');
+after('database:migrate', 'deploy:cache:clear');
 after('deploy:cache:clear', 'deploy:cache');
-before('database:migrate', 'database:prepare');
-after('deploy:cache', 'database:migrate');
 after('deploy:symlink', 'docker:restart');
 after('rollback', 'docker:restart');
 
