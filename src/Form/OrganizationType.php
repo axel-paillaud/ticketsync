@@ -50,6 +50,16 @@ class OrganizationType extends AbstractType
                     'rows' => 3,
                 ],
             ])
+            ->add('siret', TextType::class, [
+                'label' => 'SIRET',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => '12345678901234',
+                    'class' => 'form-control',
+                    'maxlength' => 14,
+                ],
+                'help' => '14 digits',
+            ])
             ->add('hourlyRate', MoneyType::class, [
                 'label' => 'Hourly Rate (€)',
                 'currency' => 'EUR',

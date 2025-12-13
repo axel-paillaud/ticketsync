@@ -41,6 +41,9 @@ class Organization
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $address = null;
 
+    #[ORM\Column(length: 14, nullable: true)]
+    private ?string $siret = null;
+
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['default' => '80.00'])]
     private ?string $hourlyRate = '80.00';
 
@@ -154,6 +157,18 @@ class Organization
     public function setAddress(?string $address): static
     {
         $this->address = $address;
+
+        return $this;
+    }
+
+    public function getSiret(): ?string
+    {
+        return $this->siret;
+    }
+
+    public function setSiret(?string $siret): static
+    {
+        $this->siret = $siret;
 
         return $this;
     }

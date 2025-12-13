@@ -74,6 +74,18 @@
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
+                        <div class="info-label">SIRET</div>
+                        <div class="info-value">
+                            {% if organization.siret %}
+                                {{ organization.siret }}
+                            {% else %}
+                                <span class="text-muted">Not set</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
                         <div class="info-label">Hourly Rate</div>
                         <div class="info-value">{{ organization.hourlyRate }} €</div>
                     </div>
