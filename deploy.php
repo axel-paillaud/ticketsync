@@ -47,7 +47,8 @@ host('production')
 // Helper function to run commands in Docker container
 function docker_exec(string $command): string
 {
-    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} sh -c 'cd /var/www/ticketsync/current && $command'";
+    // Use the current release path, not 'current' symlink (which doesn't exist yet during deploy)
+    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} sh -c 'cd {{release_path}} && $command'";
 }
 
 // Tasks
@@ -129,7 +130,7 @@ task('deploy:remove_var', function () {
     // Use docker exec to remove it as root from inside the container
     // This allows deploy:shared to create symlinks to shared/var/
     // Database and uploads are safe in shared/, never in releases
-    run('cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} rm -rf /var/www/ticketsync/current/var || true');
+    run('cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} rm -rf {{release_path}}/var || true');
 });
 
 // Hooks
