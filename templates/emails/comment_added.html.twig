@@ -18,7 +18,7 @@
         <p><strong>Date:</strong> {{ comment.createdAt|date('m/d/Y at H:i') }}</p>
 
         <p><strong>Comment:</strong></p>
-        <div class="description">{{ comment.content }}</div>
+        <div class="description">{{ comment.content|markdown_to_html|raw }}</div>
     </div>
 
     <a href="{{ url('app_ticket_show', {organizationSlug: ticket.organization.slug, ticketId: ticket.id}) }}" class="button">

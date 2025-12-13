@@ -29,7 +29,7 @@
 
         {% if ticket.description %}
             <p><strong>Description:</strong></p>
-            <div class="description">{{ ticket.description }}</div>
+            <div class="description">{{ ticket.description|markdown_to_html|raw }}</div>
         {% endif %}
     </div>
 
