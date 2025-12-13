@@ -1,0 +1,38 @@
+{% extends 'emails/_layout.html.twig' %}
+
+{% block title %}You have been invited to TicketSync{% endblock %}
+
+{% block content %}
+    <p class="greeting">Hello <strong>{{ user.name }}</strong>,</p>
+
+    <p>You have been invited to join <strong>TicketSync</strong>, our ticket management system.</p>
+
+    <div class="info-box">
+        <h2>Your Account Details</h2>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        {% if user.organization %}
+            <p><strong>Organization:</strong> {{ user.organization.name }}</p>
+        {% endif %}
+        <p><strong>Role:</strong>
+            {% if 'ROLE_ADMIN' in user.roles %}
+                <span class="badge badge-status">Administrator</span>
+            {% else %}
+                <span class="badge badge-status">User</span>
+            {% endif %}
+        </p>
+    </div>
+
+    <p>To get started, click the button below to set your password and activate your account.</p>
+
+    <a href="{{ invitationUrl }}" class="button">
+        Set Your Password
+    </a>
+
+    <p style="margin-top: 20px; font-size: 14px; color: #928374;">
+        <strong>Note:</strong> This invitation link will expire on <strong>{{ invitation.expiresAt|date('F d, Y') }} at {{ invitation.expiresAt|date('H:i') }}</strong> (48 hours from now).
+    </p>
+
+    <p style="font-size: 14px; color: #928374;">
+        If you did not expect this invitation, you can safely ignore this email.
+    </p>
+{% endblock %}
