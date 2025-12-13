@@ -88,6 +88,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: TimeEntry::class, mappedBy: 'createdBy')]
     private Collection $timeEntries;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?UserInvitation $invitation = null;
+
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
@@ -430,5 +433,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->getName();
+    }
+
+    public function getInvitation(): ?UserInvitation
+    {
+        return $this->invitation;
+    }
+
+    public function setInvitation(?UserInvitation $invitation): static
+    {
+        // Unset the owning side of the relation if necessary
+        if ($invitation === null && $this->invitation !== null) {
+            $this->invitation->setUser(null);
+        }
+
+        // Set the owning side of the relation if necessary
+        if ($invitation !== null && $invitation->getUser() !== $this) {
+            $invitation->setUser($this);
+        }
+
+        $this->invitation = $invitation;
+
+        return $this;
     }
 }
