@@ -1,4 +1,4 @@
-# Deployment Guide - TicketSync
+# Deployment Guide - TicketSync (Docker)
 
 ## Prerequisites
 
@@ -8,100 +8,60 @@
 - Git configured with repository access
 
 ### On production server
-- PHP 8.2 or higher
-- Composer
-- Node.js and npm (for SASS compilation)
-- Database (PostgreSQL or MySQL recommended, SQLite supported)
-- Web server (Nginx or Apache)
+- Docker and Docker Compose
 - Git
+- SSH access
+
+**Note**: This project runs in a Docker container, so you don't need to install PHP, Composer, or Node.js directly on the host.
 
 ## Initial Configuration
 
 ### 1. Configure deploy.php
 
-Edit the `deploy.php` file at project root and modify these values:
+Edit the `deploy.php` file at project root and verify these values:
 
 ```php
-set('repository', 'git@github.com:YOUR_USERNAME/ticketsync.git'); // Your Git repo
+set('repository', 'git@github.com:YOUR_USERNAME/ticketsync.git'); // Already configured
 
 host('production')
-    ->set('remote_user', 'deploy')              // Your SSH user
-    ->set('hostname', 'your-server.com')        // Your server
-    ->set('deploy_path', '/var/www/ticketsync') // Deployment path
-    ->set('http_user', 'www-data');             // Web server user
+    ->set('hostname', 'your-ssh-alias')         // Your SSH config alias
+    ->set('deploy_path', '/var/www/ticketsync') // Deployment path on host
+    ->set('branch', 'main')
+    ->set('http_user', 'www-data');             // User for file permissions
 ```
 
 ### 2. Prepare the server
 
-#### Create deployment user (optional but recommended)
+#### Install Docker and Docker Compose
 ```bash
-sudo adduser deploy
-sudo usermod -aG www-data deploy
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+
+# Add your user to docker group (optional, to run docker without sudo)
+sudo usermod -aG docker $USER
+
+# Install Docker Compose
+sudo apt-get update
+sudo apt-get install docker-compose-plugin
+
+# Verify installation
+docker --version
+docker compose version
 ```
 
 #### Create deployment directory
 ```bash
 sudo mkdir -p /var/www/ticketsync
-sudo chown deploy:www-data /var/www/ticketsync
+sudo chown $USER:$USER /var/www/ticketsync
 ```
 
 #### Configure SSH access
-From your local machine, copy your SSH key:
+From your local machine, verify SSH access works:
 ```bash
-ssh-copy-id deploy@your-server.com
+ssh your-ssh-alias  # Should connect successfully
 ```
 
-#### Install dependencies on the server
-```bash
-# PHP 8.2+
-sudo apt update
-sudo apt install php8.2 php8.2-cli php8.2-fpm php8.2-mysql php8.2-pgsql \
-  php8.2-sqlite3 php8.2-xml php8.2-mbstring php8.2-curl php8.2-zip \
-  php8.2-intl php8.2-gd
-
-# Composer
-curl -sS https://getcomposer.org/installer | php
-sudo mv composer.phar /usr/local/bin/composer
-
-# Node.js and npm (for SASS compilation)
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs
-
-# PostgreSQL (recommended)
-sudo apt install postgresql postgresql-contrib
-
-# OR MySQL
-sudo apt install mysql-server
-```
-
-### 3. Configure the database
-
-#### For PostgreSQL
-```bash
-sudo -u postgres psql
-```
-
-```sql
-CREATE DATABASE ticketsync;
-CREATE USER ticketsync_user WITH ENCRYPTED PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE ticketsync TO ticketsync_user;
-\q
-```
-
-#### For MySQL
-```bash
-sudo mysql
-```
-
-```sql
-CREATE DATABASE ticketsync;
-CREATE USER 'ticketsync_user'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON ticketsync.* TO 'ticketsync_user'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-```
-
-### 4. Create .env.production.local file
+### 3. Create .env.production.local file
 
 Copy the example file and configure it:
 ```bash
@@ -110,42 +70,31 @@ cp .env.production.local.example .env.production.local
 
 Edit `.env.production.local` with your actual values:
 - `APP_SECRET`: Generate a secure random string (minimum 32 characters)
-- `DATABASE_URL`: Your database credentials
-- `DEFAULT_URI`: Your application URL
+- `DATABASE_URL`: SQLite will use `var/data_prod.db` by default
+- `DEFAULT_URI`: Your application URL (e.g., https://ticketsync.axelweb.fr)
 - `MAILER_DSN`: Your SMTP server configuration
 
 **IMPORTANT**: NEVER commit this file to Git!
 
-### 5. Configure web server
+### 4. Configure reverse proxy (optional but recommended)
 
-#### Nginx
+If you want HTTPS and a custom domain, set up a reverse proxy on the host.
+
+#### Using Nginx on host
 Create `/etc/nginx/sites-available/ticketsync`:
 
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
-    root /var/www/ticketsync/current/public;
+    server_name ticketsync.axelweb.fr;
 
     location / {
-        try_files $uri /index.php$is_args$args;
+        proxy_pass http://localhost:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
-
-    location ~ ^/index\.php(/|$) {
-        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
-        fastcgi_split_path_info ^(.+\.php)(/.*)$;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        fastcgi_param DOCUMENT_ROOT $realpath_root;
-        internal;
-    }
-
-    location ~ \.php$ {
-        return 404;
-    }
-
-    error_log /var/log/nginx/ticketsync_error.log;
-    access_log /var/log/nginx/ticketsync_access.log;
 }
 ```
 
@@ -156,29 +105,10 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-#### Apache
-Create `/etc/apache2/sites-available/ticketsync.conf`:
-
-```apache
-<VirtualHost *:80>
-    ServerName your-domain.com
-    DocumentRoot /var/www/ticketsync/current/public
-
-    <Directory /var/www/ticketsync/current/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    ErrorLog ${APACHE_LOG_DIR}/ticketsync_error.log
-    CustomLog ${APACHE_LOG_DIR}/ticketsync_access.log combined
-</VirtualHost>
-```
-
-Enable the site:
+Then configure SSL with Let's Encrypt:
 ```bash
-sudo a2ensite ticketsync
-sudo a2enmod rewrite
-sudo systemctl reload apache2
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d ticketsync.axelweb.fr
 ```
 
 ## Deployment
@@ -191,48 +121,143 @@ dep deploy:first production
 This command will:
 1. Upload your `.env.production.local` file
 2. Clone the repository
-3. Install Composer dependencies
-4. Install npm dependencies and compile assets (SASS + importmap)
-5. Prepare SQLite database file (if using SQLite)
-6. Run database migrations
-7. Activate the new version
+3. Build the Docker image (Apache + PHP + Node.js)
+4. Start the Docker container
+5. Install Composer dependencies (inside container)
+6. Install npm dependencies and compile assets (inside container)
+7. Prepare SQLite database file
+8. Run database migrations (inside container)
+9. Activate the new version
+10. Restart Docker container
+
+**Note**: The first deployment takes longer because it builds the Docker image.
 
 ### Subsequent deployments
 ```bash
 dep deploy production
 ```
 
+This will:
+- Pull latest code
+- Rebuild Docker image if Dockerfile changed
+- Update dependencies
+- Compile assets
+- Run migrations
+- Restart containers
+
 ### Rollback in case of issues
 ```bash
 dep rollback production
 ```
 
+This will revert to the previous release and restart containers.
+
+## Docker Container Structure
+
+The application runs in a single Docker container (`ticketsync_app`) that includes:
+- Apache 2.4
+- PHP 8.2 with required extensions
+- Composer
+- Node.js 20 and npm (for SASS compilation)
+
+Files are mounted from the host using bind mounts:
+- Host: `/var/www/ticketsync/current/`
+- Container: `/var/www/html/`
+
+This allows you to access files directly on the host while the app runs in Docker.
+
 ## Available Deployer tasks
 
 - `dep deploy production`: Deploy the application
 - `dep rollback production`: Rollback to previous version
+- `dep docker:build production`: Rebuild Docker image
+- `dep docker:up production`: Start containers
+- `dep docker:restart production`: Restart containers
+- `dep docker:down production`: Stop containers
 - `dep ssh production`: SSH into the server
-- `dep logs production`: View deployment logs
 
-## Post-deployment
+## Managing the application
 
-### SSL Configuration (Let's Encrypt)
+### Execute commands inside the container
+
+From the server, you can run commands in the container:
+
 ```bash
-sudo apt install certbot python3-certbot-nginx  # For Nginx
-# OR
-sudo apt install certbot python3-certbot-apache  # For Apache
+cd /var/www/ticketsync/current
 
-sudo certbot --nginx -d your-domain.com  # For Nginx
-# OR
-sudo certbot --apache -d your-domain.com  # For Apache
+# Symfony console commands
+docker compose exec ticketsync_app php bin/console cache:clear
+
+# Database migrations
+docker compose exec ticketsync_app php bin/console doctrine:migrations:migrate
+
+# Compile SASS
+docker compose exec ticketsync_app npm run sass
+
+# Access container shell
+docker compose exec ticketsync_app bash
 ```
 
-### Verification checklist
-1. Access your domain in a browser
-2. Verify the application works
-3. Test login/registration
-4. Verify email sending
-5. Test file uploads
+### View logs
+
+```bash
+# Docker container logs
+docker logs ticketsync_app
+
+# Symfony logs (from host)
+tail -f /var/www/ticketsync/shared/var/log/prod.log
+
+# Apache logs (inside container)
+docker compose exec ticketsync_app tail -f /var/log/apache2/error.log
+```
+
+### Restart the application
+
+```bash
+cd /var/www/ticketsync/current
+docker compose restart
+```
+
+## Troubleshooting
+
+### Permission issues with SQLite
+
+```bash
+# From the server
+cd /var/www/ticketsync/shared/var
+chmod 666 data_prod.db
+```
+
+### Container won't start
+
+```bash
+# Check logs
+docker logs ticketsync_app
+
+# Rebuild image
+cd /var/www/ticketsync/current
+docker compose build --no-cache
+docker compose up -d
+```
+
+### Cache not cleared
+
+```bash
+dep docker:restart production
+# Or from server:
+cd /var/www/ticketsync/current
+docker compose exec ticketsync_app php bin/console cache:clear --env=prod
+```
+
+### Port 80 already in use
+
+If another service uses port 80, edit `docker-compose.yml` to use a different port:
+```yaml
+ports:
+  - "8080:80"  # Use port 8080 on host instead
+```
+
+Then adjust your reverse proxy configuration accordingly.
 
 ## Maintenance
 
@@ -246,27 +271,32 @@ dep releases production
 dep cleanup production
 ```
 
-## Troubleshooting
+### Backup SQLite database
 
-### Permission issues
 ```bash
-# On the server
-sudo chown -R deploy:www-data /var/www/ticketsync
-sudo chmod -R 775 /var/www/ticketsync/shared/var
+# From the server
+cp /var/www/ticketsync/shared/var/data_prod.db ~/backup-$(date +%Y%m%d).db
 ```
 
-### Cache not cleared
-```bash
-dep deploy:cache production
-```
+## Development vs Production
 
-### Migrations not executed
-```bash
-dep database:migrate production
-```
+**Development** (local machine):
+- Use `.env.local` or `.env.dev`
+- SQLite database in `var/data_dev.db`
+- Run directly without Docker or use Docker for consistency
 
-### View logs
-```bash
-# On the server
-tail -f /var/www/ticketsync/shared/var/log/prod.log
-```
+**Production** (server):
+- Uses `.env.production.local` (uploaded once, stored in `shared/`)
+- SQLite database in `shared/var/data_prod.db`
+- Runs in Docker container
+- Managed by Deployer
+
+## Upgrading to PostgreSQL/MySQL (recommended for production)
+
+While SQLite works for ~300 users, consider migrating to PostgreSQL or MySQL for better performance and concurrent access.
+
+To migrate:
+1. Add a database service to `docker-compose.yml`
+2. Update `DATABASE_URL` in `.env.production.local`
+3. Deploy and run migrations
+4. Import existing data if needed

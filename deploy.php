@@ -10,6 +10,10 @@ set('repository', 'git@github.com:axel-paillaud/ticketsync.git');
 set('keep_releases', 3);
 set('default_timeout', 300);
 
+// Docker configuration
+set('docker_compose_cmd', 'docker compose');
+set('docker_container', 'ticketsync_app');
+
 // Shared files/dirs between deploys
 add('shared_files', [
     '.env.production.local',
@@ -40,23 +44,49 @@ host('production')
     ->set('branch', 'main')
     ->set('http_user', 'www-data');
 
+// Helper function to run commands in Docker container
+function docker_exec(string $command): string
+{
+    return "cd {{deploy_path}}/current && {{docker_compose_cmd}} exec -T {{docker_container}} sh -c 'cd /var/www/html && $command'";
+}
+
 // Tasks
 desc('Upload .env.production.local file');
 task('deploy:upload_env', function () {
     upload('.env.production.local', '{{deploy_path}}/shared/.env.production.local');
 })->once();
 
+desc('Build Docker images');
+task('docker:build', function () {
+    run('cd {{deploy_path}}/current && {{docker_compose_cmd}} build --pull');
+});
+
+desc('Start Docker containers');
+task('docker:up', function () {
+    run('cd {{deploy_path}}/current && {{docker_compose_cmd}} up -d');
+});
+
+desc('Restart Docker containers');
+task('docker:restart', function () {
+    run('cd {{deploy_path}}/current && {{docker_compose_cmd}} restart');
+});
+
+desc('Stop Docker containers');
+task('docker:down', function () {
+    run('cd {{deploy_path}}/current && {{docker_compose_cmd}} down');
+});
+
 desc('Build assets (SASS + importmap)');
 task('deploy:assets', function () {
     // Install npm dependencies
-    run('cd {{release_path}} && npm install');
+    run(docker_exec('npm install --production'));
 
     // Compile SASS
-    run('cd {{release_path}} && npm run sass');
+    run(docker_exec('npm run sass'));
 
     // Install and compile importmap assets
-    run('cd {{release_path}} && {{bin/php}} bin/console importmap:install');
-    run('cd {{release_path}} && {{bin/php}} bin/console asset-map:compile');
+    run(docker_exec('php bin/console importmap:install'));
+    run(docker_exec('php bin/console asset-map:compile'));
 });
 
 desc('Prepare SQLite database file');
@@ -69,34 +99,43 @@ task('database:prepare', function () {
     // Create database file if it doesn't exist
     run("test -f $dbPath || touch $dbPath");
 
-    // Set proper permissions
-    run("chmod 664 $dbPath");
-    run("chown {{remote_user}}:{{http_user}} $dbPath");
+    // Set proper permissions (readable/writable by container)
+    run("chmod 666 $dbPath");
 });
 
 desc('Run database migrations');
 task('database:migrate', function () {
-    run('cd {{release_path}} && {{bin/php}} bin/console doctrine:migrations:migrate --no-interaction');
+    run(docker_exec('php bin/console doctrine:migrations:migrate --no-interaction'));
 });
 
 desc('Clear and warmup cache');
 task('deploy:cache', function () {
-    run('cd {{release_path}} && {{bin/php}} bin/console cache:clear --env=prod --no-warmup');
-    run('cd {{release_path}} && {{bin/php}} bin/console cache:warmup --env=prod');
+    run(docker_exec('php bin/console cache:clear --env=prod --no-warmup'));
+    run(docker_exec('php bin/console cache:warmup --env=prod'));
+});
+
+desc('Override deploy:vendors to run composer in Docker');
+task('deploy:vendors', function () {
+    run(docker_exec('composer install --no-dev --no-progress --no-interaction --prefer-dist --optimize-autoloader'));
 });
 
 // Hooks
 after('deploy:failed', 'deploy:unlock');
+after('deploy:update_code', 'docker:build');
+after('docker:build', 'docker:up');
+after('docker:up', 'deploy:vendors');
 after('deploy:vendors', 'deploy:assets');
 after('deploy:cache:clear', 'deploy:cache');
 before('database:migrate', 'database:prepare');
 after('deploy:cache', 'database:migrate');
+after('deploy:symlink', 'docker:restart');
 
 // Main deploy task
 desc('Deploy TicketSync');
 task('deploy', [
     'deploy:prepare',
-    'deploy:vendors',
+    'deploy:update_code',
+    'deploy:shared',
     'deploy:cache:clear',
     'deploy:publish',
 ]);
@@ -105,6 +144,7 @@ task('deploy', [
 desc('Rollback to previous release');
 task('rollback', [
     'rollback:rollback',
+    'docker:restart',
 ]);
 
 // First deploy task (includes .env upload)
