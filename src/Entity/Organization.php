@@ -41,6 +41,9 @@ class Organization
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $address = null;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['default' => '80.00'])]
+    private ?string $hourlyRate = '80.00';
+
     /**
      * @var Collection<int, User>
      */
@@ -53,10 +56,17 @@ class Organization
     #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'organization')]
     private Collection $tickets;
 
+    /**
+     * @var Collection<int, TimeEntry>
+     */
+    #[ORM\OneToMany(targetEntity: TimeEntry::class, mappedBy: 'organization')]
+    private Collection $timeEntries;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->tickets = new ArrayCollection();
+        $this->timeEntries = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -218,6 +228,48 @@ class Organization
             // set the owning side to null (unless already changed)
             if ($ticket->getOrganization() === $this) {
                 $ticket->setOrganization(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getHourlyRate(): ?string
+    {
+        return $this->hourlyRate;
+    }
+
+    public function setHourlyRate(string $hourlyRate): static
+    {
+        $this->hourlyRate = $hourlyRate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TimeEntry>
+     */
+    public function getTimeEntries(): Collection
+    {
+        return $this->timeEntries;
+    }
+
+    public function addTimeEntry(TimeEntry $timeEntry): static
+    {
+        if (!$this->timeEntries->contains($timeEntry)) {
+            $this->timeEntries->add($timeEntry);
+            $timeEntry->setOrganization($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTimeEntry(TimeEntry $timeEntry): static
+    {
+        if ($this->timeEntries->removeElement($timeEntry)) {
+            // set the owning side to null (unless already changed)
+            if ($timeEntry->getOrganization() === $this) {
+                $timeEntry->setOrganization(null);
             }
         }
 

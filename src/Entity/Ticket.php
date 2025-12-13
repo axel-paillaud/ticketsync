@@ -61,10 +61,17 @@ class Ticket
     #[ORM\OneToMany(targetEntity: Attachment::class, mappedBy: 'ticket', orphanRemoval: true)]
     private Collection $attachments;
 
+    /**
+     * @var Collection<int, TimeEntry>
+     */
+    #[ORM\OneToMany(targetEntity: TimeEntry::class, mappedBy: 'ticket', orphanRemoval: true)]
+    private Collection $timeEntries;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->attachments = new ArrayCollection();
+        $this->timeEntries = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -251,5 +258,59 @@ class Ticket
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, TimeEntry>
+     */
+    public function getTimeEntries(): Collection
+    {
+        return $this->timeEntries;
+    }
+
+    public function addTimeEntry(TimeEntry $timeEntry): static
+    {
+        if (!$this->timeEntries->contains($timeEntry)) {
+            $this->timeEntries->add($timeEntry);
+            $timeEntry->setTicket($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTimeEntry(TimeEntry $timeEntry): static
+    {
+        if ($this->timeEntries->removeElement($timeEntry)) {
+            // set the owning side to null (unless already changed)
+            if ($timeEntry->getTicket() === $this) {
+                $timeEntry->setTicket(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get total hours logged on this ticket
+     */
+    public function getTotalHours(): float
+    {
+        return array_reduce(
+            $this->timeEntries->toArray(),
+            fn($carry, $entry) => $carry + (float) $entry->getHours(),
+            0.0
+        );
+    }
+
+    /**
+     * Get total billed amount for this ticket
+     */
+    public function getTotalBilledAmount(): float
+    {
+        return array_reduce(
+            $this->timeEntries->toArray(),
+            fn($carry, $entry) => $carry + (float) $entry->getBilledAmount(),
+            0.0
+        );
     }
 }
