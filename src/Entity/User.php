@@ -64,6 +64,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $monthlyAlertThreshold = null;
+
+    #[ORM\Column(options: ['default' => 0])]
+    private bool $alertThresholdEnabled = false;
+
     /**
      * @var Collection<int, Comment>
      */
@@ -294,6 +300,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getMonthlyAlertThreshold(): ?float
+    {
+        return $this->monthlyAlertThreshold;
+    }
+
+    public function setMonthlyAlertThreshold(?float $monthlyAlertThreshold): static
+    {
+        $this->monthlyAlertThreshold = $monthlyAlertThreshold;
+
+        return $this;
+    }
+
+    public function isAlertThresholdEnabled(): bool
+    {
+        return $this->alertThresholdEnabled;
+    }
+
+    public function setAlertThresholdEnabled(bool $alertThresholdEnabled): static
+    {
+        $this->alertThresholdEnabled = $alertThresholdEnabled;
 
         return $this;
     }
