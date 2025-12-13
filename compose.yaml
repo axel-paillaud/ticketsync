@@ -5,10 +5,11 @@ services:
       dockerfile: Dockerfile
     container_name: ticketsync_app
     restart: unless-stopped
-    working_dir: /var/www/html
+    working_dir: /var/www/ticketsync/current
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html
+      # Mount the entire ticketsync directory so container can access shared/ via symlinks
+      - /var/www/ticketsync:/var/www/ticketsync
     environment:
       APP_ENV: prod
