@@ -12,7 +12,7 @@ set('default_timeout', 300);
 
 // Docker configuration
 set('docker_compose_cmd', 'docker compose -p ticketsync');
-set('docker_container', 'ticketsync_app');
+set('docker_service', 'app');  // Service name in compose.yaml
 
 // Shared files/dirs between deploys
 add('shared_files', [
@@ -47,7 +47,7 @@ host('production')
 // Helper function to run commands in Docker container
 function docker_exec(string $command): string
 {
-    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_container}} sh -c 'cd /var/www/html && $command'";
+    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} sh -c 'cd /var/www/html && $command'";
 }
 
 // Tasks
@@ -123,12 +123,21 @@ task('deploy:vendors', function () {
     run(docker_exec('composer install --no-dev --no-progress --no-interaction --prefer-dist --optimize-autoloader'));
 });
 
+desc('Remove var directory before shared symlinks');
+task('deploy:remove_var', function () {
+    // Remove var/ if it exists (Docker creates it as root during build)
+    // This allows deploy:shared to create symlinks to shared/var/
+    // Database and uploads are safe in shared/, never in releases
+    run('cd {{release_path}} && [ -d var ] && rm -rf var || true');
+});
+
 // Hooks
 after('deploy:failed', 'deploy:unlock');
 after('deploy:update_code', 'docker:build');
 after('docker:build', 'docker:up');
 after('docker:up', 'deploy:vendors');
 after('deploy:vendors', 'deploy:assets');
+before('deploy:shared', 'deploy:remove_var');
 after('deploy:cache:clear', 'deploy:cache');
 before('database:migrate', 'database:prepare');
 after('deploy:cache', 'database:migrate');
