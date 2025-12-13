@@ -110,4 +110,34 @@ class TimeEntryRepository extends ServiceEntityRepository
                   ->getQuery()
                   ->getResult();
     }
+
+    /**
+     * Calculate total billed amount for an organization in a specific month
+     *
+     * @param Organization $organization
+     * @param int|null $year Default to current year
+     * @param int|null $month Default to current month
+     * @return float
+     */
+    public function calculateMonthlyTotal(Organization $organization, ?int $year = null, ?int $month = null): float
+    {
+        $year = $year ?? (int) date('Y');
+        $month = $month ?? (int) date('m');
+
+        $startDate = new \DateTimeImmutable(sprintf('%d-%02d-01', $year, $month));
+        $endDate = $startDate->modify('last day of this month');
+
+        $result = $this->createQueryBuilder('te')
+            ->select('SUM(te.billedAmount) as total')
+            ->andWhere('te.organization = :organization')
+            ->andWhere('te.workDate >= :startDate')
+            ->andWhere('te.workDate <= :endDate')
+            ->setParameter('organization', $organization)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (float) ($result ?? 0);
+    }
 }

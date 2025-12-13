@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Comment;
+use App\Entity\Organization;
 use App\Entity\Status;
 use App\Entity\Ticket;
 use App\Entity\User;
@@ -75,4 +76,24 @@ class EmailService
 
            $this->mailer->send($email);
        }
+
+       /**
+        * Send email when monthly threshold is exceeded
+        */
+        public function sendThresholdExceededAlert(User $recipient, Organization $organization, float $currentTotal, float $threshold): void
+        {
+            $email = (new TemplatedEmail())
+                ->from(new Address($this->fromAddress, $this->fromName))
+                ->to($recipient->getEmail())
+                ->subject(sprintf('[TicketSync] Monthly threshold exceeded for %s', $organization->getName()))
+                ->htmlTemplate('emails/threshold_exceeded.html.twig')
+                ->context([
+                    'recipient' => $recipient,
+                    'organization' => $organization,
+                    'currentTotal' => $currentTotal,
+                    'threshold' => $threshold,
+                ]);
+
+            $this->mailer->send($email);
+        }
 }
