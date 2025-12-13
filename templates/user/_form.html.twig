@@ -1,0 +1,66 @@
+{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+
+<div class="row g-3">
+    {# First Name #}
+    <div class="col-md-6">
+        {{ form_label(form.firstName, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.firstName, {'attr': {'class': 'form-control', 'placeholder': 'Enter your first name'}}) }}
+        {{ form_errors(form.firstName) }}
+    </div>
+
+    {# Last Name #}
+    <div class="col-md-6">
+        {{ form_label(form.lastName, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Enter your last name'}}) }}
+        {{ form_errors(form.lastName) }}
+    </div>
+
+    {# Alert Threshold Section #}
+    <div class="col-12">
+        <hr class="my-4">
+        <h6 class="mb-3">
+            <i class="bi bi-bell"></i>
+            Monthly Alert Settings
+        </h6>
+    </div>
+
+    {# Enable Alert #}
+    <div class="col-12">
+        <div class="form-check">
+            {{ form_widget(form.alertThresholdEnabled, {'attr': {'class': 'form-check-input'}}) }}
+            {{ form_label(form.alertThresholdEnabled, null, {'label_attr': {'class': 'form-check-label'}}) }}
+            {{ form_errors(form.alertThresholdEnabled) }}
+        </div>
+        <small class="text-muted">
+            <i class="bi bi-info-circle"></i>
+            Receive an email when your monthly time entries exceed the threshold
+        </small>
+    </div>
+
+    {# Threshold Amount #}
+    <div class="col-md-6">
+        {{ form_label(form.monthlyAlertThreshold, null, {'label_attr': {'class': 'form-label'}}) }}
+        <div class="input-group">
+            {{ form_widget(form.monthlyAlertThreshold, {'attr': {'class': 'form-control', 'placeholder': '0.00'}}) }}
+            <span class="input-group-text">€</span>
+        </div>
+        {{ form_errors(form.monthlyAlertThreshold) }}
+        <small class="text-muted">Set the amount that triggers an alert</small>
+    </div>
+
+    {# Submit Button #}
+    <div class="col-12">
+        <div class="d-flex gap-2 pt-3">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-circle me-1"></i>
+                Update Profile
+            </button>
+            <a href="{{ path('app_home') }}" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-x-circle me-1"></i>
+                Cancel
+            </a>
+        </div>
+    </div>
+</div>
+
+{{ form_end(form) }}
