@@ -6,9 +6,11 @@ use App\Entity\Attachment;
 use App\Entity\Comment;
 use App\Entity\Organization;
 use App\Entity\Status;
+use App\Entity\TimeEntry;
 use App\Entity\User;
 use App\Entity\Ticket;
 use App\Form\CommentType;
+use App\Form\TimeEntryType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
 use App\Service\EmailService;
@@ -529,6 +531,171 @@ final class TicketController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Pièce jointe supprimée avec succès !');
+        }
+
+        return $this->redirectToRoute('app_ticket_show', [
+            'organizationSlug' => $organization->getSlug(),
+            'ticketId' => $ticketId
+        ], Response::HTTP_SEE_OTHER);
+    }
+
+    // ============================================
+    // TIME ENTRY METHODS
+    // ============================================
+
+    #[Route('/tickets/{ticketId}/time-entry/new', name: 'app_time_entry_new', methods: ['GET', 'POST'])]
+    public function newTimeEntry(
+        Organization $organization,
+        Request $request,
+        #[MapEntity(id: 'ticketId')] Ticket $ticket,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Security check: admin-only for MVP
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        // Security check: user must have organization access
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
+
+        // Security check: ticket must belong to this organization (non-admins only)
+        if (!$this->isGranted('ROLE_ADMIN') && $ticket->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Ticket not found in this organization.');
+        }
+
+        $timeEntry = new TimeEntry();
+        $timeEntry->setTicket($ticket);
+        $timeEntry->setCreatedBy($user);
+        $timeEntry->setOrganization($organization);
+
+        // Set default work date to today
+        $timeEntry->setWorkDate(new \DateTimeImmutable());
+
+        $form = $this->createForm(TimeEntryType::class, $timeEntry);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Snapshot hourly rate from organization
+            $timeEntry->setHourlyRateSnapshot($organization->getHourlyRate());
+
+            // Calculate billed hours and amount
+            $timeEntry->setBilledHours($timeEntry->calculateBilledHours());
+            $timeEntry->setBilledAmount($timeEntry->calculateBilledAmount());
+
+            $entityManager->persist($timeEntry);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Time entry added successfully!');
+
+            return $this->redirectToRoute('app_ticket_show', [
+                'organizationSlug' => $organization->getSlug(),
+                'ticketId' => $ticket->getId()
+            ], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('time_entry/new.html.twig', [
+            'timeEntry' => $timeEntry,
+            'ticket' => $ticket,
+            'form' => $form,
+            'organization' => $organization,
+        ]);
+    }
+
+    #[Route('/tickets/{ticketId}/time-entry/{timeEntryId}/edit', name: 'app_time_entry_edit', methods: ['GET', 'POST'])]
+    public function editTimeEntry(
+        Organization $organization,
+        Request $request,
+        int $ticketId,
+        #[MapEntity(id: 'timeEntryId')] TimeEntry $timeEntry,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Security check: admin-only for MVP
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        // Security check: user must have organization access
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
+
+        // Check time entry -> ticket association
+        if ($timeEntry->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Time entry does not belong to this ticket.');
+        }
+
+        // Check organization (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $timeEntry->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Time entry not found in this organization.');
+        }
+
+        // Security check: user must have permission to edit
+        $this->denyAccessUnlessGranted('TIMEENTRY_EDIT', $timeEntry);
+
+        $form = $this->createForm(TimeEntryType::class, $timeEntry);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Recalculate billed hours and amount (in case hours changed)
+            $timeEntry->setBilledHours($timeEntry->calculateBilledHours());
+            $timeEntry->setBilledAmount($timeEntry->calculateBilledAmount());
+
+            // Note: hourlyRateSnapshot is NOT updated on edit (preserves original rate)
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Time entry updated successfully!');
+
+            return $this->redirectToRoute('app_ticket_show', [
+                'organizationSlug' => $organization->getSlug(),
+                'ticketId' => $ticketId
+            ], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('time_entry/edit.html.twig', [
+            'timeEntry' => $timeEntry,
+            'ticket' => $timeEntry->getTicket(),
+            'form' => $form,
+            'organization' => $organization,
+        ]);
+    }
+
+    #[Route('/tickets/{ticketId}/time-entry/{timeEntryId}/delete', name: 'app_time_entry_delete', methods: ['POST'])]
+    public function deleteTimeEntry(
+        Organization $organization,
+        Request $request,
+        int $ticketId,
+        #[MapEntity(id: 'timeEntryId')] TimeEntry $timeEntry,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        // Security check: admin-only for MVP
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        // Security check: user must have organization access
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
+
+        // Check time entry -> ticket association
+        if ($timeEntry->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Time entry does not belong to this ticket.');
+        }
+
+        // Check organization (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $timeEntry->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Time entry not found in this organization.');
+        }
+
+        // Security check: user must have permission to delete
+        $this->denyAccessUnlessGranted('TIMEENTRY_DELETE', $timeEntry);
+
+        // Check CSRF token
+        if ($this->isCsrfTokenValid('delete-time-entry-'.$timeEntry->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($timeEntry);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Time entry deleted successfully!');
         }
 
         return $this->redirectToRoute('app_ticket_show', [
