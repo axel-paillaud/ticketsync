@@ -1,0 +1,185 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ organization.name }} - Admin{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="mb-3">
+        <a href="{{ path('app_admin_organization_index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Organizations
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">
+                <i class="bi bi-building"></i>
+                {{ organization.name }}
+            </h2>
+            <div class="btn-group">
+                <a href="{{ path('app_admin_organization_edit', {id: organization.id}) }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-pencil"></i>
+                    Edit
+                </a>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="bi bi-trash"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Slug</div>
+                        <div class="info-value"><code>{{ organization.slug }}</code></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Status</div>
+                        <div class="info-value">
+                            {% if organization.isActive %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">
+                            {% if organization.email %}
+                                <a href="mailto:{{ organization.email }}">{{ organization.email }}</a>
+                            {% else %}
+                                <span class="text-muted">Not set</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value">
+                            {% if organization.phone %}
+                                {{ organization.phone }}
+                            {% else %}
+                                <span class="text-muted">Not set</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Hourly Rate</div>
+                        <div class="info-value">{{ organization.hourlyRate }} €</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">Created At</div>
+                        <div class="info-value">{{ organization.createdAt|date('M d, Y H:i') }}</div>
+                    </div>
+                </div>
+                {% if organization.address %}
+                    <div class="col-12">
+                        <div class="info-box">
+                            <div class="info-label">Address</div>
+                            <div class="info-value">{{ organization.address|nl2br }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people"></i>
+                        Users ({{ organization.users|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if organization.users|length > 0 %}
+                        <ul class="list-group list-group-flush">
+                            {% for user in organization.users %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ user.name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ user.email }}</small>
+                                    </div>
+                                    {% if 'ROLE_ADMIN' in user.roles %}
+                                        <span class="badge bg-danger">Admin</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">User</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No users in this organization.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-ticket-perforated"></i>
+                        Tickets ({{ organization.tickets|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if organization.tickets|length > 0 %}
+                        <p>This organization has {{ organization.tickets|length }} ticket(s).</p>
+                        <a href="{{ path('app_ticket_index', {organizationSlug: organization.slug}) }}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-eye"></i>
+                            View Tickets
+                        </a>
+                    {% else %}
+                        <p class="text-muted mb-0">No tickets for this organization.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Delete Modal #}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Organization</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>{{ organization.name }}</strong>?</p>
+                <p class="text-danger mb-0">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    This will also delete all associated users, tickets, and data. This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{{ path('app_admin_organization_delete', {id: organization.id}) }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-organization-' ~ organization.id) }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i>
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

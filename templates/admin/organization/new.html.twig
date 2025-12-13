@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Organization - Admin{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="mb-3">
+        <a href="{{ path('app_admin_organization_index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Organizations
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">
+                <i class="bi bi-plus-circle"></i>
+                New Organization
+            </h2>
+        </div>
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.name) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.email) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.phone) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.hourlyRate) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_row(form.address) }}
+                </div>
+
+                <div class="mb-3 form-check">
+                    {{ form_widget(form.isActive) }}
+                    {{ form_label(form.isActive) }}
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ path('app_admin_organization_index') }}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i>
+                        Create Organization
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

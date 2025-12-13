@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Organizations - Admin{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bi bi-building"></i>
+            Organizations
+        </h1>
+        <a href="{{ path('app_admin_organization_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            New Organization
+        </a>
+    </div>
+
+    {% if organizations|length > 0 %}
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Hourly Rate</th>
+                                <th>Users</th>
+                                <th>Tickets</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for organization in organizations %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ organization.name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ organization.slug }}</small>
+                                    </td>
+                                    <td>
+                                        {% if organization.email %}
+                                            <a href="mailto:{{ organization.email }}">{{ organization.email }}</a>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if organization.phone %}
+                                            {{ organization.phone }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ organization.hourlyRate }} €</td>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            {{ organization.users|length }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {{ organization.tickets|length }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if organization.isActive %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ path('app_admin_organization_show', {id: organization.id}) }}"
+                                               class="btn btn-outline-primary" title="View">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ path('app_admin_organization_edit', {id: organization.id}) }}"
+                                               class="btn btn-outline-secondary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal{{ organization.id }}"
+                                                    title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                {# Delete Modal #}
+                                <div class="modal fade" id="deleteModal{{ organization.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Organization</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete <strong>{{ organization.name }}</strong>?</p>
+                                                <p class="text-danger mb-0">
+                                                    <i class="bi bi-exclamation-triangle"></i>
+                                                    This will also delete all associated users, tickets, and data. This action cannot be undone.
+                                                </p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form method="post" action="{{ path('app_admin_organization_delete', {id: organization.id}) }}" class="d-inline">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-organization-' ~ organization.id) }}">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-building text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3">No organizations yet.</p>
+                <a href="{{ path('app_admin_organization_new') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Create your first organization
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
