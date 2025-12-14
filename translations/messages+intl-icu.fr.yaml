@@ -65,3 +65,115 @@ Password: 'Mot de passe'
 'Confirm your password': 'Confirmez votre mot de passe'
 'The password fields must match.': 'Les mots de passe doivent correspondre.'
 'Back to Tickets': '__Back to Tickets'
+'Please sign in to continue': '__Please sign in to continue'
+'You are logged in as': '__You are logged in as'
+Logout: __Logout
+you@example.com: __you@example.com
+'Remember me': '__Remember me'
+'Sign in': '__Sign in'
+'All Tickets': '__All Tickets'
+'All Tickets (All Organizations)': '__All Tickets (All Organizations)'
+'Hide Resolved': '__Hide Resolved'
+'Show Resolved': '__Show Resolved'
+ID: __ID
+'Created By': '__Created By'
+'Created At': '__Created At'
+Actions: __Actions
+'No tickets found': '__No tickets found'
+'Time Entries': '__Time Entries'
+'All Time Entries': '__All Time Entries'
+'View all time entries across all organizations': '__View all time entries across all organizations'
+'Back to Admin': '__Back to Admin'
+'Total Entries': '__Total Entries'
+'Total Hours': '__Total Hours'
+'Total Billed': '__Total Billed'
+Date: __Date
+Ticket: __Ticket
+Hours: __Hours
+Billed: __Billed
+Rate: __Rate
+Amount: __Amount
+'Logged By': '__Logged By'
+Edit: __Edit
+'No time entries found.': '__No time entries found.'
+Tickets: __Tickets
+'New Ticket': '__New Ticket'
+'No tickets yet': '__No tickets yet'
+'Get started by creating your first ticket.': '__Get started by creating your first ticket.'
+'Create First Ticket': '__Create First Ticket'
+'Create New Ticket': '__Create New Ticket'
+'Ticket Information': '__Ticket Information'
+'Create Ticket': '__Create Ticket'
+'Are you sure you want to delete this item?': '__Are you sure you want to delete this item?'
+Delete: __Delete
+'Enter ticket title': '__Enter ticket title'
+'Describe the issue or request in detail...': '__Describe the issue or request in detail...'
+'Supported: Images, PDF, Word, Excel, Text, Archives | Max 10MB per file': '__Supported: Images, PDF, Word, Excel, Text, Archives | Max 10MB per file'
+Save: __Save
+Cancel: __Cancel
+'Time Tracking': '__Time Tracking'
+'Log Time': '__Log Time'
+Comments: __Comments
+'Add Comment': '__Add Comment'
+'Delete Ticket': '__Delete Ticket'
+'Are you sure you want to delete this ticket?': '__Are you sure you want to delete this ticket?'
+'This action cannot be undone.': '__This action cannot be undone.'
+'Edit Ticket': '__Edit Ticket'
+'Back to Ticket': '__Back to Ticket'
+'Update Ticket': '__Update Ticket'
+'Current Attachments': '__Current Attachments'
+'Are you sure you want to delete this attachment?': '__Are you sure you want to delete this attachment?'
+'View Ticket': '__View Ticket'
+'Hi! Please confirm your email!': '__Hi! Please confirm your email!'
+'Please confirm your email address by clicking the following link:': '__Please confirm your email address by clicking the following link:'
+'Confirm my Email': '__Confirm my Email'
+'This link will expire in': '__This link will expire in'
+Cheers!: __Cheers!
+Register: __Register
+'Your Comment': '__Your Comment'
+'Write your comment here...': '__Write your comment here...'
+'Post Comment': '__Post Comment'
+Edited: __Edited
+'Delete Comment': '__Delete Comment'
+'Are you sure you want to delete this comment?': '__Are you sure you want to delete this comment?'
+'No comments yet. Be the first to comment!': '__No comments yet. Be the first to comment!'
+'Edit Comment': '__Edit Comment'
+'Posted on': '__Posted on'
+'Save Changes': '__Save Changes'
+'Delete this attachment?': '__Delete this attachment?'
+'Uploaded on': '__Uploaded on'
+by: __by
+Download: __Download
+Dashboard: __Dashboard
+Organizations: __Organizations
+Users: __Users
+Profile: __Profile
+Login: __Login
+'Enter your first name': '__Enter your first name'
+'Enter your last name': '__Enter your last name'
+'Monthly Alert Settings': '__Monthly Alert Settings'
+'Receive an email when your monthly time entries exceed the threshold': '__Receive an email when your monthly time entries exceed the threshold'
+'Set the amount that triggers an alert': '__Set the amount that triggers an alert'
+'Update Profile': '__Update Profile'
+'My Profile': '__My Profile'
+'Back to Home': '__Back to Home'
+'Edit Profile Information': '__Edit Profile Information'
+'Time Entry Details': '__Time Entry Details'
+'e.g., 1.5': '__e.g., 1.5'
+'Billed hours will be rounded up to nearest 0.5h': '__Billed hours will be rounded up to nearest 0.5h'
+'Current Hourly Rate': '__Current Hourly Rate'
+'This rate will be saved with this time entry': '__This rate will be saved with this time entry'
+'Save Time Entry': '__Save Time Entry'
+worked: __worked
+billed: __billed
+'Logged by': '__Logged by'
+'on': __on
+'Billed Hours': '__Billed Hours'
+'Delete Time Entry': '__Delete Time Entry'
+'Are you sure you want to delete this time entry?': '__Are you sure you want to delete this time entry?'
+'Total Hours Worked': '__Total Hours Worked'
+'No time entries yet.': '__No time entries yet.'
+'Edit Time Entry': '__Edit Time Entry'
+'Original Hourly Rate': '__Original Hourly Rate'
+'The hourly rate is locked and will not change when editing': '__The hourly rate is locked and will not change when editing'
+'Update Time Entry': '__Update Time Entry'
