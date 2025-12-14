@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/organizations')]
 #[IsGranted('ROLE_ADMIN')]
@@ -27,7 +28,7 @@ class AdminOrganizationController extends AbstractController
     }
 
     #[Route('/new', name: 'app_admin_organization_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
     {
         $organization = new Organization();
         $organization->setIsActive(true);
@@ -39,7 +40,7 @@ class AdminOrganizationController extends AbstractController
             $entityManager->persist($organization);
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf('Organization "%s" has been created successfully.', $organization->getName()));
+            $this->addFlash('success', sprintf($translator->trans('Organization "%s" has been created successfully.'), $organization->getName()));
 
             return $this->redirectToRoute('app_admin_organization_index');
         }
@@ -58,7 +59,7 @@ class AdminOrganizationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_admin_organization_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Organization $organization, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Organization $organization, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
     {
         $form = $this->createForm(OrganizationType::class, $organization);
         $form->handleRequest($request);
@@ -66,7 +67,7 @@ class AdminOrganizationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf('Organization "%s" has been updated successfully.', $organization->getName()));
+            $this->addFlash('success', sprintf($translator->trans('Organization "%s" has been updated successfully.'), $organization->getName()));
 
             return $this->redirectToRoute('app_admin_organization_index');
         }
@@ -78,14 +79,14 @@ class AdminOrganizationController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_admin_organization_delete', methods: ['POST'])]
-    public function delete(Request $request, Organization $organization, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Organization $organization, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
     {
         if ($this->isCsrfTokenValid('delete-organization-' . $organization->getId(), $request->request->get('_token'))) {
             $name = $organization->getName();
             $entityManager->remove($organization);
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf('Organization "%s" has been deleted successfully.', $name));
+            $this->addFlash('success', sprintf($translator->trans('Organization "%s" has been deleted successfully.'), $name));
         }
 
         return $this->redirectToRoute('app_admin_organization_index');

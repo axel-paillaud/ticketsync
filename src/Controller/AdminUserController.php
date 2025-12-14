@@ -15,6 +15,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/users')]
 #[IsGranted('ROLE_ADMIN')]
@@ -35,7 +36,8 @@ class AdminUserController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
-        EmailService $emailService
+        EmailService $emailService,
+        TranslatorInterface $translator
     ): Response {
         $user = new User();
         $user->setIsVerified(true);
@@ -64,7 +66,7 @@ class AdminUserController extends AbstractController
             // Send invitation email
             $emailService->sendUserInvitation($invitation, $invitationUrl);
 
-            $this->addFlash('success', sprintf('User "%s" has been created and invitation email sent.', $user->getEmail()));
+            $this->addFlash('success', sprintf($translator->trans('User "%s" has been created and invitation email sent.'), $user->getEmail()));
 
             return $this->redirectToRoute('app_admin_user_index');
         }
@@ -87,7 +89,8 @@ class AdminUserController extends AbstractController
         User $user,
         Request $request,
         EntityManagerInterface $entityManager,
-        EmailService $emailService
+        EmailService $emailService,
+        TranslatorInterface $translator
     ): Response {
         if (!$this->isCsrfTokenValid('resend-invitation-' . $user->getId(), $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Invalid CSRF token.');
@@ -96,12 +99,12 @@ class AdminUserController extends AbstractController
         $invitation = $user->getInvitation();
 
         if (!$invitation) {
-            $this->addFlash('error', 'This user has no pending invitation.');
+            $this->addFlash('error', $translator->trans('This user has no pending invitation.'));
             return $this->redirectToRoute('app_admin_user_show', ['id' => $user->getId()]);
         }
 
         if ($invitation->isAccepted()) {
-            $this->addFlash('error', 'This invitation has already been accepted.');
+            $this->addFlash('error', $translator->trans('This invitation has already been accepted.'));
             return $this->redirectToRoute('app_admin_user_show', ['id' => $user->getId()]);
         }
 
@@ -122,20 +125,20 @@ class AdminUserController extends AbstractController
         // Send invitation email
         $emailService->sendUserInvitation($newInvitation, $invitationUrl);
 
-        $this->addFlash('success', sprintf('Invitation email has been resent to %s.', $user->getEmail()));
+        $this->addFlash('success', sprintf($translator->trans('Invitation email has been resent to %s.'), $user->getEmail()));
 
         return $this->redirectToRoute('app_admin_user_show', ['id' => $user->getId()]);
     }
 
     #[Route('/{id}/delete', name: 'app_admin_user_delete', methods: ['POST'])]
-    public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, User $user, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
     {
         if ($this->isCsrfTokenValid('delete-user-' . $user->getId(), $request->request->get('_token'))) {
             $email = $user->getEmail();
             $entityManager->remove($user);
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf('User "%s" has been deleted successfully.', $email));
+            $this->addFlash('success', sprintf($translator->trans('User "%s" has been deleted successfully.'), $email));
         }
 
         return $this->redirectToRoute('app_admin_user_index');

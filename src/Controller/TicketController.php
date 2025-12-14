@@ -113,7 +113,8 @@ final class TicketController extends AbstractController
         Request $request,
         #[MapEntity(id: 'ticketId')] Ticket $ticket,
         EntityManagerInterface $entityManager,
-        FileUploader $fileUploader
+        FileUploader $fileUploader,
+        TranslatorInterface $translator
     ): Response
     {
         /** @var User $user */
@@ -160,7 +161,7 @@ final class TicketController extends AbstractController
                 $entityManager->flush();
             }
 
-            $this->addFlash('success', 'Commentaire ajouté avec succès !');
+            $this->addFlash('success', $translator->trans('Comment added successfully!'));
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
@@ -311,7 +312,8 @@ final class TicketController extends AbstractController
         int $ticketId,
         #[MapEntity(id: 'commentId')] Comment $comment,
         EntityManagerInterface $entityManager,
-        FileUploader $fileUploader
+        FileUploader $fileUploader,
+        TranslatorInterface $translator
     ): Response
     {
         /** @var User $user */
@@ -361,7 +363,7 @@ final class TicketController extends AbstractController
                 $entityManager->flush();
             }
 
-            $this->addFlash('success', 'Commentaire modifié avec succès !');
+            $this->addFlash('success', $translator->trans('Comment successfully modified!'));
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
@@ -417,7 +419,8 @@ final class TicketController extends AbstractController
         int $ticketId,
         #[MapEntity(id: 'attachmentId')] Attachment $attachment,
         EntityManagerInterface $entityManager,
-        FileUploader $fileUploader
+        FileUploader $fileUploader,
+        TranslatorInterface $translator
     ): Response
     {
         /** @var User $user */
@@ -443,13 +446,13 @@ final class TicketController extends AbstractController
             try {
                 $fileUploader->delete($attachment->getStoredFilename());
             } catch (\Exception $e) {
-                $this->addFlash('warning', 'Le fichier a été supprimé de la base mais pas du disque.');
+                $this->addFlash('warning', $translator->trans('The file has been removed from database but not from disk.'));
             }
 
             $entityManager->remove($attachment);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Pièce jointe supprimée avec succès !');
+            $this->addFlash('success', $translator->trans('Attachment successfully deleted!'));
         }
 
         return $this->redirectToRoute('app_ticket_show', [
@@ -502,7 +505,8 @@ final class TicketController extends AbstractController
         int $commentId,
         #[MapEntity(id: 'attachmentId')] Attachment $attachment,
         EntityManagerInterface $entityManager,
-        FileUploader $fileUploader
+        FileUploader $fileUploader,
+        TranslatorInterface $translator
     ): Response
     {
         /** @var User $user */
@@ -527,13 +531,13 @@ final class TicketController extends AbstractController
             try {
                 $fileUploader->delete($attachment->getStoredFilename());
             } catch (\Exception $e) {
-                $this->addFlash('warning', 'Le fichier a été supprimé de la base mais pas du disque.');
+                $this->addFlash('warning', $translator->trans('The file has been removed from database but not from disk.'));
             }
 
             $entityManager->remove($attachment);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Pièce jointe supprimée avec succès !');
+            $this->addFlash('success', $translator->trans('Attachment successfully deleted!'));
         }
 
         return $this->redirectToRoute('app_ticket_show', [
@@ -551,7 +555,8 @@ final class TicketController extends AbstractController
         Organization $organization,
         Request $request,
         #[MapEntity(id: 'ticketId')] Ticket $ticket,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator
     ): Response
     {
         /** @var User $user */
@@ -590,7 +595,7 @@ final class TicketController extends AbstractController
             $entityManager->persist($timeEntry);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Time entry added successfully!');
+            $this->addFlash('success', $translator->trans('Time entry added successfully!'));
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
@@ -612,7 +617,8 @@ final class TicketController extends AbstractController
         Request $request,
         int $ticketId,
         #[MapEntity(id: 'timeEntryId')] TimeEntry $timeEntry,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator
     ): Response
     {
         /** @var User $user */
@@ -649,7 +655,7 @@ final class TicketController extends AbstractController
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Time entry updated successfully!');
+            $this->addFlash('success', $translator->trans('Time entry updated successfully!'));
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
@@ -671,7 +677,8 @@ final class TicketController extends AbstractController
         Request $request,
         int $ticketId,
         #[MapEntity(id: 'timeEntryId')] TimeEntry $timeEntry,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator
     ): Response
     {
         // Security check: admin-only for MVP
@@ -698,7 +705,7 @@ final class TicketController extends AbstractController
             $entityManager->remove($timeEntry);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Time entry deleted successfully!');
+            $this->addFlash('success', $translator->trans('Time entry deleted successfully!'));
         }
 
         return $this->redirectToRoute('app_ticket_show', [

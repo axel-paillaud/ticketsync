@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class InvitationController extends AbstractController
 {
@@ -19,12 +20,13 @@ class InvitationController extends AbstractController
         Request $request,
         UserInvitationRepository $invitationRepository,
         EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        TranslatorInterface $translator
     ): Response {
         $invitation = $invitationRepository->findValidByToken($token);
 
         if (!$invitation) {
-            $this->addFlash('error', 'This invitation link is invalid or has expired.');
+            $this->addFlash('error', $translator->trans('This invitation link is invalid or has expired.'));
             return $this->redirectToRoute('app_login');
         }
 
@@ -44,7 +46,7 @@ class InvitationController extends AbstractController
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Your password has been set successfully. You can now log in with your credentials.');
+            $this->addFlash('success', $translator->trans('Your password has been set successfully. You can now log in with your credentials.'));
 
             return $this->redirectToRoute('app_login');
         }
