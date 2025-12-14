@@ -14,7 +14,7 @@
                             <i class="bi bi-ticket-perforated text-primary"></i>
                             TicketSync
                         </h1>
-                        <p class="text-muted">Please sign in to continue</p>
+                        <p class="text-muted">{{ 'Please sign in to continue'|trans }}</p>
                     </div>
 
                     {# Error Message #}
@@ -29,34 +29,34 @@
                     {% if app.user %}
                         <div class="alert alert-info">
                             <i class="bi bi-info-circle me-1"></i>
-                            You are logged in as <strong>{{ app.user.userIdentifier }}</strong>
-                            <a href="{{ path('app_logout') }}" class="alert-link">Logout</a>
+                            {{ 'You are logged in as'|trans }} <strong>{{ app.user.userIdentifier }}</strong>
+                            <a href="{{ path('app_logout') }}" class="alert-link">{{ 'Logout'|trans }}</a>
                         </div>
                     {% endif %}
 
                     {# Login Form #}
                     <form method="post">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Email</label>
-                            <input type="email" 
-                                   value="{{ last_username }}" 
-                                   name="_username" 
-                                   id="username" 
-                                   class="form-control" 
-                                   autocomplete="email" 
-                                   placeholder="you@example.com"
-                                   required 
+                            <label for="username" class="form-label">{{ 'Email'|trans }}</label>
+                            <input type="email"
+                                   value="{{ last_username }}"
+                                   name="_username"
+                                   id="username"
+                                   class="form-control"
+                                   autocomplete="email"
+                                   placeholder="{{ 'you@example.com'|trans }}"
+                                   required
                                    autofocus>
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" 
-                                   name="_password" 
-                                   id="password" 
-                                   class="form-control" 
-                                   autocomplete="current-password" 
-                                   placeholder="Enter your password"
+                            <label for="password" class="form-label">{{ 'Password'|trans }}</label>
+                            <input type="password"
+                                   name="_password"
+                                   id="password"
+                                   class="form-control"
+                                   autocomplete="current-password"
+                                   placeholder="{{ 'Enter your password'|trans }}"
                                    required>
                         </div>
 
@@ -64,12 +64,12 @@
 
                         <div class="form-check mb-3">
                             <input type="checkbox" name="_remember_me" id="_remember_me" class="form-check-input">
-                            <label for="_remember_me" class="form-check-label">Remember me</label>
+                            <label for="_remember_me" class="form-check-label">{{ 'Remember me'|trans }}</label>
                         </div>
 
                         <button class="btn btn-primary w-100" type="submit">
                             <i class="bi bi-box-arrow-in-right me-1"></i>
-                            Sign in
+                            {{ 'Sign in'|trans }}
                         </button>
                     </form>
                 </div>
