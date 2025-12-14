@@ -87,6 +87,7 @@ task('database:prepare', function () {
         writeln('<comment>  docker exec -it ticketsync_app bash</comment>');
         writeln('<comment>  cd release && php bin/console doctrine:schema:create --env=prod</comment>');
         writeln('<comment>  php bin/console doctrine:fixtures:load --group=prod --env=prod --no-interaction</comment>');
+        writeln('<comment>  php bin/console doctrine:migrations:version --add --all --env=prod</comment>');
         run("touch $dbPath");
     }
 
