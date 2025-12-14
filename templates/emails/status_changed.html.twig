@@ -1,17 +1,19 @@
 {% extends 'emails/_layout.html.twig' %}
 
-{% block title %}Ticket #{{ ticket.id }} status updated{% endblock %}
+{% block title %}
+    {{ 'Ticket #%ticketId% status updated'|trans({ '%ticketId%': ticket.id }) }}
+{% endblock %}
 
 {% block content %}
-    <p class="greeting">Hello <strong>{{ recipient.name }}</strong>,</p>
+    <p class="greeting">{{ 'Hello'|trans }} <strong>{{ recipient.name }}</strong>,</p>
 
-    <p>The status of ticket <strong>#{{ ticket.id }}</strong> has been updated.</p>
+    <p>{{ 'The status of ticket #%ticketId% has been updated.'|trans({ '%ticketId%': ticket.id }) }}</p>
 
     <div class="info-box">
-        <h2>Ticket #{{ ticket.id }}: {{ ticket.title }}</h2>
-        <p><strong>Organization:</strong> {{ ticket.organization.name }}</p>
-        
-        <p><strong>Status changed:</strong></p>
+        <h2>{{ 'Ticket'|trans }} #{{ ticket.id }}: {{ ticket.title }}</h2>
+        <p><strong>{{ 'Organization:'|trans }}</strong> {{ ticket.organization.name }}</p>
+
+        <p><strong>{{ 'Status changed:'|trans }}</strong></p>
         <p>
             <span class="badge badge-status">{{ oldStatus.name }}</span>
             →
@@ -19,21 +21,21 @@
         </p>
 
         <p>
-            <strong>Priority:</strong>
+            <strong>{{ 'Priority:'|trans }}</strong>
             <span class="badge badge-priority">{{ ticket.priority.name }}</span>
         </p>
 
         {% if ticket.assignedTo %}
-            <p><strong>Assigned to:</strong> {{ ticket.assignedTo.name }}</p>
+            <p><strong>{{ 'Assigned to:'|trans }}</strong> {{ ticket.assignedTo.name }}</p>
         {% endif %}
 
         {% if ticket.description %}
-            <p><strong>Description:</strong></p>
+            <p><strong>{{ 'Description:'|trans }}</strong></p>
             <div class="description">{{ ticket.description|markdown_to_html|raw }}</div>
         {% endif %}
     </div>
 
     <a href="{{ url('app_ticket_show', {organizationSlug: ticket.organization.slug, ticketId: ticket.id}) }}" class="button">
-        View ticket
+        {{ 'View ticket'|trans }}
     </a>
 {% endblock %}

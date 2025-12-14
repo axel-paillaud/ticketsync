@@ -1,38 +1,41 @@
 {% extends 'emails/_layout.html.twig' %}
 
-{% block title %}You have been invited to TicketSync{% endblock %}
+{% block title %}{{ 'You have been invited to TicketSync'|trans }}{% endblock %}
 
 {% block content %}
-    <p class="greeting">Hello <strong>{{ user.name }}</strong>,</p>
+    <p class="greeting">{{ 'Hello'|trans }} <strong>{{ user.name }}</strong>,</p>
 
-    <p>You have been invited to join <strong>TicketSync</strong>, our ticket management system.</p>
+    <p>{{ 'You have been invited to join TicketSync, our ticket management system.'|trans }}</p>
 
     <div class="info-box">
-        <h2>Your Account Details</h2>
-        <p><strong>Email:</strong> {{ user.email }}</p>
+        <h2>{{ 'Your Account Details'|trans }}</h2>
+        <p><strong>{{ 'Email:'|trans }}</strong> {{ user.email }}</p>
         {% if user.organization %}
-            <p><strong>Organization:</strong> {{ user.organization.name }}</p>
+            <p><strong>{{ 'Organization:'|trans }}</strong> {{ user.organization.name }}</p>
         {% endif %}
-        <p><strong>Role:</strong>
+        <p><strong>{{ 'Role:'|trans }}</strong>
             {% if 'ROLE_ADMIN' in user.roles %}
-                <span class="badge badge-status">Administrator</span>
+                <span class="badge badge-status">{{ 'Administrator'|trans }}</span>
             {% else %}
-                <span class="badge badge-status">User</span>
+                <span class="badge badge-status">{{ 'User'|trans }}</span>
             {% endif %}
         </p>
     </div>
 
-    <p>To get started, click the button below to set your password and activate your account.</p>
+    <p>{{ 'To get started, click the button below to set your password and activate your account.'|trans }}</p>
 
     <a href="{{ invitationUrl }}" class="button">
-        Set Your Password
+        {{ 'Set Your Password'|trans }}
     </a>
 
     <p style="margin-top: 20px; font-size: 14px; color: #928374;">
-        <strong>Note:</strong> This invitation link will expire on <strong>{{ invitation.expiresAt|date('F d, Y') }} at {{ invitation.expiresAt|date('H:i') }}</strong> (48 hours from now).
+        <strong>{{ 'Note:'|trans }}</strong> {{ 'This invitation link will expire on %date% at %time% (48 hours from now).'|trans({
+            '%date%': invitation.expiresAt|date('F d, Y'),
+            '%time%': invitation.expiresAt|date('H:i')
+        }) }}
     </p>
 
     <p style="font-size: 14px; color: #928374;">
-        If you did not expect this invitation, you can safely ignore this email.
+        {{ 'If you did not expect this invitation, you can safely ignore this email.'|trans }}
     </p>
 {% endblock %}

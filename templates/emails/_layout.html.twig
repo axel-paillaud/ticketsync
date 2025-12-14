@@ -124,8 +124,8 @@
             {% block content %}{% endblock %}
         </div>
         <div class="footer">
-            <p>This is an automated email, please do not reply.</p>
-            <p>&copy; {{ 'now'|date('Y') }} TicketSync - Ticket Management System by <a href="https://axelweb.fr/">Axelweb</a></p>
+            <p>{{ 'This is an automated email, please do not reply.'|trans }}</p>
+            <p>&copy; {{ 'now'|date('Y') }} TicketSync - {{ 'Ticket Management System by'|trans }} <a href="https://axelweb.fr/">Axelweb</a></p>
         </div>
     </div>
 </body>
