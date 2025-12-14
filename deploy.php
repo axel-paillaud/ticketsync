@@ -26,12 +26,9 @@ add('shared_dirs', [
 ]);
 
 // Writable dirs by web server
-add('writable_dirs', [
-    'var',
-    'var/cache',
-    'var/log',
-    'var/uploads',
-]);
+// Note: With Docker, writable permissions are managed by the container (runs as root)
+// We don't need to run chmod from the host - disable writable task
+add('writable_dirs', []);
 
 set('writable_mode', 'chmod');
 set('writable_chmod_mode', '0775');
@@ -165,6 +162,7 @@ after('deploy:shared', 'database:prepare');
 after('database:prepare', 'database:migrate');
 after('database:migrate', 'deploy:cache:clear');
 after('deploy:cache:clear', 'deploy:cache');
+// Note: Skip deploy:writable - Docker container handles permissions
 after('deploy:symlink', 'docker:restart');
 after('rollback', 'docker:restart');
 
