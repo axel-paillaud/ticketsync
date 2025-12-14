@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 // Note : we can use this instead of $user = $this->getUser() everywhere
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/{organizationSlug}')]
 final class TicketController extends AbstractController
@@ -180,7 +181,8 @@ final class TicketController extends AbstractController
         Request $request,
         #[MapEntity(id: 'ticketId')] Ticket $ticket,
         EntityManagerInterface $entityManager,
-        FileUploader $fileUploader
+        FileUploader $fileUploader,
+        TranslatorInterface $translator,
     ): Response
     {
         /** @var User $user */
@@ -225,7 +227,7 @@ final class TicketController extends AbstractController
                 $entityManager->flush();
             }
 
-            $this->addFlash('success', 'Ticket modifié avec succès !');
+            $this->addFlash('success', $translator->trans('Ticket successfully modified!'));
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
