@@ -270,7 +270,8 @@ final class TicketController extends AbstractController
         Request $request,
         int $ticketId,
         #[MapEntity(id: 'commentId')] Comment $comment,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator,
     ): Response
     {
         // Security check: user must belong to this organization
@@ -294,7 +295,7 @@ final class TicketController extends AbstractController
             $entityManager->remove($comment);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Commentaire supprimé avec succès !');
+            $this->addFlash('success', $translator->trans('Comment successfully deleted!'));
         }
 
         return $this->redirectToRoute('app_ticket_show', [
