@@ -12,11 +12,13 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EmailService
 {
     public function __construct(
         private MailerInterface $mailer,
+        private TranslatorInterface $translator,
         private string $fromAddress,
         private string $fromName,
     ) {}
@@ -29,7 +31,7 @@ class EmailService
          $email = (new TemplatedEmail())
              ->from(new Address($this->fromAddress, $this->fromName))
              ->to($recipient->getEmail())
-             ->subject(sprintf('[TicketSync] New ticket #%d', $ticket->getId()))
+             ->subject(sprintf($this->translator->trans('[TicketSync] New ticket #%d'), $ticket->getId()))
              ->htmlTemplate('emails/ticket_created.html.twig')
              ->context([
                  'ticket' => $ticket,
@@ -47,7 +49,7 @@ class EmailService
           $email = (new TemplatedEmail())
               ->from(new Address($this->fromAddress, $this->fromName))
               ->to($recipient->getEmail())
-              ->subject(sprintf('[TicketSync] New comment on ticket #%d', $comment->getTicket()->getId()))
+              ->subject(sprintf($this->translator->trans('[TicketSync] New comment on ticket #%d'), $comment->getTicket()->getId()))
               ->htmlTemplate('emails/comment_added.html.twig')
               ->context([
                   'comment' => $comment,
@@ -66,7 +68,7 @@ class EmailService
            $email = (new TemplatedEmail())
                ->from(new Address($this->fromAddress, $this->fromName))
                ->to($recipient->getEmail())
-               ->subject(sprintf('[TicketSync] Ticket #%d status updated', $ticket->getId()))
+               ->subject(sprintf($this->translator->trans('[TicketSync] Ticket #%d status updated'), $ticket->getId()))
                ->htmlTemplate('emails/status_changed.html.twig')
                ->context([
                    'ticket' => $ticket,
@@ -86,7 +88,7 @@ class EmailService
             $email = (new TemplatedEmail())
                 ->from(new Address($this->fromAddress, $this->fromName))
                 ->to($recipient->getEmail())
-                ->subject(sprintf('[TicketSync] Monthly threshold exceeded for %s', $organization->getName()))
+                ->subject(sprintf($this->translator->trans('[TicketSync] Monthly threshold exceeded for %s'), $organization->getName()))
                 ->htmlTemplate('emails/threshold_exceeded.html.twig')
                 ->context([
                     'recipient' => $recipient,
@@ -108,7 +110,7 @@ class EmailService
             $email = (new TemplatedEmail())
                 ->from(new Address($this->fromAddress, $this->fromName))
                 ->to($user->getEmail())
-                ->subject('[TicketSync] You have been invited to join TicketSync')
+                ->subject($this->translator->trans('[TicketSync] You have been invited to join TicketSync'))
                 ->htmlTemplate('emails/user_invitation.html.twig')
                 ->context([
                     'user' => $user,

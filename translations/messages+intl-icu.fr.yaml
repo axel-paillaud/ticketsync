@@ -4,7 +4,7 @@
 'Organization "%s" has been created successfully.': 'Organisation "%s" créée avec succès.'
 'Organization "%s" has been updated successfully.': 'Organisation "%s" mise à jour avec succès.'
 'Organization "%s" has been deleted successfully.': 'Organisation "%s" supprimée avec succès.'
-'This invitation link is invalid or has expired.': 'Ce lien d''invitation est invalide ou a expiré.'
+'This invitation link is invalid or has expired.': "Ce lien d'invitation est invalide ou a expiré."
 'Your password has been set successfully. You can now log in with your credentials.': 'Votre mot de passe a été défini avec succès. Vous pouvez maintenant vous connecter avec vos identifiants.'
 'Comment added successfully!': 'Commentaire ajouté avec succès !'
 'Comment successfully modified!': 'Commentaire modifié avec succès !'
@@ -14,9 +14,14 @@
 'Time entry updated successfully!': 'Saisie de temps mise à jour avec succès !'
 'Time entry deleted successfully!': 'Saisie de temps supprimée avec succès !'
 'User "%s" has been created and invitation email sent.': 'Utilisateur "%s" créé et email d''invitation envoyé.'
-'This user has no pending invitation.': 'Cet utilisateur n''a pas d''invitation en attente.'
+'This user has no pending invitation.': "Cet utilisateur n'a pas d'invitation en attente."
 'This invitation has already been accepted.': 'Cette invitation a déjà été acceptée.'
-'Invitation email has been resent to %s.': 'Email d''invitation renvoyé à %s.'
+'Invitation email has been resent to %s.': "Email d'invitation renvoyé à %s."
 'User "%s" has been deleted successfully.': 'Utilisateur "%s" supprimé avec succès.'
 'Account created! Please log in.': 'Compte créé ! Veuillez vous connecter.'
 'Your email address has been verified.': 'Votre adresse email a été vérifiée.'
+'[TicketSync] New ticket #%d': '[TicketSync] Nouveau ticket #%d'
+'[TicketSync] New comment on ticket #%d': '[TicketSync] Nouveau commentaire sur le ticket #%d'
+'[TicketSync] Ticket #%d status updated': '[TicketSync] Statut du ticket #%d mis à jour'
+'[TicketSync] Monthly threshold exceeded for %s': '[TicketSync] Seuil mensuel dépassé pour %s'
+'[TicketSync] You have been invited to join TicketSync': '[TicketSync] Vous avez été invité(e) à rejoindre TicketSync'
