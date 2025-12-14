@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Ticket - {{ currentOrganization.name }}{% endblock %}
+{% block title %}{{ 'New Ticket'|trans }} - {{ currentOrganization.name }}{% endblock %}
 
 {% block body %}
 <div class="container py-4">
@@ -8,7 +8,7 @@
     <div class="mb-3">
         <a href="{{ path('app_ticket_index', {'organizationSlug': currentOrganization.slug}) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
-            Back to Tickets
+            {{ 'Back to Tickets'|trans }}
         </a>
     </div>
 
@@ -16,7 +16,7 @@
     <div class="mb-4">
         <h1>
             <i class="bi bi-plus-circle text-primary"></i>
-            Create New Ticket
+            {{ 'Create New Ticket'|trans }}
         </h1>
         <p class="text-muted">
             <i class="bi bi-building"></i>
@@ -29,11 +29,11 @@
         <div class="card-header">
             <h5 class="mb-0">
                 <i class="bi bi-file-text"></i>
-                Ticket Information
+                {{ 'Ticket Information'|trans }}
             </h5>
         </div>
         <div class="card-body">
-            {{ include('ticket/_form.html.twig', {'button_label': 'Create Ticket'}) }}
+            {{ include('ticket/_form.html.twig', {'button_label': 'Create Ticket'|trans}) }}
         </div>
     </div>
 </div>

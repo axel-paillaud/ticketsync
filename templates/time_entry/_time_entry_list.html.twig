@@ -23,16 +23,16 @@
                                 <strong>{{ timeEntry.workDate|date('M d, Y') }}</strong>
                                 <span class="text-muted">•</span>
                                 <span class="badge bg-success">
-                                    {{ timeEntry.hours }}h worked
+                                    {{ timeEntry.hours }}h {{ 'worked'|trans }}
                                 </span>
                                 <span class="badge bg-info">
-                                    {{ timeEntry.billedHours }}h billed
+                                    {{ timeEntry.billedHours }}h {{ 'billed'|trans }}
                                 </span>
                             </div>
                             <small class="text-muted">
                                 <i class="bi bi-person-circle"></i>
-                                Logged by {{ timeEntry.createdBy.name }}
-                                on {{ timeEntry.createdAt|date('M d, Y H:i') }}
+                                {{ 'Logged by'|trans }} {{ timeEntry.createdBy.name }}
+                                {{ 'on'|trans }} {{ timeEntry.createdAt|date('M d, Y H:i') }}
                             </small>
                         </div>
 
@@ -44,7 +44,7 @@
                                         'organizationSlug': currentOrganization.slug,
                                         'ticketId': ticket.id,
                                         'timeEntryId': timeEntry.id
-                                    }) }}" class="btn btn-outline-secondary" title="Edit">
+                                    }) }}" class="btn btn-outline-secondary" title="{{ 'Edit'|trans }}">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                 {% endif %}
@@ -53,7 +53,7 @@
                                     <button type="button" class="btn btn-outline-danger"
                                             data-bs-toggle="modal"
                                             data-bs-target="#deleteTimeEntryModal{{ timeEntry.id }}"
-                                            title="Delete">
+                                            title="{{ 'Delete'|trans }}">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 {% endif %}
@@ -70,15 +70,15 @@
                     <div class="mt-3 pt-3 border-top">
                         <div class="row g-2">
                             <div class="col-md-4">
-                                <small class="text-muted">Rate:</small>
+                                <small class="text-muted">{{ 'Rate'|trans }}:</small>
                                 <div><strong>{{ timeEntry.hourlyRateSnapshot|number_format(2) }} €/h</strong></div>
                             </div>
                             <div class="col-md-4">
-                                <small class="text-muted">Billed Hours:</small>
+                                <small class="text-muted">{{ 'Billed Hours'|trans }}:</small>
                                 <div><strong>{{ timeEntry.billedHours }}h</strong></div>
                             </div>
                             <div class="col-md-4">
-                                <small class="text-muted">Amount:</small>
+                                <small class="text-muted">{{ 'Amount'|trans }}:</small>
                                 <div><strong class="text-success">{{ timeEntry.billedAmount|number_format(2) }} €</strong></div>
                             </div>
                         </div>
@@ -92,18 +92,18 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Delete Time Entry</h5>
+                            <h5 class="modal-title">{{ 'Delete Time Entry'|trans }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <p>Are you sure you want to delete this time entry?</p>
+                            <p>{{ 'Are you sure you want to delete this time entry?'|trans }}</p>
                             <p class="text-danger mb-0">
                                 <i class="bi bi-exclamation-triangle"></i>
-                                This action cannot be undone.
+                                {{ 'This action cannot be undone.'|trans }}
                             </p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
                             <form method="post" action="{{ path('app_time_entry_delete', {
                                 'organizationSlug': currentOrganization.slug,
                                 'ticketId': ticket.id,
@@ -112,7 +112,7 @@
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete-time-entry-' ~ timeEntry.id) }}">
                                 <button type="submit" class="btn btn-danger">
                                     <i class="bi bi-trash"></i>
-                                    Delete
+                                    {{ 'Delete'|trans }}
                                 </button>
                             </form>
                         </div>
@@ -126,10 +126,10 @@
         <div class="alert alert-info mt-3">
             <div class="row">
                 <div class="col-md-6">
-                    <strong>Total Hours Worked:</strong> {{ totalHours|number_format(2) }}h
+                    <strong>{{ 'Total Hours Worked'|trans }}:</strong> {{ totalHours|number_format(2) }}h
                 </div>
                 <div class="col-md-6 text-end">
-                    <strong>Total Billed:</strong> <span class="text-success">{{ totalBilled|number_format(2) }} €</span>
+                    <strong>{{ 'Total Billed'|trans }}:</strong> <span class="text-success">{{ totalBilled|number_format(2) }} €</span>
                 </div>
             </div>
         </div>
@@ -137,14 +137,14 @@
 {% else %}
     <div class="text-center py-4">
         <i class="bi bi-clock-history text-muted" style="font-size: 3rem;"></i>
-        <p class="text-muted mt-2 mb-0">No time entries yet.</p>
+        <p class="text-muted mt-2 mb-0">{{ 'No time entries yet.'|trans }}</p>
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_time_entry_new', {
                 'organizationSlug': currentOrganization.slug,
                 'ticketId': ticket.id
             }) }}" class="btn btn-sm btn-primary mt-2">
                 <i class="bi bi-plus-circle"></i>
-                Log Time
+                {{ 'Log Time'|trans }}
             </a>
         {% endif %}
     </div>

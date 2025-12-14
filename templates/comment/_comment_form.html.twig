@@ -9,19 +9,19 @@
 <div class="row g-3">
     {# Content #}
     <div class="col-12">
-        {{ form_label(commentForm.content, 'Your Comment', {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(commentForm.content, {'attr': {'class': 'form-control comment-textarea', 'rows': 4, 'placeholder': 'Write your comment here...'}}) }}
+        {{ form_label(commentForm.content, 'Your Comment'|trans, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(commentForm.content, {'attr': {'class': 'form-control comment-textarea', 'rows': 4, 'placeholder': 'Write your comment here...'|trans}}) }}
         {{ form_errors(commentForm.content) }}
     </div>
 
     {# Attachments #}
     <div class="col-12">
         <label for="{{ commentForm.attachments.vars.id }}" class="attachment-upload-zone d-block" style="cursor: pointer;">
-            <div class="form-label mb-2">Attachments (optional)</div>
+            <div class="form-label mb-2">{{ 'Attachments (optional)'|trans }}</div>
             <div class="upload-info mb-2">
                 <small class="text-muted">
                     <i class="bi bi-info-circle"></i>
-                    Supported: Images, PDF, Word, Excel, Text, Archives | Max 10MB per file
+                    {{ 'Supported: Images, PDF, Word, Excel, Text, Archives | Max 10MB per file'|trans }}
                 </small>
             </div>
             {{ form_widget(commentForm.attachments, {'attr': {'class': 'form-control'}}) }}
@@ -33,7 +33,7 @@
     <div class="col-12">
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-send me-1"></i>
-            Post Comment
+            {{ 'Post Comment'|trans }}
         </button>
     </div>
 </div>

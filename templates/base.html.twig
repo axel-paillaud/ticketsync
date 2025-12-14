@@ -33,13 +33,13 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ path('app_ticket_index', {organizationSlug: currentOrganization.slug}) }}">
                                         <i class="bi bi-ticket-perforated me-1"></i>
-                                        Tickets
+                                        {{ 'Tickets'|trans }}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ path('app_ticket_new', {organizationSlug: currentOrganization.slug}) }}">
                                         <i class="bi bi-plus-circle me-1"></i>
-                                        New Ticket
+                                        {{ 'New Ticket'|trans }}
                                     </a>
                                 </li>
                             {% endif %}
@@ -48,26 +48,26 @@
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
                                         <i class="bi bi-speedometer2 me-1"></i>
-                                        Admin
+                                        {{ 'Admin'|trans }}
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><a class="dropdown-item" href="{{ path('app_admin_index') }}">
                                             <i class="bi bi-speedometer2 me-1"></i>
-                                            Dashboard
+                                            {{ 'Dashboard'|trans }}
                                         </a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="{{ path('app_admin_organization_index') }}">
                                             <i class="bi bi-building me-1"></i>
-                                            Organizations
+                                            {{ 'Organizations'|trans }}
                                         </a></li>
                                         <li><a class="dropdown-item" href="{{ path('app_admin_user_index') }}">
                                             <i class="bi bi-people me-1"></i>
-                                            Users
+                                            {{ 'Users'|trans }}
                                         </a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="{{ path('app_admin_time_entries') }}">
                                             <i class="bi bi-clock-history me-1"></i>
-                                            Time Tracking
+                                            {{ 'Time Tracking'|trans }}
                                         </a></li>
                                     </ul>
                                 </li>
@@ -81,18 +81,18 @@
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="{{ path('app_user_profile') }}">
                                         <i class="bi bi-person me-1"></i>
-                                        Profile
+                                        {{ 'Profile'|trans }}
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ path('app_logout') }}">
                                         <i class="bi bi-box-arrow-right me-1"></i>
-                                        Logout
+                                        {{ 'Logout'|trans }}
                                     </a></li>
                                 </ul>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                                <a class="nav-link" href="{{ path('app_login') }}">{{ 'Login'|trans }}</a>
                             </li>
                         {% endif %}
                     </ul>

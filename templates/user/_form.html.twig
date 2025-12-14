@@ -4,14 +4,14 @@
     {# First Name #}
     <div class="col-md-6">
         {{ form_label(form.firstName, null, {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.firstName, {'attr': {'class': 'form-control', 'placeholder': 'Enter your first name'}}) }}
+        {{ form_widget(form.firstName, {'attr': {'class': 'form-control', 'placeholder': 'Enter your first name'|trans}}) }}
         {{ form_errors(form.firstName) }}
     </div>
 
     {# Last Name #}
     <div class="col-md-6">
         {{ form_label(form.lastName, null, {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Enter your last name'}}) }}
+        {{ form_widget(form.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Enter your last name'|trans}}) }}
         {{ form_errors(form.lastName) }}
     </div>
 
@@ -20,7 +20,7 @@
         <hr class="my-4">
         <h6 class="mb-3">
             <i class="bi bi-bell"></i>
-            Monthly Alert Settings
+            {{ 'Monthly Alert Settings'|trans }}
         </h6>
     </div>
 
@@ -33,7 +33,7 @@
         </div>
         <small class="text-muted">
             <i class="bi bi-info-circle"></i>
-            Receive an email when your monthly time entries exceed the threshold
+            {{ 'Receive an email when your monthly time entries exceed the threshold'|trans }}
         </small>
     </div>
 
@@ -45,7 +45,7 @@
             <span class="input-group-text">€</span>
         </div>
         {{ form_errors(form.monthlyAlertThreshold) }}
-        <small class="text-muted">Set the amount that triggers an alert</small>
+        <small class="text-muted">{{ 'Set the amount that triggers an alert'|trans }}</small>
     </div>
 
     {# Submit Button #}
@@ -53,11 +53,11 @@
         <div class="d-flex gap-2 pt-3">
             <button type="submit" class="btn btn-primary btn-lg">
                 <i class="bi bi-check-circle me-1"></i>
-                Update Profile
+                {{ 'Update Profile'|trans }}
             </button>
             <a href="{{ path('app_home') }}" class="btn btn-outline-secondary btn-lg">
                 <i class="bi bi-x-circle me-1"></i>
-                Cancel
+                {{ 'Cancel'|trans }}
             </a>
         </div>
     </div>

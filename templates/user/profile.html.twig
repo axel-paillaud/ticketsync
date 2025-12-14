@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}My Profile{% endblock %}
+{% block title %}{{ 'My Profile'|trans }}{% endblock %}
 
 {% block body %}
 <div class="container py-4">
@@ -8,7 +8,7 @@
     <div class="mb-3">
         <a href="{{ path('app_home') }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
-            Back to Home
+            {{ 'Back to Home'|trans }}
         </a>
     </div>
 
@@ -16,7 +16,7 @@
     <div class="mb-4">
         <h1>
             <i class="bi bi-person-circle text-primary"></i>
-            My Profile
+            {{ 'My Profile'|trans }}
         </h1>
         <p class="text-muted">
             <i class="bi bi-envelope"></i>
@@ -29,7 +29,7 @@
         <div class="card-header">
             <h5 class="mb-0">
                 <i class="bi bi-pencil"></i>
-                Edit Profile Information
+                {{ 'Edit Profile Information'|trans }}
             </h5>
         </div>
         <div class="card-body">

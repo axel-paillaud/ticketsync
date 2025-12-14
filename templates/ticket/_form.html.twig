@@ -4,14 +4,14 @@
     {# Title #}
     <div class="col-12">
         {{ form_label(form.title, null, {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Enter ticket title'}}) }}
+        {{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Enter ticket title'|trans}}) }}
         {{ form_errors(form.title) }}
     </div>
 
     {# Description #}
     <div class="col-12">
         {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 6, 'placeholder': 'Describe the issue or request in detail...'}}) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 6, 'placeholder': 'Describe the issue or request in detail...'|trans}}) }}
         {{ form_errors(form.description) }}
     </div>
 
@@ -32,11 +32,11 @@
     {# Attachments #}
     <div class="col-12">
         <div class="attachment-upload-zone">
-            {{ form_label(form.attachments, 'Attachments (optional)', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_label(form.attachments, 'Attachments (optional)'|trans, {'label_attr': {'class': 'form-label'}}) }}
             <div class="upload-info mb-2">
                 <small class="text-muted">
                     <i class="bi bi-info-circle"></i>
-                    Supported: Images, PDF, Word, Excel, Text, Archives | Max 10MB per file
+                    {{ 'Supported: Images, PDF, Word, Excel, Text, Archives | Max 10MB per file'|trans }}
                 </small>
             </div>
             {{ form_widget(form.attachments, {'attr': {'class': 'form-control'}}) }}
@@ -49,11 +49,11 @@
         <div class="d-flex gap-2 pt-3">
             <button type="submit" class="btn btn-primary btn-lg">
                 <i class="bi bi-check-circle me-1"></i>
-                {{ button_label|default('Save') }}
+                {{ button_label|default('Save'|trans) }}
             </button>
             <a href="{{ path('app_ticket_index', {'organizationSlug': currentOrganization.slug}) }}" class="btn btn-outline-secondary btn-lg">
                 <i class="bi bi-x-circle me-1"></i>
-                Cancel
+                {{ 'Cancel'|trans }}
             </a>
         </div>
     </div>

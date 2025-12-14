@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Time Entries - Admin{% endblock %}
+{% block title %}{{ 'Time Entries'|trans }} - {{ 'Admin'|trans }}{% endblock %}
 
 {% block body %}
 <div class="container-fluid py-4">
@@ -9,13 +9,13 @@
         <div>
             <h2>
                 <i class="bi bi-clock-history"></i>
-                All Time Entries
+                {{ 'All Time Entries'|trans }}
             </h2>
-            <p class="text-muted mb-0">View all time entries across all organizations</p>
+            <p class="text-muted mb-0">{{ 'View all time entries across all organizations'|trans }}</p>
         </div>
         <a href="{{ path('app_admin_index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
-            Back to Admin
+            {{ 'Back to Admin'|trans }}
         </a>
     </div>
 
@@ -24,7 +24,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="text-muted mb-2">Total Entries</h6>
+                    <h6 class="text-muted mb-2">{{ 'Total Entries'|trans }}</h6>
                     <h3 class="mb-0">{{ totalEntries }}</h3>
                 </div>
             </div>
@@ -32,7 +32,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="text-muted mb-2">Total Hours</h6>
+                    <h6 class="text-muted mb-2">{{ 'Total Hours'|trans }}</h6>
                     <h3 class="mb-0">{{ totalHours|number_format(2) }}h</h3>
                 </div>
             </div>
@@ -40,7 +40,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="text-muted mb-2">Total Billed</h6>
+                    <h6 class="text-muted mb-2">{{ 'Total Billed'|trans }}</h6>
                     <h3 class="mb-0 text-success">{{ totalBilled|number_format(2) }} €</h3>
                 </div>
             </div>
@@ -72,16 +72,16 @@
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Ticket</th>
-                                    <th>Organization</th>
-                                    <th>Description</th>
-                                    <th class="text-end">Hours</th>
-                                    <th class="text-end">Billed</th>
-                                    <th class="text-end">Rate</th>
-                                    <th class="text-end">Amount</th>
-                                    <th>Logged By</th>
-                                    <th class="text-center">Actions</th>
+                                    <th>{{ 'Date'|trans }}</th>
+                                    <th>{{ 'Ticket'|trans }}</th>
+                                    <th>{{ 'Organization'|trans }}</th>
+                                    <th>{{ 'Description'|trans }}</th>
+                                    <th class="text-end">{{ 'Hours'|trans }}</th>
+                                    <th class="text-end">{{ 'Billed'|trans }}</th>
+                                    <th class="text-end">{{ 'Rate'|trans }}</th>
+                                    <th class="text-end">{{ 'Amount'|trans }}</th>
+                                    <th>{{ 'Logged By'|trans }}</th>
+                                    <th class="text-center">{{ 'Actions'|trans }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -129,7 +129,7 @@
                                                     'organizationSlug': entry.organization.slug,
                                                     'ticketId': entry.ticket.id,
                                                     'timeEntryId': entry.id
-                                                }) }}" class="btn btn-outline-secondary" title="Edit">
+                                                }) }}" class="btn btn-outline-secondary" title="{{ 'Edit'|trans }}">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                             </div>
@@ -146,7 +146,7 @@
         <div class="card">
             <div class="card-body text-center py-5">
                 <i class="bi bi-clock-history text-muted" style="font-size: 4rem;"></i>
-                <p class="text-muted mt-3 mb-0">No time entries found.</p>
+                <p class="text-muted mt-3 mb-0">{{ 'No time entries found.'|trans }}</p>
             </div>
         </div>
     {% endif %}

@@ -32,7 +32,7 @@
                     })
                 }}" class="d-inline">
                     <input type="hidden" name="_token" value="{{ csrf_token((commentId is defined ? 'delete-comment-attachment-' : 'delete-attachment-') ~ attachment.id) }}">
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette pièce jointe ?')" title="Supprimer">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('{{ 'Delete this attachment?'|trans }}')" title="{{ 'Delete'|trans }}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </form>
@@ -95,14 +95,14 @@
                 <small class="text-muted">
                     {{ attachment.formattedSize }}
                     {% if size == 'large' %}
-                        <br>Uploadé le {{ attachment.uploadedAt|date('d/m/Y à H:i') }}
+                        <br>{{ 'Uploaded on'|trans }} {{ attachment.uploadedAt|date('M d, Y H:i') }}
                         {% if attachment.uploadedBy %}
-                            <br>par {{ attachment.uploadedBy.email }}
+                            <br>{{ 'by'|trans }} {{ attachment.uploadedBy.email }}
                         {% endif %}
                     {% endif %}
                 </small>
             </p>
-            <a href="{{ commentId is defined 
+            <a href="{{ commentId is defined
                 ? path('app_comment_attachment_download', {
                     'organizationSlug': currentOrganization.slug,
                     'ticketId': ticketId,
@@ -115,7 +115,7 @@
                     'attachmentId': attachment.id
                 })
             }}" class="btn btn-sm btn-primary w-100" download>
-                <i class="bi bi-download"></i> Télécharger
+                <i class="bi bi-download"></i> {{ 'Download'|trans }}
             </a>
         </div>
     </div>
