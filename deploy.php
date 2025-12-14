@@ -116,6 +116,10 @@ task('deploy:remove_var', function () {
     run('cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} rm -rf {{release_path}}/var || true');
 })->desc('Remove var directory');
 
+task('deploy:fix_permissions', function () {
+    run('chown -R axel:www-data {{release_path}} || true');
+})->desc('Fix file permissions after Docker operations');
+
 // Hooks
 after('deploy:failed', 'deploy:unlock');
 after('deploy:update_code', 'docker:build');
@@ -127,6 +131,7 @@ after('deploy:shared', 'database:prepare');
 after('database:prepare', 'database:migrate');
 after('database:migrate', 'deploy:cache:clear');
 after('deploy:cache:clear', 'deploy:cache');
+after('deploy:cache', 'deploy:fix_permissions');
 after('deploy:symlink', 'docker:restart');
 after('rollback', 'docker:restart');
 
