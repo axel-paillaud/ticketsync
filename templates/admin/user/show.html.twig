@@ -7,7 +7,7 @@
     <div class="mb-3">
         <a href="{{ path('app_admin_user_index') }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
-            Back to Users
+            {{ 'Back to Users'|trans }}
         </a>
     </div>
 
@@ -23,13 +23,13 @@
                         <input type="hidden" name="_token" value="{{ csrf_token('resend-invitation-' ~ user.id) }}">
                         <button type="submit" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-envelope"></i>
-                            Resend Invitation
+                            {{ 'Resend Invitation'|trans }}
                         </button>
                     </form>
                 {% endif %}
                 <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
                     <i class="bi bi-trash"></i>
-                    Delete
+                    {{ 'Delete'|trans }}
                 </button>
             </div>
         </div>
@@ -37,7 +37,7 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Email</div>
+                        <div class="info-label">{{ 'Email'|trans }}</div>
                         <div class="info-value">
                             <a href="mailto:{{ user.email }}">{{ user.email }}</a>
                         </div>
@@ -45,61 +45,61 @@
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Full Name</div>
+                        <div class="info-label">{{ 'Full Name'|trans }}</div>
                         <div class="info-value">
                             {% if user.firstName or user.lastName %}
                                 {{ user.firstName }} {{ user.lastName }}
                             {% else %}
-                                <span class="text-muted">Not set</span>
+                                <span class="text-muted">{{ 'Not set'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Organization</div>
+                        <div class="info-label">{{ 'Organization'|trans }}</div>
                         <div class="info-value">
                             {% if user.organization %}
                                 <a href="{{ path('app_admin_organization_show', {id: user.organization.id}) }}">
                                     {{ user.organization.name }}
                                 </a>
                             {% else %}
-                                <span class="text-muted">Not assigned</span>
+                                <span class="text-muted">{{ 'Not assigned'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Role</div>
+                        <div class="info-label">{{ 'Role'|trans }}</div>
                         <div class="info-value">
                             {% if 'ROLE_ADMIN' in user.roles %}
-                                <span class="badge bg-danger">Admin</span>
+                                <span class="badge bg-danger">{{ 'Admin'|trans }}</span>
                             {% else %}
-                                <span class="badge bg-primary">User</span>
+                                <span class="badge bg-primary">{{ 'User'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Account Status</div>
+                        <div class="info-label">{{ 'Account Status'|trans }}</div>
                         <div class="info-value">
                             {% if user.invitation and not user.invitation.isAccepted %}
                                 {% if user.invitation.isExpired %}
-                                    <span class="badge bg-danger">Invitation Expired</span>
+                                    <span class="badge bg-danger">{{ 'Invitation Expired'|trans }}</span>
                                 {% else %}
-                                    <span class="badge bg-warning">Pending Invitation</span>
+                                    <span class="badge bg-warning">{{ 'Pending Invitation'|trans }}</span>
                                 {% endif %}
                             {% else %}
-                                <span class="badge bg-success">Active</span>
+                                <span class="badge bg-success">{{ 'Active'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Created At</div>
+                        <div class="info-label">{{ 'Created At'|trans }}</div>
                         <div class="info-value">{{ user.createdAt|date('M d, Y H:i') }}</div>
                     </div>
                 </div>
@@ -110,24 +110,24 @@
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <i class="bi bi-envelope"></i>
-                                    Invitation Details
+                                    {{ 'Invitation Details'|trans }}
                                 </h5>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <strong>Created:</strong> {{ user.invitation.createdAt|date('M d, Y H:i') }}
+                                        <strong>{{ 'Created:'|trans }}</strong> {{ user.invitation.createdAt|date('M d, Y H:i') }}
                                     </div>
                                     <div class="col-md-4">
-                                        <strong>Expires:</strong> {{ user.invitation.expiresAt|date('M d, Y H:i') }}
+                                        <strong>{{ 'Expires:'|trans }}</strong> {{ user.invitation.expiresAt|date('M d, Y H:i') }}
                                     </div>
                                     <div class="col-md-4">
-                                        <strong>Status:</strong>
+                                        <strong>{{ 'Status:'|trans }}</strong>
                                         {% if user.invitation.isAccepted %}
-                                            <span class="badge bg-success">Accepted</span>
+                                            <span class="badge bg-success">{{ 'Accepted'|trans }}</span>
                                             ({{ user.invitation.acceptedAt|date('M d, Y H:i') }})
                                         {% elseif user.invitation.isExpired %}
-                                            <span class="badge bg-danger">Expired</span>
+                                            <span class="badge bg-danger">{{ 'Expired'|trans }}</span>
                                         {% else %}
-                                            <span class="badge bg-warning">Pending</span>
+                                            <span class="badge bg-warning">{{ 'Pending'|trans }}</span>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -145,14 +145,17 @@
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="bi bi-ticket-perforated"></i>
-                        Created Tickets ({{ user.tickets|length }})
+                        {{ 'Created Tickets'|trans }} ({{ user.tickets|length }})
                     </h5>
                 </div>
                 <div class="card-body">
                     {% if user.tickets|length > 0 %}
                         <p>This user has created {{ user.tickets|length }} ticket(s).</p>
+                        <p>
+                            {{ 'This user has created {ticketsLength} ticket(s).'|trans({ 'ticketsLength': user.tickets|length }) }}
+                        </p>
                     {% else %}
-                        <p class="text-muted mb-0">No tickets created yet.</p>
+                        <p class="text-muted mb-0">{{ 'No tickets created yet.'|trans }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -163,14 +166,16 @@
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="bi bi-chat-left-text"></i>
-                        Comments ({{ user.comments|length }})
+                        {{ 'Comments'|trans }} ({{ user.comments|length }})
                     </h5>
                 </div>
                 <div class="card-body">
                     {% if user.comments|length > 0 %}
-                        <p>This user has posted {{ user.comments|length }} comment(s).</p>
+                        <p>
+                            {{ 'This user has posted {commentsLength} comment(s).'|trans({ 'commentsLength': user.comments|length }) }}
+                        </p>
                     {% else %}
-                        <p class="text-muted mb-0">No comments posted yet.</p>
+                        <p class="text-muted mb-0">{{ 'No comments posted yet.'|trans }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -183,23 +188,26 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Delete User</h5>
+                <h5 class="modal-title">{{ 'Delete User'|trans }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete <strong>{{ user.email }}</strong>?</p>
+                <p>Are you sure you want to delete {{ user.email }}?</p>
+                <p>
+                    {{ 'Are you sure you want to delete {userEmail}?'|trans({ 'userEmail': user.email }) }}
+                </p>
                 <p class="text-danger mb-0">
                     <i class="bi bi-exclamation-triangle"></i>
-                    This will also delete all associated tickets and data. This action cannot be undone.
+                    {{ 'This will also delete all associated tickets and data. This action cannot be undone.'|trans }}
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
                 <form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}" class="d-inline">
                     <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash"></i>
-                        Delete
+                        {{ 'Delete'|trans }}
                     </button>
                 </form>
             </div>

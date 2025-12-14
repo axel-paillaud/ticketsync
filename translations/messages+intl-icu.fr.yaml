@@ -128,7 +128,7 @@ Comments: Commentaires
 'Please confirm your email address by clicking the following link:': 'Veuillez confirmer votre adresse email en cliquant sur le lien suivant :'
 'Confirm my Email': 'Confirmer mon email'
 'This link will expire in': 'Ce lien expirera dans'
-Cheers!: Cordialement !
+Cheers!: 'Cordialement !'
 Register: "S'inscrire"
 'Your Comment': 'Votre commentaire'
 'Write your comment here...': 'Écrivez votre commentaire ici...'
@@ -144,14 +144,14 @@ Edited: Modifié
 'Uploaded on': 'Téléchargé le'
 by: par
 Download: Télécharger
-Dashboard: Tableau de bord
+Dashboard: 'Tableau de bord'
 Organizations: Organisations
 Users: Utilisateurs
 Profile: Profil
 Login: Connexion
 'Enter your first name': 'Saisissez votre prénom'
 'Enter your last name': 'Saisissez votre nom'
-'Monthly Alert Settings': 'Paramètres d''alerte mensuelle'
+'Monthly Alert Settings': "Paramètres d'alerte mensuelle"
 'Receive an email when your monthly time entries exceed the threshold': 'Recevoir un email lorsque vos saisies de temps mensuelles dépassent le seuil'
 'Set the amount that triggers an alert': 'Définir le montant qui déclenche une alerte'
 'Update Profile': 'Mettre à jour le profil'
@@ -174,7 +174,7 @@ billed: facturées
 'Total Hours Worked': 'Total des heures travaillées'
 'No time entries yet.': 'Aucune saisie de temps pour le moment.'
 'Edit Time Entry': 'Modifier la saisie de temps'
-'Original Hourly Rate': 'Taux horaire d''origine'
+'Original Hourly Rate': "Taux horaire d'origine"
 'The hourly rate is locked and will not change when editing': 'Le taux horaire est verrouillé et ne changera pas lors de la modification'
 'Update Time Entry': 'Mettre à jour la saisie de temps'
 'Organizations - Admin': 'Organisations - Admin'
@@ -183,16 +183,16 @@ Name: Nom
 'Hourly Rate': 'Taux horaire'
 Inactive: Inactif
 View: Voir
-'Delete Organization': 'Supprimer l''organisation'
+'Delete Organization': "Supprimer l'organisation"
 'Are you sure you want to delete <strong>{organizationName}</strong>?': 'Êtes-vous sûr de vouloir supprimer <strong>{organizationName}</strong> ?'
 'This will also delete all associated users, tickets, and data. This action cannot be undone.': 'Cela supprimera également tous les utilisateurs, tickets et données associés. Cette action est irréversible.'
 'Back to Organizations': 'Retour aux organisations'
-'Edit Organization:': 'Modifier l''organisation :'
-'Update Organization': 'Mettre à jour l''organisation'
+'Edit Organization:': "Modifier l'organisation :"
+'Update Organization': "Mettre à jour l'organisation"
 'No organizations yet.': 'Aucune organisation pour le moment.'
 'Create your first organization': 'Créez votre première organisation'
 'New Organization - Admin': 'Nouvelle organisation - Admin'
-'Create Organization': 'Créer l''organisation'
+'Create Organization': "Créer l'organisation"
 Slug: Slug
 'Not set': 'Non défini'
 'No users in this organization.': 'Aucun utilisateur dans cette organisation.'
@@ -216,7 +216,7 @@ Hello: Bonjour
 'Current monthly total:': 'Total mensuel actuel :'
 'Exceeded by:': 'Dépassement de :'
 'This alert is sent once when your monthly billing total exceeds your configured threshold.': 'Cette alerte est envoyée une fois lorsque votre total de facturation mensuel dépasse votre seuil configuré.'
-'You can adjust your alert settings in your profile.': 'Vous pouvez ajuster vos paramètres d''alerte dans votre profil.'
+'You can adjust your alert settings in your profile.': "Vous pouvez ajuster vos paramètres d'alerte dans votre profil."
 'Go to Profile': 'Aller au profil'
 'You have been invited to TicketSync': 'Vous avez été invité(e) à rejoindre TicketSync'
 'You have been invited to join TicketSync, our ticket management system.': 'Vous avez été invité(e) à rejoindre TicketSync, notre système de gestion de tickets.'
@@ -227,8 +227,8 @@ Administrator: Administrateur
 'To get started, click the button below to set your password and activate your account.': 'Pour commencer, cliquez sur le bouton ci-dessous pour définir votre mot de passe et activer votre compte.'
 'Set Your Password': 'Définir votre mot de passe'
 'Note:': 'Note :'
-'This invitation link will expire on {date} at {time} (48 hours from now).': 'Ce lien d''invitation expirera le {date} à {time} (48 heures à partir de maintenant).'
-'If you did not expect this invitation, you can safely ignore this email.': 'Si vous n''attendiez pas cette invitation, vous pouvez ignorer cet email en toute sécurité.'
+'This invitation link will expire on {date} at {time} (48 hours from now).': "Ce lien d'invitation expirera le {date} à {time} (48 heures à partir de maintenant)."
+'If you did not expect this invitation, you can safely ignore this email.': "Si vous n'attendiez pas cette invitation, vous pouvez ignorer cet email en toute sécurité."
 'This is an automated email, please do not reply.': 'Ceci est un email automatique, veuillez ne pas répondre.'
 'Ticket Management System by': 'Système de gestion de tickets par'
 'New ticket': 'Nouveau ticket'
@@ -248,14 +248,41 @@ Administrator: Administrateur
 'Use a strong, unique password': 'Utilisez un mot de passe fort et unique'
 'Set Password & Continue': 'Définir le mot de passe et continuer'
 'This invitation expires on {date} at {time}': 'Cette invitation expire le {date} à {time}'
-
-# Status translations
 Open: Ouvert
 'In Progress': 'En cours'
 Wait: 'En attente'
 Resolved: Résolu
-
-# Priority translations
 'Priority A': 'Priorité A'
 'Priority B': 'Priorité B'
 'Priority C': 'Priorité C'
+'Users - Admin': 'Utilisateurs - Admin'
+'Invite User': 'Inviter un utilisateur'
+Created: Créé
+'Invitation Expired': 'Invitation expirée'
+'Pending Invitation': 'Invitation en attente'
+'Delete User': "Supprimer l'utilisateur"
+'This will also delete all associated tickets and data. This action cannot be undone.': 'Cela supprimera également tous les tickets et données associés. Cette action est irréversible.'
+'No users yet.': 'Aucun utilisateur pour le moment.'
+'Invite your first user': 'Invitez votre premier utilisateur'
+'Invite User - Admin': 'Inviter un utilisateur - Admin'
+'Back to Users': 'Retour aux utilisateurs'
+'Invite New User': 'Inviter un nouvel utilisateur'
+'An invitation email will be sent to the user with a secure link to set their password.': "Un email d'invitation sera envoyé à l'utilisateur avec un lien sécurisé pour définir son mot de passe."
+'The invitation link will expire in 48 hours.': "Le lien d'invitation expirera dans 48 heures."
+'Send Invitation': "Envoyer l'invitation"
+'Resend Invitation': "Renvoyer l'invitation"
+'Full Name': 'Nom complet'
+'Not assigned': 'Non assigné'
+'Account Status': 'Statut du compte'
+'Invitation Details': "Détails de l'invitation"
+'Created:': 'Créé :'
+'Expires:': 'Expire :'
+Accepted: Accepté
+Expired: Expiré
+Pending: 'En attente'
+'Created Tickets': 'Tickets créés'
+'This user has created {ticketsLength} ticket(s).': 'Cet utilisateur a créé {ticketsLength} ticket(s).'
+'No tickets created yet.': 'Aucun ticket créé pour le moment.'
+'This user has posted {commentsLength} comment(s).': 'Cet utilisateur a posté {commentsLength} commentaire(s).'
+'No comments posted yet.': 'Aucun commentaire posté pour le moment.'
+'Are you sure you want to delete {userEmail}?': 'Êtes-vous sûr de vouloir supprimer {userEmail} ?'

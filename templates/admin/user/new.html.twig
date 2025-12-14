@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Invite User - Admin{% endblock %}
+{% block title %}{{ 'Invite User - Admin'|trans }}{% endblock %}
 
 {% block body %}
 <div class="container py-4">
     <div class="mb-3">
         <a href="{{ path('app_admin_user_index') }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
-            Back to Users
+            {{ 'Back to Users'|trans }}
         </a>
     </div>
 
@@ -15,14 +15,14 @@
         <div class="card-header">
             <h2 class="mb-0">
                 <i class="bi bi-person-plus"></i>
-                Invite New User
+                {{ 'Invite New User'|trans }}
             </h2>
         </div>
         <div class="card-body">
             <div class="alert alert-info mb-4">
                 <i class="bi bi-info-circle"></i>
-                An invitation email will be sent to the user with a secure link to set their password.
-                The invitation link will expire in 48 hours.
+                {{ 'An invitation email will be sent to the user with a secure link to set their password.'|trans }}
+                {{ 'The invitation link will expire in 48 hours.'|trans }}
             </div>
 
             {{ form_start(form) }}
@@ -54,7 +54,7 @@
                     </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-envelope"></i>
-                        Send Invitation
+                        {{ 'Send Invitation'|trans }}
                     </button>
                 </div>
             {{ form_end(form) }}
