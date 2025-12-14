@@ -55,11 +55,12 @@ RUN a2enmod rewrite headers
 
 # Set Apache document root to Symfony's public directory
 # Using a variable that will be resolved at runtime
-ENV APACHE_DOCUMENT_ROOT=/var/www/ticketsync/current/public
+# Note: Deployer 7 uses 'release' symlink (not 'current')
+ENV APACHE_DOCUMENT_ROOT=/var/www/ticketsync/release/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Set working directory to ticketsync root
+# Set working directory to ticketsync root (not current, to avoid symlink issues)
 WORKDIR /var/www/ticketsync
 
 # Expose port 80

@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: ticketsync_app
     restart: unless-stopped
-    working_dir: /var/www/ticketsync/current
+    # Don't set working_dir here - use the WORKDIR from Dockerfile
+    # This avoids issues when 'current' symlink doesn't exist yet
     ports:
       - "8080:80"
     volumes:

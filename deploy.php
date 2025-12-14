@@ -45,10 +45,11 @@ host('production')
     ->set('http_user', 'www-data');
 
 // Helper function to run commands in Docker container
-function docker_exec(string $command): string
+function docker_exec(string $command, bool $useReleaseSymlink = false): string
 {
-    // Use the current release path, not 'current' symlink (which doesn't exist yet during deploy)
-    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} sh -c 'cd {{release_path}} && $command'";
+    // Deployer 7 uses 'release' symlink (not 'current' like Deployer 6)
+    $targetPath = $useReleaseSymlink ? '{{deploy_path}}/release' : '{{release_path}}';
+    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} sh -c 'cd $targetPath && $command'";
 }
 
 // Tasks
@@ -73,12 +74,16 @@ task('docker:up', function () {
 
 desc('Restart Docker containers');
 task('docker:restart', function () {
-    run('cd {{deploy_path}}/current && {{docker_compose_cmd}} restart');
+    // Deployer 7 uses 'release' symlink
+    $path = test('[ -L {{deploy_path}}/release ]') ? '{{deploy_path}}/release' : '{{release_path}}';
+    run("cd $path && {{docker_compose_cmd}} restart");
 });
 
 desc('Stop Docker containers');
 task('docker:down', function () {
-    run('cd {{deploy_path}}/current && {{docker_compose_cmd}} down');
+    // Deployer 7 uses 'release' symlink
+    $path = test('[ -L {{deploy_path}}/release ]') ? '{{deploy_path}}/release' : '{{release_path}}';
+    run("cd $path && {{docker_compose_cmd}} down");
 });
 
 desc('Build assets (SASS + importmap)');
@@ -94,38 +99,39 @@ task('deploy:assets', function () {
     run(docker_exec('php bin/console asset-map:compile'));
 });
 
-desc('Prepare SQLite database file');
+desc('Ensure SQLite database file exists with correct permissions');
 task('database:prepare', function () {
     $dbPath = '{{deploy_path}}/shared/var/data_prod.db';
 
     // Create var directory if it doesn't exist
     run('mkdir -p {{deploy_path}}/shared/var');
 
-    // Check if database file exists and has content
-    $dbExists = test("[ -f $dbPath ] && [ -s $dbPath ]");
-
+    // Create empty file if it doesn't exist (schema creation is manual)
+    $dbExists = test("[ -f $dbPath ]");
     if (!$dbExists) {
-        // First deploy: create empty file
+        writeln('<info>Creating empty database file. You need to create the schema manually:</info>');
+        writeln('<comment>docker exec -it ticketsync_app bash</comment>');
+        writeln('<comment>cd release && php bin/console doctrine:schema:create --env=prod</comment>');
+        writeln('<comment>php bin/console doctrine:fixtures:load --group=prod --env=prod --no-interaction</comment>');
         run("touch $dbPath");
-        run("chmod 666 $dbPath");
-
-        // Create schema from scratch
-        writeln('<info>Creating database schema for first deployment...</info>');
-        run(docker_exec('APP_ENV=prod php bin/console doctrine:schema:create --env=prod'));
-
-        // Mark all migrations as executed (since schema is already created)
-        writeln('<info>Marking all migrations as executed...</info>');
-        run(docker_exec('APP_ENV=prod php bin/console doctrine:migrations:version --add --all --no-interaction --env=prod'));
-    } else {
-        // Database exists, just ensure permissions
-        run("chmod 666 $dbPath");
     }
+
+    // Ensure correct permissions
+    run("chmod 666 $dbPath");
 });
 
 desc('Run database migrations');
 task('database:migrate', function () {
-    // Run migrations (Doctrine skips already executed migrations automatically)
-    run(docker_exec('php bin/console doctrine:migrations:migrate --no-interaction'));
+    // Only run migrations if database has tables (skip for empty DB)
+    $dbPath = '{{deploy_path}}/shared/var/data_prod.db';
+    $dbHasContent = test("[ -f $dbPath ] && [ -s $dbPath ]");
+
+    if ($dbHasContent) {
+        writeln('<info>Running database migrations...</info>');
+        run(docker_exec('php bin/console doctrine:migrations:migrate --no-interaction'));
+    } else {
+        writeln('<comment>Skipping migrations (empty database - create schema manually first)</comment>');
+    }
 });
 
 desc('Clear and warmup cache');
