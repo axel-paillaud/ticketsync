@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Organization - Admin{% endblock %}
+{% block title %}{{ 'New Organization - Admin'|trans }}{% endblock %}
 
 {% block body %}
 <div class="container py-4">
     <div class="mb-3">
         <a href="{{ path('app_admin_organization_index') }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
-            Back to Organizations
+            {{ 'Back to Organizations'|trans }}
         </a>
     </div>
 
@@ -15,7 +15,7 @@
         <div class="card-header">
             <h2 class="mb-0">
                 <i class="bi bi-plus-circle"></i>
-                New Organization
+                {{ 'New Organization'|trans }}
             </h2>
         </div>
         <div class="card-body">
@@ -53,11 +53,11 @@
 
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{{ path('app_admin_organization_index') }}" class="btn btn-secondary">
-                        Cancel
+                        {{ 'Cancel'|trans }}
                     </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-circle"></i>
-                        Create Organization
+                        {{ 'Create Organization'|trans }}
                     </button>
                 </div>
             {{ form_end(form) }}

@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ organization.name }} - Admin{% endblock %}
+{% block title %}{{ organization.name }} - {{ 'Admin'|trans }}{% endblock %}
 
 {% block body %}
 <div class="container py-4">
     <div class="mb-3">
         <a href="{{ path('app_admin_organization_index') }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
-            Back to Organizations
+            {{ 'Back to Organizations'|trans }}
         </a>
     </div>
 
@@ -20,11 +20,11 @@
             <div class="btn-group">
                 <a href="{{ path('app_admin_organization_edit', {id: organization.id}) }}" class="btn btn-outline-primary btn-sm">
                     <i class="bi bi-pencil"></i>
-                    Edit
+                    {{ 'Edit'|trans }}
                 </a>
                 <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
                     <i class="bi bi-trash"></i>
-                    Delete
+                    {{ 'Delete'|trans }}
                 </button>
             </div>
         </div>
@@ -32,74 +32,74 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Slug</div>
+                        <div class="info-label">{{ 'Slug'|trans }}</div>
                         <div class="info-value"><code>{{ organization.slug }}</code></div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Status</div>
+                        <div class="info-label">{{ 'Status'|trans }}</div>
                         <div class="info-value">
                             {% if organization.isActive %}
-                                <span class="badge bg-success">Active</span>
+                                <span class="badge bg-success">{{ 'Active'|trans }}</span>
                             {% else %}
-                                <span class="badge bg-danger">Inactive</span>
+                                <span class="badge bg-danger">{{ 'Inactive'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Email</div>
+                        <div class="info-label">{{ 'Email'|trans }}</div>
                         <div class="info-value">
                             {% if organization.email %}
                                 <a href="mailto:{{ organization.email }}">{{ organization.email }}</a>
                             {% else %}
-                                <span class="text-muted">Not set</span>
+                                <span class="text-muted">{{ 'Not set'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Phone</div>
+                        <div class="info-label">{{ 'Phone'|trans }}</div>
                         <div class="info-value">
                             {% if organization.phone %}
                                 {{ organization.phone }}
                             {% else %}
-                                <span class="text-muted">Not set</span>
+                                <span class="text-muted">{{ 'Not set'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">SIRET</div>
+                        <div class="info-label">{{ 'SIRET'|trans }}</div>
                         <div class="info-value">
                             {% if organization.siret %}
                                 {{ organization.siret }}
                             {% else %}
-                                <span class="text-muted">Not set</span>
+                                <span class="text-muted">{{ 'Not set'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Hourly Rate</div>
+                        <div class="info-label">{{ 'Hourly Rate'|trans }}</div>
                         <div class="info-value">{{ organization.hourlyRate }} €</div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">Created At</div>
+                        <div class="info-label">{{ 'Created At'|trans }}</div>
                         <div class="info-value">{{ organization.createdAt|date('M d, Y H:i') }}</div>
                     </div>
                 </div>
                 {% if organization.address %}
                     <div class="col-12">
                         <div class="info-box">
-                            <div class="info-label">Address</div>
+                            <div class="info-label">{{ 'Address'|trans }}</div>
                             <div class="info-value">{{ organization.address|nl2br }}</div>
                         </div>
                     </div>
@@ -114,7 +114,7 @@
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="bi bi-people"></i>
-                        Users ({{ organization.users|length }})
+                        {{ 'Users'|trans }} ({{ organization.users|length }})
                     </h5>
                 </div>
                 <div class="card-body">
@@ -128,15 +128,15 @@
                                         <small class="text-muted">{{ user.email }}</small>
                                     </div>
                                     {% if 'ROLE_ADMIN' in user.roles %}
-                                        <span class="badge bg-danger">Admin</span>
+                                        <span class="badge bg-danger">{{ 'Admin'|trans }}</span>
                                     {% else %}
-                                        <span class="badge bg-primary">User</span>
+                                        <span class="badge bg-primary">{{ 'User'|trans }}</span>
                                     {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-muted mb-0">No users in this organization.</p>
+                        <p class="text-muted mb-0">{{ 'No users in this organization.'|trans }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -147,18 +147,22 @@
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="bi bi-ticket-perforated"></i>
-                        Tickets ({{ organization.tickets|length }})
+                        {{ 'Tickets'|trans }} ({{ organization.tickets|length }})
                     </h5>
                 </div>
                 <div class="card-body">
                     {% if organization.tickets|length > 0 %}
-                        <p>This organization has {{ organization.tickets|length }} ticket(s).</p>
+                        <p>
+                            {{ 'This organization has %ticketsLength% ticket(s).'|trans({
+                                '%ticketsLength%': organization.tickets|length
+                            }) }}
+                        </p>
                         <a href="{{ path('app_ticket_index', {organizationSlug: organization.slug}) }}" class="btn btn-sm btn-primary">
                             <i class="bi bi-eye"></i>
-                            View Tickets
+                            {{ 'View Tickets'|trans }}
                         </a>
                     {% else %}
-                        <p class="text-muted mb-0">No tickets for this organization.</p>
+                        <p class="text-muted mb-0">{{ 'No tickets for this organization.'|trans }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -171,23 +175,24 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Delete Organization</h5>
+                <h5 class="modal-title">{{ 'Delete Organization'|trans }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to delete <strong>{{ organization.name }}</strong>?</p>
+                <p>{{ 'Are you sure you want to delete'|trans }} <strong>{{ organization.name }}</strong> ?</p>
                 <p class="text-danger mb-0">
                     <i class="bi bi-exclamation-triangle"></i>
-                    This will also delete all associated users, tickets, and data. This action cannot be undone.
+                    {{ 'This will also delete all associated users, tickets, and data. This action cannot be undone.'|trans }}
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
                 <form method="post" action="{{ path('app_admin_organization_delete', {id: organization.id}) }}" class="d-inline">
                     <input type="hidden" name="_token" value="{{ csrf_token('delete-organization-' ~ organization.id) }}">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash"></i>
-                        Delete
+                        {{ 'Delete'|trans }}
                     </button>
                 </form>
             </div>
