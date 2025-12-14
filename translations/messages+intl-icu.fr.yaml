@@ -25,57 +25,41 @@
 '[TicketSync] Ticket #%d status updated': '[TicketSync] Statut du ticket #%d mis à jour'
 '[TicketSync] Monthly threshold exceeded for %s': '[TicketSync] Seuil mensuel dépassé pour %s'
 '[TicketSync] You have been invited to join TicketSync': '[TicketSync] Vous avez été invité(e) à rejoindre TicketSync'
-
-# Form labels - Ticket
-'Title': 'Titre'
-'Description': 'Description'
-'Status': 'Statut'
-'Priority': 'Priorité'
-'Attachments': 'Pièces jointes'
-
-# Form labels - Comment
+Title: Titre
+Description: Description
+Status: Statut
+Priority: Priorité
+Attachments: 'Pièces jointes'
 'Your comment': 'Votre commentaire'
 'Write your comment...': 'Écrivez votre commentaire...'
 'Attachments (optional)': 'Pièces jointes (optionnel)'
-
-# Form labels - Organization
-'Organization Name': 'Nom de l''organisation'
-'Enter organization name': 'Saisissez le nom de l''organisation'
-'Email': 'Email'
-'Phone': 'Téléphone'
-'Address': 'Adresse'
+'Organization Name': "Nom de l'organisation"
+'Enter organization name': "Saisissez le nom de l'organisation"
+Email: Email
+Phone: Téléphone
+Address: Adresse
 'Full address': 'Adresse complète'
-'SIRET': 'SIRET'
+SIRET: SIRET
 '14 digits': '14 chiffres'
 'Hourly Rate (€)': 'Taux horaire (€)'
-'Active': 'Actif'
-
-# Form labels - Time Entry
+Active: Actif
 'Work Description': 'Description du travail'
 'Describe the work performed...': 'Décrivez le travail effectué...'
 'Hours Worked': 'Heures travaillées'
 'e.g., 1.5 (1h30) or 0.75 (45min)': 'ex: 1.5 (1h30) ou 0.75 (45min)'
 'Work Date': 'Date du travail'
-
-# Form labels - User Profile
-'First Name': 'Prénom'
-'Last Name': 'Nom'
-'Enable monthly alert': 'Activer l''alerte mensuelle'
+'First Name': Prénom
+'Last Name': Nom
+'Enable monthly alert': "Activer l'alerte mensuelle"
 'Monthly threshold (€)': 'Seuil mensuel (€)'
-
-# Form labels - User Invitation
-'Organization': 'Organisation'
+Organization: Organisation
 'Select an organization': 'Sélectionnez une organisation'
-'Role': 'Rôle'
-'User': 'Utilisateur'
-'Admin': 'Administrateur'
+Role: Rôle
+User: Utilisateur
+Admin: Administrateur
 'Admins have access to all organizations and can manage the system.': 'Les administrateurs ont accès à toutes les organisations et peuvent gérer le système.'
-
-# Form labels - Registration
-'Company Name': 'Nom de l''entreprise'
-
-# Form labels - Set Password
-'Password': 'Mot de passe'
+'Company Name': "Nom de l'entreprise"
+Password: 'Mot de passe'
 'Enter your password': 'Saisissez votre mot de passe'
 'Confirm Password': 'Confirmez le mot de passe'
 'Confirm your password': 'Confirmez votre mot de passe'
