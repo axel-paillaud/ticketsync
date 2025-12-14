@@ -1,7 +1,7 @@
 {% extends 'emails/_layout.html.twig' %}
 
 {% block title %}
-    {{ 'New comment on ticket %ticketId%'|trans({ '%ticketId%': ticket.id}) }}
+    {{ 'New comment on ticket {ticketId}'|trans({ 'ticketId': ticket.id}) }}
 {% endblock %}
 
 {% block content %}

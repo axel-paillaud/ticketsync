@@ -29,9 +29,9 @@
     </a>
 
     <p style="margin-top: 20px; font-size: 14px; color: #928374;">
-        <strong>{{ 'Note:'|trans }}</strong> {{ 'This invitation link will expire on %date% at %time% (48 hours from now).'|trans({
-            '%date%': invitation.expiresAt|date('F d, Y'),
-            '%time%': invitation.expiresAt|date('H:i')
+        <strong>{{ 'Note:'|trans }}</strong> {{ 'This invitation link will expire on {date} at {time} (48 hours from now).'|trans({
+            'date': invitation.expiresAt|date('F d, Y'),
+            'time': invitation.expiresAt|date('H:i')
         }) }}
     </p>
 

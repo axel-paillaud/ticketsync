@@ -64,9 +64,9 @@
 
                     <div class="text-center mt-3">
                         <small class="text-muted">
-                            {{ 'This invitation expires on %date% at %time%'|trans({
-                                '%date%': invitation.expiresAt|date('F d, Y'),
-                                '%time%': invitation.expiresAt|date('H:i'),
+                            {{ 'This invitation expires on {date} at {time}'|trans({
+                                'date': invitation.expiresAt|date('F d, Y'),
+                                'time': invitation.expiresAt|date('H:i'),
                             }) }}
                         </small>
                     </div>

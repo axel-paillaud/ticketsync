@@ -153,8 +153,8 @@
                 <div class="card-body">
                     {% if organization.tickets|length > 0 %}
                         <p>
-                            {{ 'This organization has %ticketsLength% ticket(s).'|trans({
-                                '%ticketsLength%': organization.tickets|length
+                            {{ 'This organization has {ticketsLength} ticket(s).'|trans({
+                                'ticketsLength': organization.tickets|length
                             }) }}
                         </p>
                         <a href="{{ path('app_ticket_index', {organizationSlug: organization.slug}) }}" class="btn btn-sm btn-primary">
