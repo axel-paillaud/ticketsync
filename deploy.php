@@ -27,8 +27,8 @@ add('shared_dirs', [
 
 // Writable dirs by web server
 // Note: With Docker, writable permissions are managed by the container (runs as root)
-// We don't need to run chmod from the host - disable writable task
-add('writable_dirs', []);
+// We don't need to run chmod from the host - override with empty array to disable
+set('writable_dirs', []);  // Use set() instead of add() to override Symfony recipe defaults
 
 set('writable_mode', 'chmod');
 set('writable_chmod_mode', '0775');
@@ -48,6 +48,12 @@ function docker_exec(string $command, bool $useReleaseSymlink = false): string
     $targetPath = $useReleaseSymlink ? '{{deploy_path}}/release' : '{{release_path}}';
     return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} sh -c 'cd $targetPath && $command'";
 }
+
+// Override deploy:writable to do nothing (Docker handles permissions)
+desc('Skip writable (Docker handles permissions)');
+task('deploy:writable', function () {
+    writeln('<comment>Skipping writable task - Docker container handles permissions</comment>');
+});
 
 // Tasks
 desc('Upload .env.production.local file');
