@@ -14,7 +14,7 @@
         <p><strong>{{ 'Organization:'|trans }}</strong> {{ ticket.organization.name }}</p>
         <p>
             <strong>{{ 'Status:'|trans }}</strong>
-            <span class="badge badge-status">{{ ticket.status.name }}</span>
+            <span class="badge badge-status">{{ ticket.status.name|trans }}</span>
         </p>
         <p><strong>{{ 'Comment author:'|trans }}</strong> {{ comment.author.name }}</p>
         <p><strong>{{ 'Date:'|trans }}</strong> {{ comment.createdAt|date('m/d/Y at H:i') }}</p>

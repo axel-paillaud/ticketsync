@@ -13,11 +13,11 @@
         <p><strong>{{ 'Title:'|trans }}</strong> {{ ticket.title }}</p>
         <p>
             <strong>{{ 'Status:'|trans }}</strong>
-            <span class="badge badge-status">{{ ticket.status.name }}</span>
+            <span class="badge badge-status">{{ ticket.status.name|trans }}</span>
         </p>
         <p>
             <strong>{{ 'Priority:'|trans }}</strong>
-            <span class="badge badge-priority">{{ ticket.priority.name }}</span>
+            <span class="badge badge-priority">{{ ticket.priority.name|trans }}</span>
         </p>
         <p><strong>{{ 'Created by:'|trans }}</strong> {{ ticket.createdBy.name }}</p>
         {% if ticket.assignedTo %}

@@ -15,14 +15,14 @@
 
         <p><strong>{{ 'Status changed:'|trans }}</strong></p>
         <p>
-            <span class="badge badge-status">{{ oldStatus.name }}</span>
+            <span class="badge badge-status">{{ oldStatus.name|trans }}</span>
             →
-            <span class="badge badge-status">{{ newStatus.name }}</span>
+            <span class="badge badge-status">{{ newStatus.name|trans }}</span>
         </p>
 
         <p>
             <strong>{{ 'Priority:'|trans }}</strong>
-            <span class="badge badge-priority">{{ ticket.priority.name }}</span>
+            <span class="badge badge-priority">{{ ticket.priority.name|trans }}</span>
         </p>
 
         {% if ticket.assignedTo %}

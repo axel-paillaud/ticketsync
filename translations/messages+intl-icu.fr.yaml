@@ -248,3 +248,14 @@ Administrator: Administrateur
 'Use a strong, unique password': 'Utilisez un mot de passe fort et unique'
 'Set Password & Continue': 'Définir le mot de passe et continuer'
 'This invitation expires on {date} at {time}': 'Cette invitation expire le {date} à {time}'
+
+# Status translations
+Open: Ouvert
+'In Progress': 'En cours'
+Wait: 'En attente'
+Resolved: Résolu
+
+# Priority translations
+'Priority A': 'Priorité A'
+'Priority B': 'Priorité B'
+'Priority C': 'Priorité C'
