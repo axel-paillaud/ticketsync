@@ -68,7 +68,9 @@ final class TicketController extends AbstractController
             $ticket->setStatus($defaultStatus);
         }
 
-        $form = $this->createForm(TicketType::class, $ticket);
+        $form = $this->createForm(TicketType::class, $ticket, [
+            'is_admin' => $this->isGranted('ROLE_ADMIN'),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -200,10 +202,20 @@ final class TicketController extends AbstractController
         // Security check: user must have permission to edit this ticket
         $this->denyAccessUnlessGranted('TICKET_EDIT', $ticket);
 
-        $form = $this->createForm(TicketType::class, $ticket);
+        // Store original status to check if non-admin tried to change it
+        $originalStatus = $ticket->getStatus();
+
+        $form = $this->createForm(TicketType::class, $ticket, [
+            'is_admin' => $this->isGranted('ROLE_ADMIN'),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Security: prevent non-admins from changing status
+            if (!$this->isGranted('ROLE_ADMIN') && $ticket->getStatus() !== $originalStatus) {
+                $ticket->setStatus($originalStatus);
+            }
+
             $entityManager->flush();
 
             // Handle new file uploads

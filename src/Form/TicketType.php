@@ -28,6 +28,7 @@ class TicketType extends AbstractType
                 'class' => Status::class,
                 'choice_label' => 'name',
                 'label' => 'Status',
+                'disabled' => !$options['is_admin'],
             ])
             ->add('priority', EntityType::class, [
                 'class' => Priority::class,
@@ -69,6 +70,7 @@ class TicketType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Ticket::class,
+            'is_admin' => false,
         ]);
     }
 }
