@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Set Your Password - TicketSync{% endblock %}
+{% block title %}{{ 'Set Your Password'|trans }} - TicketSync{% endblock %}
 
 {% block body %}
 <div class="container py-5">
@@ -10,27 +10,27 @@
                 <div class="card-header text-center">
                     <h2 class="mb-0">
                         <i class="bi bi-envelope-check"></i>
-                        Welcome to TicketSync
+                        {{ 'Welcome to TicketSync'|trans }}
                     </h2>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info mb-4">
                         <i class="bi bi-info-circle"></i>
-                        Hello <strong>{{ user.name }}</strong>, please set your password to complete your account setup.
+                        {{ 'Hello'|trans }} <strong>{{ user.name }}</strong>, {{ 'please set your password to complete your account setup.'|trans }}
                     </div>
 
                     <div class="mb-4">
                         <h5>Your Account Details:</h5>
                         <ul class="list-unstyled">
-                            <li><strong>Email:</strong> {{ user.email }}</li>
+                            <li><strong>{{ 'Email:'|trans }}</strong> {{ user.email }}</li>
                             {% if user.organization %}
-                                <li><strong>Organization:</strong> {{ user.organization.name }}</li>
+                                <li><strong>{{ 'Organization:'|trans }}</strong> {{ user.organization.name }}</li>
                             {% endif %}
-                            <li><strong>Role:</strong>
+                            <li><strong>{{ 'Role:'|trans }}</strong>
                                 {% if 'ROLE_ADMIN' in user.roles %}
-                                    <span class="badge bg-danger">Administrator</span>
+                                    <span class="badge bg-danger">{{ 'Administrator'|trans }}</span>
                                 {% else %}
-                                    <span class="badge bg-primary">User</span>
+                                    <span class="badge bg-primary">{{ 'User'|trans }}</span>
                                 {% endif %}
                             </li>
                         </ul>
@@ -47,24 +47,27 @@
 
                         <div class="alert alert-warning">
                             <i class="bi bi-shield-lock"></i>
-                            <strong>Password Requirements:</strong>
+                            <strong>{{ 'Password Requirements:'|trans }}</strong>
                             <ul class="mb-0 mt-2">
-                                <li>Minimum 6 characters</li>
-                                <li>Use a strong, unique password</li>
+                                <li>{{ 'Minimum 6 characters'|trans }}</li>
+                                <li>{{ 'Use a strong, unique password'|trans }}</li>
                             </ul>
                         </div>
 
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="bi bi-check-circle"></i>
-                                Set Password & Continue
+                                {{ 'Set Password & Continue'|trans }}
                             </button>
                         </div>
                     {{ form_end(form) }}
 
                     <div class="text-center mt-3">
                         <small class="text-muted">
-                            This invitation expires on {{ invitation.expiresAt|date('F d, Y') }} at {{ invitation.expiresAt|date('H:i') }}
+                            {{ 'This invitation expires on %date% at %time%'|trans({
+                                '%date%': invitation.expiresAt|date('F d, Y'),
+                                '%time%': invitation.expiresAt|date('H:i'),
+                            }) }}
                         </small>
                     </div>
                 </div>
