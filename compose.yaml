@@ -5,12 +5,11 @@ services:
       dockerfile: Dockerfile
     container_name: ticketsync_app
     restart: unless-stopped
-    # Don't set working_dir here - use the WORKDIR from Dockerfile
-    # This avoids issues when 'current' symlink doesn't exist yet
     ports:
       - "8080:80"
     volumes:
-      # Mount the entire ticketsync directory so container can access shared/ via symlinks
       - /var/www/ticketsync:/var/www/ticketsync
+    env_file:
+      - /var/www/ticketsync/shared/.env.production.local
     environment:
       APP_ENV: prod
