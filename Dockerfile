@@ -58,6 +58,19 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/ticketsync/current/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+# Configure Apache for Symfony
+RUN { \
+    echo '<Directory ${APACHE_DOCUMENT_ROOT}>'; \
+    echo '    AllowOverride None'; \
+    echo '    Require all granted'; \
+    echo '    FallbackResource /index.php'; \
+    echo '</Directory>'; \
+    echo ''; \
+    echo '<Directory ${APACHE_DOCUMENT_ROOT}/bundles>'; \
+    echo '    FallbackResource disabled'; \
+    echo '</Directory>'; \
+} >> /etc/apache2/sites-available/000-default.conf
+
 # Set working directory to ticketsync root (not current, to avoid symlink issues)
 WORKDIR /var/www/ticketsync
 
