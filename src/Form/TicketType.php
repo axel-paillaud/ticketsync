@@ -18,18 +18,24 @@ class TicketType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title')
-            ->add('description')
+            ->add('title', null, [
+                'label' => 'Title',
+            ])
+            ->add('description', null, [
+                'label' => 'Description',
+            ])
             ->add('status', EntityType::class, [
                 'class' => Status::class,
                 'choice_label' => 'name',
+                'label' => 'Status',
             ])
             ->add('priority', EntityType::class, [
                 'class' => Priority::class,
                 'choice_label' => 'name',
+                'label' => 'Priority',
             ])
             ->add('attachments', FileType::class, [
-               'label' => 'Pièces jointes',
+               'label' => 'Attachments',
                'mapped' => false,
                'required' => false,
                'multiple' => true,
@@ -52,7 +58,7 @@ class TicketType extends AbstractType
                                 'application/zip',
                                 'application/x-rar-compressed'
                             ],
-                            'mimeTypesMessage' => 'Veuillez uploader un fichier valide (image, PDF, Word, Excel, texte, archive)',
+                            'mimeTypesMessage' => 'Please upload a valid file (image, PDF, Word, Excel, text, archive)',
                         ])
                     ])
                ]

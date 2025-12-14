@@ -17,14 +17,14 @@ class CommentType extends AbstractType
     {
         $builder
             ->add('content', TextareaType::class, [
-                'label' => 'Votre commentaire',
+                'label' => 'Your comment',
                 'attr' => [
                     'rows' => 4,
-                    'placeholder' => 'Écrivez votre commentaire ...'
+                    'placeholder' => 'Write your comment...'
                 ]
             ])
             ->add('attachments', FileType::class, [
-                'label' => 'Pièces jointes (optionnel)',
+                'label' => 'Attachments (optional)',
                 'mapped' => false,
                 'required' => false,
                 'multiple' => true,
@@ -49,7 +49,7 @@ class CommentType extends AbstractType
                                 'application/zip',
                                 'application/x-rar-compressed',
                             ],
-                            'mimeTypesMessage' => 'Veuillez uploader un fichier valide (image, PDF, Word, Excel, texte ou archive)',
+                            'mimeTypesMessage' => 'Please upload a valid file (image, PDF, Word, Excel, text or archive)',
                         ])
                     ])
                 ],
