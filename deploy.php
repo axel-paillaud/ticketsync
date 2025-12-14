@@ -76,6 +76,7 @@ task('deploy:assets', function () {
     run(docker_exec('npm run sass'));
     run(docker_exec('php bin/console importmap:install'));
     run(docker_exec('php bin/console asset-map:compile'));
+    run(docker_exec('rm -rf node_modules'));
 })->desc('Build assets');
 
 task('database:prepare', function () {
