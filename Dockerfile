@@ -1,5 +1,8 @@
 FROM php:8.4-apache
 
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -14,6 +17,10 @@ RUN apt-get update && apt-get install -y \
     sqlite3 \
     libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Configure www-data user with host's UID/GID to avoid permission issues
+RUN groupmod -g $GROUP_ID www-data \
+    && usermod -u $USER_ID -g $GROUP_ID www-data
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
