@@ -8,9 +8,6 @@ framework:
     #esi: true
     #fragments: true
 
-    trusted_proxies: '%env(TRUSTED_PROXIES)%'
-    trusted_headers: '%env(TRUSTED_HEADERS)%'
-
 when@test:
     framework:
         test: true
