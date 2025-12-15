@@ -27,60 +27,60 @@ class RegistrationController extends AbstractController
     {
     }
 
-    #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
-    {
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $organizationName = $form->get('organizationName')->getData();
-
-            $slugger = new AsciiSlugger();
-            $slug = $slugger->slug($organizationName)->lower();
-
-            $organization = $entityManager->getRepository(Organization::class)
-                ->findOneBy(['slug' => $slug]);
-
-            // if organization doesn't exist, create it
-            if (!$organization) {
-                $organization = new Organization();
-                $organization->setName($organizationName);
-                $organization->setIsActive(true);
-                $entityManager->persist($organization);
-            }
-
-            $user->setOrganization($organization);
-
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
-
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                (new TemplatedEmail())
-                    ->from(new Address('contact@axelweb.fr', 'Axelweb'))
-                    ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
-            );
-
-            // do anything else you need here, like send an email
-
-            $this->addFlash('success', $translator->trans('Account created! Please log in.'));
-            return $this->redirectToRoute('app_login');
-        }
-
-        return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
-        ]);
-    }
+    // #[Route('/register', name: 'app_register')]
+    // public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
+    // {
+    //     $user = new User();
+    //     $form = $this->createForm(RegistrationFormType::class, $user);
+    //     $form->handleRequest($request);
+    //
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $organizationName = $form->get('organizationName')->getData();
+    //
+    //         $slugger = new AsciiSlugger();
+    //         $slug = $slugger->slug($organizationName)->lower();
+    //
+    //         $organization = $entityManager->getRepository(Organization::class)
+    //             ->findOneBy(['slug' => $slug]);
+    //
+    //         // if organization doesn't exist, create it
+    //         if (!$organization) {
+    //             $organization = new Organization();
+    //             $organization->setName($organizationName);
+    //             $organization->setIsActive(true);
+    //             $entityManager->persist($organization);
+    //         }
+    //
+    //         $user->setOrganization($organization);
+    //
+    //         /** @var string $plainPassword */
+    //         $plainPassword = $form->get('plainPassword')->getData();
+    //
+    //         // encode the plain password
+    //         $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+    //
+    //         $entityManager->persist($user);
+    //         $entityManager->flush();
+    //
+    //         // generate a signed url and email it to the user
+    //         $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+    //             (new TemplatedEmail())
+    //                 ->from(new Address('contact@axelweb.fr', 'Axelweb'))
+    //                 ->to((string) $user->getEmail())
+    //                 ->subject('Please Confirm your Email')
+    //                 ->htmlTemplate('registration/confirmation_email.html.twig')
+    //         );
+    //
+    //         // do anything else you need here, like send an email
+    //
+    //         $this->addFlash('success', $translator->trans('Account created! Please log in.'));
+    //         return $this->redirectToRoute('app_login');
+    //     }
+    //
+    //     return $this->render('registration/register.html.twig', [
+    //         'registrationForm' => $form,
+    //     ]);
+    // }
 
     #[Route('/verify/email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): Response
