@@ -12,6 +12,12 @@ class SecurityController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        dump([
+            'secure' => $request->isSecure(),
+            'scheme' => $request->getScheme(),
+            'host' => $request->getHost(),
+        ]);
+
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
