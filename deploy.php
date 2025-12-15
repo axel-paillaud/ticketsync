@@ -38,10 +38,11 @@ host('production')
     ->set('http_user', 'www-data');
 
 // Helper: run commands in Docker container
-function docker_exec(string $command, bool $useCurrentSymlink = false): string
+function docker_exec(string $command, bool $useCurrentSymlink = false, ?string $user = null): string
 {
     $targetPath = $useCurrentSymlink ? '{{deploy_path}}/current' : '{{release_path}}';
-    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} sh -c 'cd $targetPath && $command'";
+    $userFlag = $user ? "--user $user " : '';
+    return "cd {{release_path}} && {{docker_compose_cmd}} exec -T $userFlag{{docker_service}} sh -c 'cd $targetPath && $command'";
 }
 
 // Override writable task (Docker handles permissions)
@@ -72,11 +73,11 @@ task('docker:down', function () {
 })->desc('Stop Docker containers');
 
 task('deploy:assets', function () {
-    run(docker_exec('npm install --production'));
-    run(docker_exec('npm run sass'));
-    run(docker_exec('php bin/console importmap:install'));
-    run(docker_exec('php bin/console asset-map:compile'));
-    run(docker_exec('rm -rf node_modules'));
+    run(docker_exec('npm install --production', false, 'www-data'));
+    run(docker_exec('npm run sass', false, 'www-data'));
+    run(docker_exec('php bin/console importmap:install', false, 'www-data'));
+    run(docker_exec('php bin/console asset-map:compile', false, 'www-data'));
+    run(docker_exec('rm -rf node_modules', false, 'www-data'));
 })->desc('Build assets');
 
 task('database:prepare', function () {
@@ -104,12 +105,12 @@ task('database:migrate', function () {
 })->desc('Run migrations');
 
 task('deploy:cache', function () {
-    run(docker_exec('php bin/console cache:clear --env=prod --no-warmup'));
-    run(docker_exec('php bin/console cache:warmup --env=prod'));
+    run(docker_exec('php bin/console cache:clear --env=prod --no-warmup', false, 'www-data'));
+    run(docker_exec('php bin/console cache:warmup --env=prod', false, 'www-data'));
 })->desc('Clear and warmup cache');
 
 task('deploy:vendors', function () {
-    run(docker_exec('composer install --no-dev --no-progress --no-interaction --prefer-dist --optimize-autoloader'));
+    run(docker_exec('composer install --no-dev --no-progress --no-interaction --prefer-dist --optimize-autoloader', false, 'www-data'));
 })->desc('Install dependencies');
 
 task('deploy:remove_var', function () {
@@ -118,7 +119,7 @@ task('deploy:remove_var', function () {
 
 task('deploy:fix_permissions', function () {
     run('chown -R axel:www-data {{release_path}} || true');
-})->desc('Fix file permissions after Docker operations');
+})->desc('Fix file permissions (manual use only, no longer auto-run)');
 
 // Hooks
 after('deploy:failed', 'deploy:unlock');
@@ -131,7 +132,6 @@ after('deploy:shared', 'database:prepare');
 after('database:prepare', 'database:migrate');
 after('database:migrate', 'deploy:cache:clear');
 after('deploy:cache:clear', 'deploy:cache');
-after('deploy:cache', 'deploy:fix_permissions');
 after('deploy:symlink', 'docker:restart');
 after('rollback', 'docker:restart');
 
