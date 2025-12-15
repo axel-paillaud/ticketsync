@@ -255,8 +255,8 @@ final class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/tickets/{ticketId}', name: 'app_ticket_delete', methods: ['POST'])]
-    public function delete(Organization $organization, Request $request, #[MapEntity(id: 'ticketId')] Ticket $ticket, EntityManagerInterface $entityManager): Response
+    #[Route('/tickets/{ticketId}/delete', name: 'app_ticket_delete', methods: ['POST'])]
+    public function delete(Organization $organization, Request $request, #[MapEntity(id: 'ticketId')] Ticket $ticket, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
     {
         // Security check: user must belong to this organization
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
@@ -272,6 +272,8 @@ final class TicketController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$ticket->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($ticket);
             $entityManager->flush();
+
+            $this->addFlash('success', $translator->trans('Ticket successfully deleted!'));
         }
 
         return $this->redirectToRoute(
