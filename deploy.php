@@ -73,7 +73,7 @@ task('docker:down', function () {
 })->desc('Stop Docker containers');
 
 task('deploy:assets', function () {
-    run(docker_exec('npm install --production', false, 'www-data'));
+    run(docker_exec('npm install --omit=dev --cache /tmp/.npm', false, 'www-data'));
     run(docker_exec('npm run sass', false, 'www-data'));
     run(docker_exec('php bin/console importmap:install', false, 'www-data'));
     run(docker_exec('php bin/console asset-map:compile', false, 'www-data'));
