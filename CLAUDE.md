@@ -123,7 +123,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - Optimisations performances
 
 ## Notes Techniques
-- Projet solo pour ~300 clients max
+- Projet solo pour ~15 clients max
 - Pas besoin d'optimisation prématurée sur l'organisation des fichiers
 - Focus sur la simplicité et les fonctionnalités métier
 - Architecture multi-tenant avec isolation stricte par organization
