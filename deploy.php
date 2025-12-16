@@ -118,8 +118,11 @@ task('deploy:remove_var', function () {
 })->desc('Remove var directory');
 
 task('deploy:fix_permissions', function () {
+    // Set ownership to axel:www-data for the entire release
     run('chown -R axel:www-data {{release_path}} || true');
-})->desc('Fix file permissions (manual use only, no longer auto-run)');
+    // Ensure group has write permissions on directories
+    run('find {{release_path}} -type d -exec chmod 775 {} + || true');
+})->desc('Fix file permissions for www-data');
 
 // Hooks
 after('deploy:failed', 'deploy:unlock');
@@ -128,7 +131,8 @@ after('docker:build', 'docker:up');
 after('docker:up', 'deploy:vendors');
 after('deploy:vendors', 'deploy:assets');
 before('deploy:shared', 'deploy:remove_var');
-after('deploy:shared', 'database:prepare');
+after('deploy:shared', 'deploy:fix_permissions');
+after('deploy:fix_permissions', 'database:prepare');
 after('database:prepare', 'database:migrate');
 after('database:migrate', 'deploy:cache:clear');
 after('deploy:cache:clear', 'deploy:cache');
