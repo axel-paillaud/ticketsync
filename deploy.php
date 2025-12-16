@@ -134,7 +134,7 @@ after('deploy:update_code', 'docker:build');
 after('docker:build', 'docker:up');
 before('deploy:shared', 'deploy:remove_var');
 after('deploy:shared', 'deploy:fix_permissions');
-after('deploy:fix_permissions', 'database:prepare');
+after('deploy:vendors', 'database:prepare');
 after('database:prepare', 'database:migrate');
 after('deploy:symlink', 'docker:restart');
 after('rollback', 'docker:restart');
