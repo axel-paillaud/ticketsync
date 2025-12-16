@@ -78,7 +78,7 @@ task('deploy:assets', function () {
     run(docker_exec('php bin/console importmap:install', false, 'www-data'));
     run(docker_exec('php bin/console asset-map:compile', false, 'www-data'));
     run(docker_exec('rm -rf node_modules', false, 'www-data'));
-})->desc('Build assets');
+})->once()->desc('Build assets');
 
 task('database:prepare', function () {
     $dbPath = '{{deploy_path}}/shared/var/data_prod.db';
@@ -115,7 +115,7 @@ task('deploy:cache:warmup', function () {
 
 task('deploy:vendors', function () {
     run(docker_exec('composer install --no-dev --no-progress --no-interaction --prefer-dist --optimize-autoloader', false, 'www-data'));
-})->desc('Install dependencies');
+})->once()->desc('Install dependencies');
 
 task('deploy:remove_var', function () {
     run('cd {{release_path}} && {{docker_compose_cmd}} exec -T {{docker_service}} rm -rf {{release_path}}/var || true');
