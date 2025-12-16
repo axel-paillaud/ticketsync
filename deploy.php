@@ -104,10 +104,14 @@ task('database:migrate', function () {
     }
 })->desc('Run migrations');
 
-task('deploy:cache', function () {
+// Override Symfony recipe cache tasks to use Docker
+task('deploy:cache:clear', function () {
     run(docker_exec('php bin/console cache:clear --env=prod --no-warmup', false, 'www-data'));
+})->desc('Clear cache');
+
+task('deploy:cache:warmup', function () {
     run(docker_exec('php bin/console cache:warmup --env=prod', false, 'www-data'));
-})->desc('Clear and warmup cache');
+})->desc('Warmup cache');
 
 task('deploy:vendors', function () {
     run(docker_exec('composer install --no-dev --no-progress --no-interaction --prefer-dist --optimize-autoloader', false, 'www-data'));
@@ -134,25 +138,11 @@ before('deploy:shared', 'deploy:remove_var');
 after('deploy:shared', 'deploy:fix_permissions');
 after('deploy:fix_permissions', 'database:prepare');
 after('database:prepare', 'database:migrate');
-after('database:migrate', 'deploy:cache:clear');
-after('deploy:cache:clear', 'deploy:cache');
 after('deploy:symlink', 'docker:restart');
 after('rollback', 'docker:restart');
 
-// Deploy tasks
-task('deploy', [
-    'deploy:prepare',
-    'deploy:update_code',
-    'deploy:shared',
-    'deploy:cache:clear',
-    'deploy:publish',
-])->desc('Deploy TicketSync');
-
+// First deploy task (uploads .env then runs standard deploy)
 task('deploy:first', [
-    'deploy:prepare',
     'deploy:upload_env',
-    'deploy:update_code',
-    'deploy:shared',
-    'deploy:cache:clear',
-    'deploy:publish',
+    'deploy',
 ])->desc('First deploy (with .env upload)');
