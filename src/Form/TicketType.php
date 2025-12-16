@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Organization;
 use App\Entity\Priority;
 use App\Entity\Status;
 use App\Entity\Ticket;
@@ -34,8 +35,19 @@ class TicketType extends AbstractType
                 'class' => Priority::class,
                 'choice_label' => 'name',
                 'label' => 'Priority',
-            ])
-            ->add('attachments', FileType::class, [
+            ]);
+
+        // Only admins can choose organization when creating/editing tickets
+        if ($options['is_admin']) {
+            $builder->add('organization', EntityType::class, [
+                'class' => Organization::class,
+                'choice_label' => 'name',
+                'label' => 'Organization',
+                'placeholder' => 'Select an organization',
+            ]);
+        }
+
+        $builder->add('attachments', FileType::class, [
                'label' => 'Attachments',
                'mapped' => false,
                'required' => false,

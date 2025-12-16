@@ -16,18 +16,27 @@
     </div>
 
     {# Status #}
-    <div class="col-md-6">
+    <div class="col-md-{{ form.organization is defined ? '4' : '6' }}">
         {{ form_label(form.status, null, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
         {{ form_errors(form.status) }}
     </div>
 
     {# Priority #}
-    <div class="col-md-6">
+    <div class="col-md-{{ form.organization is defined ? '4' : '6' }}">
         {{ form_label(form.priority, null, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(form.priority, {'attr': {'class': 'form-select'}}) }}
         {{ form_errors(form.priority) }}
     </div>
+
+    {# Organization (admins only) #}
+    {% if form.organization is defined %}
+        <div class="col-md-4">
+            {{ form_label(form.organization, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.organization, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.organization) }}
+        </div>
+    {% endif %}
 
     {# Attachments #}
     <div class="col-12">

@@ -74,6 +74,11 @@ final class TicketController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Security: prevent non-admins from changing organization (even if they modify HTML)
+            if (!$this->isGranted('ROLE_ADMIN')) {
+                $ticket->setOrganization($organization);
+            }
+
             $entityManager->persist($ticket);
             $entityManager->flush();
 
@@ -202,8 +207,9 @@ final class TicketController extends AbstractController
         // Security check: user must have permission to edit this ticket
         $this->denyAccessUnlessGranted('TICKET_EDIT', $ticket);
 
-        // Store original status to check if non-admin tried to change it
+        // Store original values to prevent unauthorized changes
         $originalStatus = $ticket->getStatus();
+        $originalOrganization = $ticket->getOrganization();
 
         $form = $this->createForm(TicketType::class, $ticket, [
             'is_admin' => $this->isGranted('ROLE_ADMIN'),
@@ -214,6 +220,11 @@ final class TicketController extends AbstractController
             // Security: prevent non-admins from changing status
             if (!$this->isGranted('ROLE_ADMIN') && $ticket->getStatus() !== $originalStatus) {
                 $ticket->setStatus($originalStatus);
+            }
+
+            // Security: prevent non-admins from changing organization (even if they modify HTML)
+            if (!$this->isGranted('ROLE_ADMIN')) {
+                $ticket->setOrganization($originalOrganization);
             }
 
             $entityManager->flush();
