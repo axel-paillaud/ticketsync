@@ -100,7 +100,7 @@ task('database:migrate', function () {
     $dbPath = '{{deploy_path}}/shared/var/data_prod.db';
 
     if (test("[ -f $dbPath ] && [ -s $dbPath ]")) {
-        run(docker_exec('php bin/console doctrine:migrations:migrate --no-interaction'));
+        run(docker_exec('php bin/console doctrine:migrations:migrate --no-interaction', false, 'www-data'));
     }
 })->desc('Run migrations');
 
