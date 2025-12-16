@@ -432,8 +432,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Attachment does not belong to this ticket.');
         }
 
-        // Check organization access
-        if ($attachment->getTicket()->getOrganization() !== $organization) {
+        // Check organization access (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $attachment->getTicket()->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Attachment not found in this organization.');
         }
 
@@ -467,7 +467,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Attachment does not belong to this ticket.');
         }
 
-        if ($attachment->getTicket()->getOrganization() !== $organization) {
+        // Check organization access (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $attachment->getTicket()->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Attachment not found in this organization.');
         }
 
@@ -518,7 +519,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Comment does not belong to this ticket.');
         }
 
-        if ($attachment->getComment()->getTicket()->getOrganization() !== $organization) {
+        // Check organization access (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $attachment->getComment()->getTicket()->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Attachment not found in this organization.');
         }
 
@@ -557,7 +559,8 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Comment does not belong to this ticket.');
         }
 
-        if ($attachment->getComment()->getTicket()->getOrganization() !== $organization) {
+        // Check organization access (only for non-admins)
+        if (!$this->isGranted('ROLE_ADMIN') && $attachment->getComment()->getTicket()->getOrganization() !== $organization) {
             throw $this->createNotFoundException('Attachment not found in this organization.');
         }
 
