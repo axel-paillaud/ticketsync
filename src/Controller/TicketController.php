@@ -104,6 +104,11 @@ final class TicketController extends AbstractController
                 $entityManager->flush();
             }
 
+            // Redirect to admin dashboard if admin created ticket for a different organization
+            if ($this->isGranted('ROLE_ADMIN') && $ticket->getOrganization() !== $organization) {
+                return $this->redirectToRoute('app_admin_index', [], Response::HTTP_SEE_OTHER);
+            }
+
             return $this->redirectToRoute('app_ticket_index', ['organizationSlug' => $organization->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
