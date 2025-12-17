@@ -622,8 +622,8 @@ final class TicketController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Snapshot hourly rate from organization
-            $timeEntry->setHourlyRateSnapshot($organization->getHourlyRate());
+            // Snapshot hourly rate from ticket's organization (not URL organization)
+            $timeEntry->setHourlyRateSnapshot($ticket->getOrganization()->getHourlyRate());
 
             // Calculate billed hours and amount
             $timeEntry->setBilledHours($timeEntry->calculateBilledHours());
