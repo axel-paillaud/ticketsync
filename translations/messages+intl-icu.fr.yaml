@@ -200,9 +200,10 @@ Slug: Slug
 'View Tickets': 'Voir les tickets'
 'No tickets for this organization.': 'Aucun ticket pour cette organisation.'
 'Are you sure you want to delete': 'Êtes-vous sûr de vouloir supprimer'
-'Ticket #{ticketId} status updated': 'Statut du ticket #{ticketId} mis à jour'
+'Ticket {ticketId} status updated': 'Statut du ticket {ticketId} mis à jour'
 Hello: Bonjour
-'The status of ticket #{ticketId} has been updated.': 'Le statut du ticket #{ticketId} a été mis à jour.'
+'The status of ticket': 'Le statut du ticket'
+'has been updated.': 'a été mis à jour.'
 'Organization:': 'Organisation :'
 'Status changed:': 'Statut modifié :'
 'Priority:': 'Priorité :'

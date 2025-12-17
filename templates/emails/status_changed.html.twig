@@ -1,13 +1,13 @@
 {% extends 'emails/_layout.html.twig' %}
 
 {% block title %}
-    {{ 'Ticket #{ticketId} status updated'|trans({ 'ticketId': ticket.id }) }}
+    {{ 'Ticket {ticketId} status updated'|trans({ 'ticketId': '#' ~ ticket.id }) }}
 {% endblock %}
 
 {% block content %}
     <p class="greeting">{{ 'Hello'|trans }} <strong>{{ recipient.name }}</strong>,</p>
 
-    <p>{{ 'The status of ticket #{ticketId} has been updated.'|trans({ 'ticketId': ticket.id }) }}</p>
+    <p>{{ 'The status of ticket'|trans }} <strong>#{{ ticket.id }}</strong> {{ 'has been updated.'|trans }}</p>
 
     <div class="info-box">
         <h2>{{ 'Ticket'|trans }} #{{ ticket.id }}: {{ ticket.title }}</h2>
