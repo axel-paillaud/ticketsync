@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <p class="greeting">{{ 'Hello'|trans }} <strong>{{ recipient.name }}</strong>,</p>
+    <p class="greeting">{{ 'Hello'|trans }} <strong>{{ recipient.firstName }}</strong>,</p>
 
     <p>{{ 'The status of ticket'|trans }} <strong>#{{ ticket.id }}</strong> {{ 'has been updated.'|trans }}</p>
 

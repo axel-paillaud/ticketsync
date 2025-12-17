@@ -3,7 +3,7 @@
 {% block title %}{{ 'Monthly threshold exceeded'|trans }}{% endblock %}
 
 {% block content %}
-    <p class="greeting">{{ 'Hello'|trans }} <strong>{{ recipient.name }}</strong>,</p>
+    <p class="greeting">{{ 'Hello'|trans }} <strong>{{ recipient.firstName }}</strong>,</p>
 
     <p>{{ 'Your monthly time entry threshold has been exceeded for'|trans }} <strong>{{ organization.name }}</strong>.</p>
 
