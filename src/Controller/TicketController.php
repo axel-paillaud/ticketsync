@@ -618,7 +618,7 @@ final class TicketController extends AbstractController
         // Set default work date to today
         $activity->setWorkDate(new \DateTimeImmutable());
 
-        $form = $this->createForm(TimeEntryType::class, $activity);
+        $form = $this->createForm(ActivityType::class, $activity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -643,12 +643,12 @@ final class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/tickets/{ticketId}/activity/{timeEntryId}/edit', name: 'app_activity_edit', methods: ['GET', 'POST'])]
+    #[Route('/tickets/{ticketId}/activity/{activityId}/edit', name: 'app_activity_edit', methods: ['GET', 'POST'])]
     public function editActivity(
         Organization $organization,
         Request $request,
         int $ticketId,
-        #[MapEntity(id: 'timeEntryId')] TimeEntry $activity,
+        #[MapEntity(id: 'activityId')] Activity $activity,
         EntityManagerInterface $entityManager,
         TranslatorInterface $translator
     ): Response
@@ -675,7 +675,7 @@ final class TicketController extends AbstractController
         // Security check: user must have permission to edit
         $this->denyAccessUnlessGranted('ACTIVITY_EDIT', $activity);
 
-        $form = $this->createForm(TimeEntryType::class, $activity);
+        $form = $this->createForm(ActivityType::class, $activity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -699,12 +699,12 @@ final class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/tickets/{ticketId}/activity/{timeEntryId}/delete', name: 'app_activity_delete', methods: ['POST'])]
+    #[Route('/tickets/{ticketId}/activity/{activityId}/delete', name: 'app_activity_delete', methods: ['POST'])]
     public function deleteActivity(
         Organization $organization,
         Request $request,
         int $ticketId,
-        #[MapEntity(id: 'timeEntryId')] TimeEntry $activity,
+        #[MapEntity(id: 'activityId')] Activity $activity,
         EntityManagerInterface $entityManager,
         TranslatorInterface $translator
     ): Response
