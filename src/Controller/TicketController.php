@@ -2,15 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Activity;
 use App\Entity\Attachment;
 use App\Entity\Comment;
 use App\Entity\Organization;
 use App\Entity\Status;
-use App\Entity\TimeEntry;
 use App\Entity\User;
 use App\Entity\Ticket;
+use App\Form\ActivityType;
 use App\Form\CommentType;
-use App\Form\TimeEntryType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
 use App\Service\EmailService;
@@ -584,11 +584,11 @@ final class TicketController extends AbstractController
     }
 
     // ============================================
-    // TIME ENTRY METHODS
+    // ACTIVITY METHODS
     // ============================================
 
-    #[Route('/tickets/{ticketId}/time-entry/new', name: 'app_time_entry_new', methods: ['GET', 'POST'])]
-    public function newTimeEntry(
+    #[Route('/tickets/{ticketId}/activity/new', name: 'app_activity_new', methods: ['GET', 'POST'])]
+    public function newActivity(
         Organization $organization,
         Request $request,
         #[MapEntity(id: 'ticketId')] Ticket $ticket,
@@ -610,29 +610,24 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
-        $timeEntry = new TimeEntry();
-        $timeEntry->setTicket($ticket);
-        $timeEntry->setCreatedBy($user);
-        $timeEntry->setOrganization($organization);
+        $activity = new Activity();
+        $activity->setTicket($ticket);
+        $activity->setCreatedBy($user);
+        $activity->setOrganization($organization);
 
         // Set default work date to today
-        $timeEntry->setWorkDate(new \DateTimeImmutable());
+        $activity->setWorkDate(new \DateTimeImmutable());
 
-        $form = $this->createForm(TimeEntryType::class, $timeEntry);
+        $form = $this->createForm(TimeEntryType::class, $activity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Snapshot hourly rate from ticket's organization (not URL organization)
-            $timeEntry->setHourlyRateSnapshot($ticket->getOrganization()->getHourlyRate());
 
-            // Calculate billed hours and amount
-            $timeEntry->setBilledHours($timeEntry->calculateBilledHours());
-            $timeEntry->setBilledAmount($timeEntry->calculateBilledAmount());
 
-            $entityManager->persist($timeEntry);
+            $entityManager->persist($activity);
             $entityManager->flush();
 
-            $this->addFlash('success', $translator->trans('Time entry added successfully!'));
+            $this->addFlash('success', $translator->trans('Activity added successfully!'));
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
@@ -640,20 +635,20 @@ final class TicketController extends AbstractController
             ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('time_entry/new.html.twig', [
-            'timeEntry' => $timeEntry,
+        return $this->render('activity/new.html.twig', [
+            'timeEntry' => $activity,
             'ticket' => $ticket,
             'form' => $form,
             'organization' => $organization,
         ]);
     }
 
-    #[Route('/tickets/{ticketId}/time-entry/{timeEntryId}/edit', name: 'app_time_entry_edit', methods: ['GET', 'POST'])]
-    public function editTimeEntry(
+    #[Route('/tickets/{ticketId}/activity/{timeEntryId}/edit', name: 'app_activity_edit', methods: ['GET', 'POST'])]
+    public function editActivity(
         Organization $organization,
         Request $request,
         int $ticketId,
-        #[MapEntity(id: 'timeEntryId')] TimeEntry $timeEntry,
+        #[MapEntity(id: 'timeEntryId')] TimeEntry $activity,
         EntityManagerInterface $entityManager,
         TranslatorInterface $translator
     ): Response
@@ -667,32 +662,28 @@ final class TicketController extends AbstractController
         // Security check: user must have organization access
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
-        // Check time entry -> ticket association
-        if ($timeEntry->getTicket()->getId() !== $ticketId) {
-            throw $this->createNotFoundException('Time entry does not belong to this ticket.');
+        // Check activity -> ticket association
+        if ($activity->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Activity does not belong to this ticket.');
         }
 
         // Check organization (only for non-admins)
-        if (!$this->isGranted('ROLE_ADMIN') && $timeEntry->getTicket()->getOrganization() !== $organization) {
-            throw $this->createNotFoundException('Time entry not found in this organization.');
+        if (!$this->isGranted('ROLE_ADMIN') && $activity->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Activity not found in this organization.');
         }
 
         // Security check: user must have permission to edit
-        $this->denyAccessUnlessGranted('TIMEENTRY_EDIT', $timeEntry);
+        $this->denyAccessUnlessGranted('ACTIVITY_EDIT', $activity);
 
-        $form = $this->createForm(TimeEntryType::class, $timeEntry);
+        $form = $this->createForm(TimeEntryType::class, $activity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Recalculate billed hours and amount (in case hours changed)
-            $timeEntry->setBilledHours($timeEntry->calculateBilledHours());
-            $timeEntry->setBilledAmount($timeEntry->calculateBilledAmount());
 
-            // Note: hourlyRateSnapshot is NOT updated on edit (preserves original rate)
 
             $entityManager->flush();
 
-            $this->addFlash('success', $translator->trans('Time entry updated successfully!'));
+            $this->addFlash('success', $translator->trans('Activity updated successfully!'));
 
             return $this->redirectToRoute('app_ticket_show', [
                 'organizationSlug' => $organization->getSlug(),
@@ -700,20 +691,20 @@ final class TicketController extends AbstractController
             ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('time_entry/edit.html.twig', [
-            'timeEntry' => $timeEntry,
-            'ticket' => $timeEntry->getTicket(),
+        return $this->render('activity/edit.html.twig', [
+            'timeEntry' => $activity,
+            'ticket' => $activity->getTicket(),
             'form' => $form,
             'organization' => $organization,
         ]);
     }
 
-    #[Route('/tickets/{ticketId}/time-entry/{timeEntryId}/delete', name: 'app_time_entry_delete', methods: ['POST'])]
-    public function deleteTimeEntry(
+    #[Route('/tickets/{ticketId}/activity/{timeEntryId}/delete', name: 'app_activity_delete', methods: ['POST'])]
+    public function deleteActivity(
         Organization $organization,
         Request $request,
         int $ticketId,
-        #[MapEntity(id: 'timeEntryId')] TimeEntry $timeEntry,
+        #[MapEntity(id: 'timeEntryId')] TimeEntry $activity,
         EntityManagerInterface $entityManager,
         TranslatorInterface $translator
     ): Response
@@ -724,25 +715,25 @@ final class TicketController extends AbstractController
         // Security check: user must have organization access
         $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
 
-        // Check time entry -> ticket association
-        if ($timeEntry->getTicket()->getId() !== $ticketId) {
-            throw $this->createNotFoundException('Time entry does not belong to this ticket.');
+        // Check activity -> ticket association
+        if ($activity->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Activity does not belong to this ticket.');
         }
 
         // Check organization (only for non-admins)
-        if (!$this->isGranted('ROLE_ADMIN') && $timeEntry->getTicket()->getOrganization() !== $organization) {
-            throw $this->createNotFoundException('Time entry not found in this organization.');
+        if (!$this->isGranted('ROLE_ADMIN') && $activity->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Activity not found in this organization.');
         }
 
         // Security check: user must have permission to delete
-        $this->denyAccessUnlessGranted('TIMEENTRY_DELETE', $timeEntry);
+        $this->denyAccessUnlessGranted('ACTIVITY_DELETE', $activity);
 
         // Check CSRF token
-        if ($this->isCsrfTokenValid('delete-time-entry-'.$timeEntry->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($timeEntry);
+        if ($this->isCsrfTokenValid('delete-time-entry-'.$activity->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($activity);
             $entityManager->flush();
 
-            $this->addFlash('success', $translator->trans('Time entry deleted successfully!'));
+            $this->addFlash('success', $translator->trans('Activity deleted successfully!'));
         }
 
         return $this->redirectToRoute('app_ticket_show', [
