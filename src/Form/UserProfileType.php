@@ -23,24 +23,6 @@ class UserProfileType extends AbstractType
             ->add('lastName', TextType::class, [
                 'label' => 'Last Name',
                 'required' => false,
-            ])
-            ->add('alertThresholdEnabled', CheckboxType::class, [
-                'label' => 'Enable monthly alert',
-                'required' => false,
-            ])
-            ->add('monthlyAlertThreshold', NumberType::class, [
-                'label' => 'Monthly threshold (€)',
-                'required' => false,
-                'attr' => [
-                    'min' => 0,
-                    'step' => 0.01,
-                ],
-                'constraints' => [
-                    new GreaterThan([
-                        'value' => 0,
-                        'message' => 'The threshold must be greater than 0',
-                    ])
-                ],
             ]);
     }
 
