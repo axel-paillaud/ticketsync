@@ -44,9 +44,6 @@ class Organization
     #[ORM\Column(length: 14, nullable: true)]
     private ?string $siret = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['default' => '80.00'])]
-    private ?string $hourlyRate = '80.00';
-
     /**
      * @var Collection<int, User>
      */
@@ -60,16 +57,16 @@ class Organization
     private Collection $tickets;
 
     /**
-     * @var Collection<int, TimeEntry>
+     * @var Collection<int, Activity>
      */
-    #[ORM\OneToMany(targetEntity: TimeEntry::class, mappedBy: 'organization')]
-    private Collection $timeEntries;
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'organization')]
+    private Collection $activities;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->tickets = new ArrayCollection();
-        $this->timeEntries = new ArrayCollection();
+        $this->activities = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -249,42 +246,30 @@ class Organization
         return $this;
     }
 
-    public function getHourlyRate(): ?string
-    {
-        return $this->hourlyRate;
-    }
-
-    public function setHourlyRate(string $hourlyRate): static
-    {
-        $this->hourlyRate = $hourlyRate;
-
-        return $this;
-    }
-
     /**
-     * @return Collection<int, TimeEntry>
+     * @return Collection<int, Activity>
      */
-    public function getTimeEntries(): Collection
+    public function getActivities(): Collection
     {
-        return $this->timeEntries;
+        return $this->activities;
     }
 
-    public function addTimeEntry(TimeEntry $timeEntry): static
+    public function addActivity(Activity $activity): static
     {
-        if (!$this->timeEntries->contains($timeEntry)) {
-            $this->timeEntries->add($timeEntry);
-            $timeEntry->setOrganization($this);
+        if (!$this->activities->contains($activity)) {
+            $this->activities->add($activity);
+            $activity->setOrganization($this);
         }
 
         return $this;
     }
 
-    public function removeTimeEntry(TimeEntry $timeEntry): static
+    public function removeActivity(Activity $activity): static
     {
-        if ($this->timeEntries->removeElement($timeEntry)) {
+        if ($this->activities->removeElement($activity)) {
             // set the owning side to null (unless already changed)
-            if ($timeEntry->getOrganization() === $this) {
-                $timeEntry->setOrganization(null);
+            if ($activity->getOrganization() === $this) {
+                $activity->setOrganization(null);
             }
         }
 
