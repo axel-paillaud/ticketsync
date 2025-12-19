@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\TicketRepository;
-use App\Repository\TimeEntryRepository;
+use App\Repository\ActivityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,47 +28,42 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/time-entries', name: 'app_admin_time_entries', methods: ['GET'])]
-    public function timeEntries(TimeEntryRepository $timeEntryRepository): Response
+    #[Route('/activities', name: 'app_admin_activities', methods: ['GET'])]
+    public function activities(ActivityRepository $activityRepository): Response
     {
-        // Get all time entries across all organizations
-        $timeEntries = $timeEntryRepository->findAllOrderedByDate();
+        // Get all activities across all organizations
+        $activities = $activityRepository->findAllOrderedByDate();
 
         // Group by month and calculate totals
-        $entriesByMonth = [];
+        $activitiesByMonth = [];
         $totalHours = 0.0;
-        $totalBilled = 0.0;
 
-        foreach ($timeEntries as $entry) {
+        foreach ($activities as $activity) {
             // Group key: YYYY-MM
-            $monthKey = $entry->getWorkDate()->format('Y-m');
+            $monthKey = $activity->getWorkDate()->format('Y-m');
 
-            if (!isset($entriesByMonth[$monthKey])) {
-                $entriesByMonth[$monthKey] = [
-                    'label' => $entry->getWorkDate()->format('F Y'), // "December 2025"
+            if (!isset($activitiesByMonth[$monthKey])) {
+                $activitiesByMonth[$monthKey] = [
+                    'label' => $activity->getWorkDate()->format('F Y'), // "December 2025"
                     'entries' => [],
                     'totalHours' => 0.0,
-                    'totalBilled' => 0.0,
                 ];
             }
 
-            $entriesByMonth[$monthKey]['entries'][] = $entry;
-            $entriesByMonth[$monthKey]['totalHours'] += (float) $entry->getHours();
-            $entriesByMonth[$monthKey]['totalBilled'] += (float) $entry->getBilledAmount();
+            $activitiesByMonth[$monthKey]['entries'][] = $activity;
+            $activitiesByMonth[$monthKey]['totalHours'] += (float) $activity->getHours();
 
             // Global totals
-            $totalHours += (float) $entry->getHours();
-            $totalBilled += (float) $entry->getBilledAmount();
+            $totalHours += (float) $activity->getHours();
         }
 
         // Sort by month DESC (most recent first)
-        krsort($entriesByMonth);
+        krsort($activitiesByMonth);
 
-        return $this->render('admin/time_entries.html.twig', [
-            'entriesByMonth' => $entriesByMonth,
-            'totalEntries' => count($timeEntries),
+        return $this->render('admin/activities.html.twig', [
+            'activitiesByMonth' => $activitiesByMonth,
+            'totalEntries' => count($activities),
             'totalHours' => $totalHours,
-            'totalBilled' => $totalBilled,
         ]);
     }
 }
