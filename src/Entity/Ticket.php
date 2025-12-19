@@ -62,16 +62,16 @@ class Ticket
     private Collection $attachments;
 
     /**
-     * @var Collection<int, TimeEntry>
+     * @var Collection<int, Activity>
      */
-    #[ORM\OneToMany(targetEntity: TimeEntry::class, mappedBy: 'ticket', orphanRemoval: true)]
-    private Collection $timeEntries;
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'ticket', orphanRemoval: true)]
+    private Collection $activities;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->attachments = new ArrayCollection();
-        $this->timeEntries = new ArrayCollection();
+        $this->activities = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -261,29 +261,29 @@ class Ticket
     }
 
     /**
-     * @return Collection<int, TimeEntry>
+     * @return Collection<int, Activity>
      */
-    public function getTimeEntries(): Collection
+    public function getActivities(): Collection
     {
-        return $this->timeEntries;
+        return $this->activities;
     }
 
-    public function addTimeEntry(TimeEntry $timeEntry): static
+    public function addActivity(Activity $activity): static
     {
-        if (!$this->timeEntries->contains($timeEntry)) {
-            $this->timeEntries->add($timeEntry);
-            $timeEntry->setTicket($this);
+        if (!$this->activities->contains($activity)) {
+            $this->activities->add($activity);
+            $activity->setTicket($this);
         }
 
         return $this;
     }
 
-    public function removeTimeEntry(TimeEntry $timeEntry): static
+    public function removeActivity(Activity $activity): static
     {
-        if ($this->timeEntries->removeElement($timeEntry)) {
+        if ($this->activities->removeElement($activity)) {
             // set the owning side to null (unless already changed)
-            if ($timeEntry->getTicket() === $this) {
-                $timeEntry->setTicket(null);
+            if ($activity->getTicket() === $this) {
+                $activity->setTicket(null);
             }
         }
 
@@ -296,20 +296,8 @@ class Ticket
     public function getTotalHours(): float
     {
         return array_reduce(
-            $this->timeEntries->toArray(),
+            $this->activities->toArray(),
             fn($carry, $entry) => $carry + (float) $entry->getHours(),
-            0.0
-        );
-    }
-
-    /**
-     * Get total billed amount for this ticket
-     */
-    public function getTotalBilledAmount(): float
-    {
-        return array_reduce(
-            $this->timeEntries->toArray(),
-            fn($carry, $entry) => $carry + (float) $entry->getBilledAmount(),
             0.0
         );
     }
