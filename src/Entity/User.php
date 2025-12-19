@@ -301,30 +301,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getMonthlyAlertThreshold(): ?float
-    {
-        return $this->monthlyAlertThreshold;
-    }
-
-    public function setMonthlyAlertThreshold(?float $monthlyAlertThreshold): static
-    {
-        $this->monthlyAlertThreshold = $monthlyAlertThreshold;
-
-        return $this;
-    }
-
-    public function isAlertThresholdEnabled(): bool
-    {
-        return $this->alertThresholdEnabled;
-    }
-
-    public function setAlertThresholdEnabled(bool $alertThresholdEnabled): static
-    {
-        $this->alertThresholdEnabled = $alertThresholdEnabled;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Comment>
      */
@@ -386,29 +362,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, TimeEntry>
+     * @return Collection<int, Activity>
      */
-    public function getTimeEntries(): Collection
+    public function getActivities(): Collection
     {
-        return $this->timeEntries;
+        return $this->activities;
     }
 
-    public function addTimeEntry(TimeEntry $timeEntry): static
+    public function addActivity(Activity $activity): static
     {
-        if (!$this->timeEntries->contains($timeEntry)) {
-            $this->timeEntries->add($timeEntry);
-            $timeEntry->setCreatedBy($this);
+        if (!$this->activities->contains($activity)) {
+            $this->activities->add($activity);
+            $activity->setCreatedBy($this);
         }
 
         return $this;
     }
 
-    public function removeTimeEntry(TimeEntry $timeEntry): static
+    public function removeActivity(Activity $activity): static
     {
-        if ($this->timeEntries->removeElement($timeEntry)) {
+        if ($this->activities->removeElement($activity)) {
             // set the owning side to null (unless already changed)
-            if ($timeEntry->getCreatedBy() === $this) {
-                $timeEntry->setCreatedBy(null);
+            if ($activity->getCreatedBy() === $this) {
+                $activity->setCreatedBy(null);
             }
         }
 
