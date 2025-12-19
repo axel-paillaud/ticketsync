@@ -5,13 +5,11 @@
 #}
 
 {% if ticket.activities|length > 0 %}
-    <div class="time-entries-list">
+    <div class="activities-list">
         {% set totalHours = 0 %}
-        {% set totalBilled = 0 %}
 
         {% for activity in ticket.activities %}
             {% set totalHours = totalHours + activity.hours %}
-            {% set totalBilled = totalBilled + activity.hours %}
 
             <div class="card time-entry-card mb-3">
                 <div class="card-body">

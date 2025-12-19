@@ -21,7 +21,7 @@
 
     {# Summary Cards #}
     <div class="row g-3 mb-4">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h6 class="text-muted mb-2">{{ 'Total Entries'|trans }}</h6>
@@ -29,7 +29,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h6 class="text-muted mb-2">{{ 'Total Hours'|trans }}</h6>
@@ -37,19 +37,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="text-muted mb-2">{{ 'Total Billed'|trans }}</h6>
-                    <h3 class="mb-0 text-success">{{ totalBilled|number_format(2) }} €</h3>
-                </div>
-            </div>
-        </div>
     </div>
 
     {# Activities Grouped by Month #}
-    {% if entriesByMonth|length > 0 %}
-        {% for monthKey, monthData in entriesByMonth %}
+    {% if activitiesByMonth|length > 0 %}
+        {% for monthKey, monthData in activitiesByMonth %}
             <div class="card mb-4">
                 <div class="card-header bg-light">
                     <div class="d-flex justify-content-between align-items-center">
@@ -58,11 +50,8 @@
                             {{ monthData.label }}
                         </h5>
                         <div class="text-end">
-                            <span class="badge bg-primary me-2">
+                            <span class="badge bg-primary">
                                 {{ monthData.totalHours|number_format(2) }}h
-                            </span>
-                            <span class="badge bg-success">
-                                {{ monthData.totalBilled|number_format(2) }} €
                             </span>
                         </div>
                     </div>
@@ -77,9 +66,6 @@
                                     <th>{{ 'Organization'|trans }}</th>
                                     <th>{{ 'Description'|trans }}</th>
                                     <th class="text-end">{{ 'Hours'|trans }}</th>
-                                    <th class="text-end">{{ 'Billed'|trans }}</th>
-                                    <th class="text-end">{{ 'Rate'|trans }}</th>
-                                    <th class="text-end">{{ 'Amount'|trans }}</th>
                                     <th>{{ 'Logged By'|trans }}</th>
                                     <th class="text-center">{{ 'Actions'|trans }}</th>
                                 </tr>
@@ -110,14 +96,7 @@
                                             </div>
                                         </td>
                                         <td class="text-end">
-                                            <span class="badge bg-success">{{ entry.hours }}h</span>
-                                        </td>
-                                        <td class="text-end">
-                                            <span class="badge bg-info">{{ entry.hours }}h</span>
-                                        </td>
-                                        <td class="text-end">{{ entry.|number_format(2) }} €</td>
-                                        <td class="text-end">
-                                            <strong class="text-success">{{ entry.hours|number_format(2) }} €</strong>
+                                            <span class="badge bg-primary">{{ entry.hours|number_format(2) }}h</span>
                                         </td>
                                         <td>
                                             <i class="bi bi-person-circle"></i>
