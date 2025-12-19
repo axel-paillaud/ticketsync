@@ -64,12 +64,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $monthlyAlertThreshold = null;
-
-    #[ORM\Column(options: ['default' => 0])]
-    private bool $alertThresholdEnabled = false;
-
     /**
      * @var Collection<int, Comment>
      */
@@ -83,10 +77,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $attachments;
 
     /**
-     * @var Collection<int, TimeEntry>
+     * @var Collection<int, Activity>
      */
-    #[ORM\OneToMany(targetEntity: TimeEntry::class, mappedBy: 'createdBy')]
-    private Collection $timeEntries;
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'createdBy')]
+    private Collection $activities;
 
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?UserInvitation $invitation = null;
@@ -97,7 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->assignedTickets = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->attachments = new ArrayCollection();
-        $this->timeEntries = new ArrayCollection();
+        $this->activities = new ArrayCollection();
     }
 
     public function getId(): ?int
