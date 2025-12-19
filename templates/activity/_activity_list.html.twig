@@ -1,58 +1,58 @@
 {#
-    Time Entry list partial
+    Activity list partial
     Expected variables:
     - ticket: the Ticket object
 #}
 
-{% if ticket.timeEntries|length > 0 %}
+{% if ticket.activities|length > 0 %}
     <div class="time-entries-list">
         {% set totalHours = 0 %}
         {% set totalBilled = 0 %}
 
-        {% for timeEntry in ticket.timeEntries %}
-            {% set totalHours = totalHours + timeEntry.hours %}
-            {% set totalBilled = totalBilled + timeEntry.billedAmount %}
+        {% for activity in ticket.activities %}
+            {% set totalHours = totalHours + activity.hours %}
+            {% set totalBilled = totalBilled + activity.hours %}
 
             <div class="card time-entry-card mb-3">
                 <div class="card-body">
-                    {# Time Entry Header #}
+                    {# Activity Header #}
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="time-entry-meta">
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <i class="bi bi-clock-history text-primary"></i>
-                                <strong>{{ timeEntry.workDate|date('M d, Y') }}</strong>
+                                <strong>{{ activity.workDate|date('M d, Y') }}</strong>
                                 <span class="text-muted">•</span>
                                 <span class="badge bg-success">
-                                    {{ timeEntry.hours }}h {{ 'worked'|trans }}
+                                    {{ activity.hours }}h {{ 'worked'|trans }}
                                 </span>
                                 <span class="badge bg-info">
-                                    {{ timeEntry.billedHours }}h {{ 'billed'|trans }}
+                                    {{ activity.hours }}h {{ 'billed'|trans }}
                                 </span>
                             </div>
                             <small class="text-muted">
                                 <i class="bi bi-person-circle"></i>
-                                {{ 'Logged by'|trans }} {{ timeEntry.createdBy.name }}
-                                {{ 'on'|trans }} {{ timeEntry.createdAt|date('M d, Y H:i') }}
+                                {{ 'Logged by'|trans }} {{ activity.createdBy.name }}
+                                {{ 'on'|trans }} {{ activity.createdAt|date('M d, Y H:i') }}
                             </small>
                         </div>
 
                         {# Actions (Admin only) #}
                         {% if is_granted('ROLE_ADMIN') %}
                             <div class="btn-group btn-group-sm">
-                                {% if is_granted('TIMEENTRY_EDIT', timeEntry) %}
-                                    <a href="{{ path('app_time_entry_edit', {
+                                {% if is_granted('ACTIVITY_EDIT', activity) %}
+                                    <a href="{{ path('app_activity_edit', {
                                         'organizationSlug': ticket.organization.slug,
                                         'ticketId': ticket.id,
-                                        'timeEntryId': timeEntry.id
+                                        'activityId': activity.id
                                     }) }}" class="btn btn-outline-secondary" title="{{ 'Edit'|trans }}">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                 {% endif %}
 
-                                {% if is_granted('TIMEENTRY_DELETE', timeEntry) %}
+                                {% if is_granted('ACTIVITY_DELETE', activity) %}
                                     <button type="button" class="btn btn-outline-danger"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#deleteTimeEntryModal{{ timeEntry.id }}"
+                                            data-bs-target="#deleteTimeEntryModal{{ activity.id }}"
                                             title="{{ 'Delete'|trans }}">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -61,9 +61,9 @@
                         {% endif %}
                     </div>
 
-                    {# Time Entry Description #}
+                    {# Activity Description #}
                     <div class="time-entry-description">
-                        {{ timeEntry.description|markdown_to_html|raw }}
+                        {{ activity.description|markdown_to_html|raw }}
                     </div>
 
                     {# Billing Info #}
@@ -71,15 +71,15 @@
                         <div class="row g-2">
                             <div class="col-md-4">
                                 <small class="text-muted">{{ 'Rate'|trans }}:</small>
-                                <div><strong>{{ timeEntry.hourlyRateSnapshot|number_format(2) }} €/h</strong></div>
+                                <div><strong>{{ activity.|number_format(2) }} €/h</strong></div>
                             </div>
                             <div class="col-md-4">
-                                <small class="text-muted">{{ 'Billed Hours'|trans }}:</small>
-                                <div><strong>{{ timeEntry.billedHours }}h</strong></div>
+                                <small class="text-muted">{{ 'Hours'|trans }}:</small>
+                                <div><strong>{{ activity.hours }}h</strong></div>
                             </div>
                             <div class="col-md-4">
                                 <small class="text-muted">{{ 'Amount'|trans }}:</small>
-                                <div><strong class="text-success">{{ timeEntry.billedAmount|number_format(2) }} €</strong></div>
+                                <div><strong class="text-success">{{ activity.hours|number_format(2) }} €</strong></div>
                             </div>
                         </div>
                     </div>
@@ -87,16 +87,16 @@
             </div>
 
             {# Delete Modal #}
-            {% if is_granted('TIMEENTRY_DELETE', timeEntry) %}
-            <div class="modal fade" id="deleteTimeEntryModal{{ timeEntry.id }}" tabindex="-1">
+            {% if is_granted('ACTIVITY_DELETE', activity) %}
+            <div class="modal fade" id="deleteTimeEntryModal{{ activity.id }}" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">{{ 'Delete Time Entry'|trans }}</h5>
+                            <h5 class="modal-title">{{ 'Delete Activity'|trans }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <p>{{ 'Are you sure you want to delete this time entry?'|trans }}</p>
+                            <p>{{ 'Are you sure you want to delete this activity?'|trans }}</p>
                             <p class="text-danger mb-0">
                                 <i class="bi bi-exclamation-triangle"></i>
                                 {{ 'This action cannot be undone.'|trans }}
@@ -104,12 +104,12 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
-                            <form method="post" action="{{ path('app_time_entry_delete', {
+                            <form method="post" action="{{ path('app_activity_delete', {
                                 'organizationSlug': ticket.organization.slug,
                                 'ticketId': ticket.id,
-                                'timeEntryId': timeEntry.id
+                                'activityId': activity.id
                             }) }}" class="d-inline">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete-time-entry-' ~ timeEntry.id) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-time-entry-' ~ activity.id) }}">
                                 <button type="submit" class="btn btn-danger">
                                     <i class="bi bi-trash"></i>
                                     {{ 'Delete'|trans }}
@@ -137,14 +137,14 @@
 {% else %}
     <div class="text-center py-4">
         <i class="bi bi-clock-history text-muted" style="font-size: 3rem;"></i>
-        <p class="text-muted mt-2 mb-0">{{ 'No time entries yet.'|trans }}</p>
+        <p class="text-muted mt-2 mb-0">{{ 'No activities yet.'|trans }}</p>
         {% if is_granted('ROLE_ADMIN') %}
-            <a href="{{ path('app_time_entry_new', {
+            <a href="{{ path('app_activity_new', {
                 'organizationSlug': ticket.organization.slug,
                 'ticketId': ticket.id
             }) }}" class="btn btn-sm btn-primary mt-2">
                 <i class="bi bi-plus-circle"></i>
-                {{ 'Log Time'|trans }}
+                {{ 'Add Activity'|trans }}
             </a>
         {% endif %}
     </div>

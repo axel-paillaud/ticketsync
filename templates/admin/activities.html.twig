@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'Time Entries'|trans }} - {{ 'Admin'|trans }}{% endblock %}
+{% block title %}{{ 'Activities'|trans }} - {{ 'Admin'|trans }}{% endblock %}
 
 {% block body %}
 <div class="container-fluid py-4">
@@ -9,9 +9,9 @@
         <div>
             <h2>
                 <i class="bi bi-clock-history"></i>
-                {{ 'All Time Entries'|trans }}
+                {{ 'All Activities'|trans }}
             </h2>
-            <p class="text-muted mb-0">{{ 'View all time entries across all organizations'|trans }}</p>
+            <p class="text-muted mb-0">{{ 'View all activities across all organizations'|trans }}</p>
         </div>
         <a href="{{ path('app_admin_index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    {# Time Entries Grouped by Month #}
+    {# Activities Grouped by Month #}
     {% if entriesByMonth|length > 0 %}
         {% for monthKey, monthData in entriesByMonth %}
             <div class="card mb-4">
@@ -113,11 +113,11 @@
                                             <span class="badge bg-success">{{ entry.hours }}h</span>
                                         </td>
                                         <td class="text-end">
-                                            <span class="badge bg-info">{{ entry.billedHours }}h</span>
+                                            <span class="badge bg-info">{{ entry.hours }}h</span>
                                         </td>
-                                        <td class="text-end">{{ entry.hourlyRateSnapshot|number_format(2) }} €</td>
+                                        <td class="text-end">{{ entry.|number_format(2) }} €</td>
                                         <td class="text-end">
-                                            <strong class="text-success">{{ entry.billedAmount|number_format(2) }} €</strong>
+                                            <strong class="text-success">{{ entry.hours|number_format(2) }} €</strong>
                                         </td>
                                         <td>
                                             <i class="bi bi-person-circle"></i>
@@ -125,10 +125,10 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group btn-group-sm">
-                                                <a href="{{ path('app_time_entry_edit', {
+                                                <a href="{{ path('app_activity_edit', {
                                                     'organizationSlug': entry.organization.slug,
                                                     'ticketId': entry.ticket.id,
-                                                    'timeEntryId': entry.id
+                                                    'activityId': entry.id
                                                 }) }}" class="btn btn-outline-secondary" title="{{ 'Edit'|trans }}">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
@@ -146,7 +146,7 @@
         <div class="card">
             <div class="card-body text-center py-5">
                 <i class="bi bi-clock-history text-muted" style="font-size: 4rem;"></i>
-                <p class="text-muted mt-3 mb-0">{{ 'No time entries found.'|trans }}</p>
+                <p class="text-muted mt-3 mb-0">{{ 'No activities found.'|trans }}</p>
             </div>
         </div>
     {% endif %}
