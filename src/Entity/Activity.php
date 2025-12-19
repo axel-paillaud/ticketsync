@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\TimeEntryRepository;
+use App\Repository\ActivityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: TimeEntryRepository::class)]
+#[ORM\Entity(repositoryClass: ActivityRepository::class)]
+#[ORM\Table(name: 'activity')]
 #[ORM\HasLifecycleCallbacks]
-class TimeEntry
+class Activity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,15 +22,6 @@ class TimeEntry
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     private ?string $hours = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
-    private ?string $billedHours = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $hourlyRateSnapshot = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $billedAmount = null;
-
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $workDate = null;
 
@@ -39,15 +31,15 @@ class TimeEntry
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'timeEntries')]
+    #[ORM\ManyToOne(inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Ticket $ticket = null;
 
-    #[ORM\ManyToOne(inversedBy: 'timeEntries')]
+    #[ORM\ManyToOne(inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
-    #[ORM\ManyToOne(inversedBy: 'timeEntries')]
+    #[ORM\ManyToOne(inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Organization $organization = null;
 
@@ -76,42 +68,6 @@ class TimeEntry
     public function setHours(string $hours): static
     {
         $this->hours = $hours;
-
-        return $this;
-    }
-
-    public function getBilledHours(): ?string
-    {
-        return $this->billedHours;
-    }
-
-    public function setBilledHours(string $billedHours): static
-    {
-        $this->billedHours = $billedHours;
-
-        return $this;
-    }
-
-    public function getHourlyRateSnapshot(): ?string
-    {
-        return $this->hourlyRateSnapshot;
-    }
-
-    public function setHourlyRateSnapshot(string $hourlyRateSnapshot): static
-    {
-        $this->hourlyRateSnapshot = $hourlyRateSnapshot;
-
-        return $this;
-    }
-
-    public function getBilledAmount(): ?string
-    {
-        return $this->billedAmount;
-    }
-
-    public function setBilledAmount(string $billedAmount): static
-    {
-        $this->billedAmount = $billedAmount;
 
         return $this;
     }
@@ -199,24 +155,5 @@ class TimeEntry
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
-    }
-
-    /**
-     * Calculate billed hours (round up to nearest 0.5h)
-     */
-    public function calculateBilledHours(): string
-    {
-        $hours = (float) $this->hours;
-        return (string) (ceil($hours * 2) / 2);
-    }
-
-    /**
-     * Calculate billed amount
-     */
-    public function calculateBilledAmount(): string
-    {
-        $billedHours = (float) $this->billedHours;
-        $rate = (float) $this->hourlyRateSnapshot;
-        return number_format($billedHours * $rate, 2, '.', '');
     }
 }
