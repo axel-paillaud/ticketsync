@@ -6,7 +6,6 @@ use App\Entity\Organization;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -59,14 +58,6 @@ class OrganizationType extends AbstractType
                     'maxlength' => 14,
                 ],
                 'help' => '14 digits',
-            ])
-            ->add('hourlyRate', MoneyType::class, [
-                'label' => 'Hourly Rate (€)',
-                'currency' => 'EUR',
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => '80.00',
-                ],
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'Active',
