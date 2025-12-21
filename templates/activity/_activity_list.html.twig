@@ -21,10 +21,7 @@
                                 <strong>{{ activity.workDate|date('M d, Y') }}</strong>
                                 <span class="text-muted">•</span>
                                 <span class="badge bg-success">
-                                    {{ activity.hours }}h {{ 'worked'|trans }}
-                                </span>
-                                <span class="badge bg-info">
-                                    {{ activity.hours }}h {{ 'billed'|trans }}
+                                    {{ activity.hours }}h
                                 </span>
                             </div>
                             <small class="text-muted">
@@ -62,24 +59,6 @@
                     {# Activity Description #}
                     <div class="time-entry-description">
                         {{ activity.description|markdown_to_html|raw }}
-                    </div>
-
-                    {# Billing Info #}
-                    <div class="mt-3 pt-3 border-top">
-                        <div class="row g-2">
-                            <div class="col-md-4">
-                                <small class="text-muted">{{ 'Rate'|trans }}:</small>
-                                <div><strong>{{ activity.|number_format(2) }} €/h</strong></div>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted">{{ 'Hours'|trans }}:</small>
-                                <div><strong>{{ activity.hours }}h</strong></div>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted">{{ 'Amount'|trans }}:</small>
-                                <div><strong class="text-success">{{ activity.hours|number_format(2) }} €</strong></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -122,14 +101,7 @@
 
         {# Totals Summary #}
         <div class="alert alert-info mt-3">
-            <div class="row">
-                <div class="col-md-6">
-                    <strong>{{ 'Total Hours Worked'|trans }}:</strong> {{ totalHours|number_format(2) }}h
-                </div>
-                <div class="col-md-6 text-end">
-                    <strong>{{ 'Total Billed'|trans }}:</strong> <span class="text-success">{{ totalBilled|number_format(2) }} €</span>
-                </div>
-            </div>
+            <strong>{{ 'Total Hours'|trans }}:</strong> {{ totalHours|number_format(2) }}h
         </div>
     </div>
 {% else %}
