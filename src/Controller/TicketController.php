@@ -729,7 +729,7 @@ final class TicketController extends AbstractController
         $this->denyAccessUnlessGranted('ACTIVITY_DELETE', $activity);
 
         // Check CSRF token
-        if ($this->isCsrfTokenValid('delete-time-entry-'.$activity->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete-activity-entry-'.$activity->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($activity);
             $entityManager->flush();
 
