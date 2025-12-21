@@ -288,3 +288,17 @@ Pending: 'En attente'
 'No comments posted yet.': 'Aucun commentaire posté pour le moment.'
 'Are you sure you want to delete {userEmail}?': 'Êtes-vous sûr de vouloir supprimer {userEmail} ?'
 'Ticket successfully deleted!': 'Ticket supprimé avec succès !'
+'Activity added successfully!': 'Activité ajoutée avec succès !'
+'Activity updated successfully!': 'Activité mise à jour avec succès !'
+'Activity deleted successfully!': 'Activité supprimée avec succès !'
+Activities: Activités
+'All Activities': 'Toutes les activités'
+'View all activities across all organizations': 'Voir toutes les activités de toutes les organisations'
+'No activities found.': 'Aucune activité trouvée.'
+'Activity Tracking': 'Suivi des activités'
+'Add Activity': 'Ajouter une activité'
+'Activity Details': "Détails de l'activité"
+'Save Activity': "Enregistrer l'activité"
+'Delete Activity': "Supprimer l'activité"
+'Are you sure you want to delete this activity?': 'Êtes-vous sûr de vouloir supprimer cette activité ?'
+'No activities yet.': 'Aucune activité pour le moment.'
