@@ -149,27 +149,17 @@ Login: Connexion
 'My Profile': 'Mon profil'
 'Back to Home': "Retour à l'accueil"
 'Edit Profile Information': 'Modifier les informations du profil'
-'Time Entry Details': 'Détails de la saisie de temps'
 'e.g., 1.5': 'ex : 1.5'
-'Current Hourly Rate': 'Taux horaire actuel'
-'This rate will be saved with this time entry': 'Ce taux sera enregistré avec cette saisie de temps'
 worked: travaillées
 billed: facturées
 'Logged by': 'Saisi par'
 'on': le
-'Billed Hours': 'Heures facturées'
-'Delete Time Entry': 'Supprimer la saisie de temps'
-'Are you sure you want to delete this time entry?': 'Êtes-vous sûr de vouloir supprimer cette saisie de temps ?'
 'Total Hours Worked': 'Total des heures travaillées'
 'No time entries yet.': 'Aucune saisie de temps pour le moment.'
 'Edit Time Entry': 'Modifier la saisie de temps'
-'Original Hourly Rate': "Taux horaire d'origine"
-'The hourly rate is locked and will not change when editing': 'Le taux horaire est verrouillé et ne changera pas lors de la modification'
-'Update Time Entry': 'Mettre à jour la saisie de temps'
 'Organizations - Admin': 'Organisations - Admin'
 'New Organization': 'Nouvelle organisation'
 Name: Nom
-'Hourly Rate': 'Taux horaire'
 Inactive: Inactif
 View: Voir
 'Delete Organization': "Supprimer l'organisation"
