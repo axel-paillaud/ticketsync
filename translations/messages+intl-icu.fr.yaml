@@ -10,9 +10,6 @@
 'Comment successfully modified!': 'Commentaire modifié avec succès !'
 'The file has been removed from database but not from disk.': 'Le fichier a été supprimé de la base de données mais pas du disque.'
 'Attachment successfully deleted!': 'Pièce jointe supprimée avec succès !'
-'Time entry added successfully!': 'Saisie de temps ajoutée avec succès !'
-'Time entry updated successfully!': 'Saisie de temps mise à jour avec succès !'
-'Time entry deleted successfully!': 'Saisie de temps supprimée avec succès !'
 'User "%s" has been created and invitation email sent.': 'Utilisateur "%s" créé et email d''invitation envoyé.'
 'This user has no pending invitation.': "Cet utilisateur n'a pas d'invitation en attente."
 'This invitation has already been accepted.': 'Cette invitation a déjà été acceptée.'
@@ -80,9 +77,6 @@ ID: ID
 'Created At': 'Créé le'
 Actions: Actions
 'No tickets found': 'Aucun ticket trouvé'
-'Time Entries': 'Saisies de temps'
-'All Time Entries': 'Toutes les saisies de temps'
-'View all time entries across all organizations': 'Voir toutes les saisies de temps de toutes les organisations'
 'Back to Admin': "Retour à l'administration"
 'Total Entries': 'Total des saisies'
 'Total Hours': 'Total des heures'
@@ -95,7 +89,6 @@ Rate: Taux
 Amount: Montant
 'Logged By': 'Saisi par'
 Edit: Modifier
-'No time entries found.': 'Aucune saisie de temps trouvée.'
 Tickets: Tickets
 'New Ticket': 'Nouveau ticket'
 'No tickets yet': 'Aucun ticket pour le moment'
@@ -111,8 +104,6 @@ Delete: Supprimer
 'Supported: Images, PDF, Word, Excel, Text, Archives | Max 10MB per file': 'Formats supportés : Images, PDF, Word, Excel, Texte, Archives | Max 10 Mo par fichier'
 Save: Enregistrer
 Cancel: Annuler
-'Time Tracking': 'Suivi du temps'
-'Log Time': 'Saisir du temps'
 Comments: Commentaires
 'Add Comment': 'Ajouter un commentaire'
 'Delete Ticket': 'Supprimer le ticket'
@@ -160,10 +151,8 @@ Login: Connexion
 'Edit Profile Information': 'Modifier les informations du profil'
 'Time Entry Details': 'Détails de la saisie de temps'
 'e.g., 1.5': 'ex : 1.5'
-'Billed hours will be rounded up to nearest 0.5h': 'Les heures facturées seront arrondies au 0.5h supérieur'
 'Current Hourly Rate': 'Taux horaire actuel'
 'This rate will be saved with this time entry': 'Ce taux sera enregistré avec cette saisie de temps'
-'Save Time Entry': 'Enregistrer la saisie de temps'
 worked: travaillées
 billed: facturées
 'Logged by': 'Saisi par'
