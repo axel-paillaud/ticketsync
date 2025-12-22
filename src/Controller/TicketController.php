@@ -636,7 +636,6 @@ final class TicketController extends AbstractController
         }
 
         return $this->render('activity/new.html.twig', [
-            'timeEntry' => $activity,
             'ticket' => $ticket,
             'form' => $form,
             'organization' => $organization,
@@ -692,7 +691,6 @@ final class TicketController extends AbstractController
         }
 
         return $this->render('activity/edit.html.twig', [
-            'timeEntry' => $activity,
             'ticket' => $activity->getTicket(),
             'form' => $form,
             'organization' => $organization,
