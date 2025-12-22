@@ -40,7 +40,7 @@
                                 {% if is_granted('ACTIVITY_DELETE', activity) %}
                                     <button type="button" class="btn btn-outline-danger"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#deleteTimeEntryModal{{ activity.id }}"
+                                            data-bs-target="#deleteActivityModal{{ activity.id }}"
                                             title="{{ 'Delete'|trans }}">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -58,7 +58,7 @@
 
             {# Delete Modal #}
             {% if is_granted('ACTIVITY_DELETE', activity) %}
-            <div class="modal fade" id="deleteTimeEntryModal{{ activity.id }}" tabindex="-1">
+            <div class="modal fade" id="deleteActivityModal{{ activity.id }}" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
