@@ -44,10 +44,6 @@
                         {{ form_label(form.hours, null, {'label_attr': {'class': 'form-label'}}) }}
                         {{ form_widget(form.hours, {'attr': {'class': 'form-control', 'placeholder': 'e.g., 1.5'|trans}}) }}
                         {{ form_errors(form.hours) }}
-                        <small class="text-muted">
-                            <i class="bi bi-info-circle"></i>
-                            {{ 'Billed hours will be rounded up to nearest 0.5h'|trans }}
-                        </small>
                     </div>
 
                     <div class="col-md-6">
