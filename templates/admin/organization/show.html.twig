@@ -50,6 +50,18 @@
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
+                        <div class="info-label">{{ 'Package'|trans }}</div>
+                        <div class="info-value">
+                            {% if organization.package %}
+                                <span class="badge bg-info">{{ organization.package|trans }}</span>
+                            {% else %}
+                                <span class="text-muted">{{ 'No package'|trans }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
                         <div class="info-label">{{ 'Email'|trans }}</div>
                         <div class="info-value">
                             {% if organization.email %}
