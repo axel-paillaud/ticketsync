@@ -75,7 +75,7 @@
                                         {% if organization.package %}
                                             <span class="badge bg-info">{{ organization.package|trans }}</span>
                                         {% else %}
-                                            <span class="text-muted">-</span>
+                                            <span class="text-muted">{{ 'No packages'|trans }}</span>
                                         {% endif %}
                                     </td>
                                     <td>
