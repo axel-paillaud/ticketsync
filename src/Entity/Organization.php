@@ -62,6 +62,12 @@ class Organization
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'organization')]
     private Collection $activities;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $url = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $package = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -272,6 +278,30 @@ class Organization
                 $activity->setOrganization(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): static
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getPackage(): ?string
+    {
+        return $this->package;
+    }
+
+    public function setPackage(?string $package): static
+    {
+        $this->package = $package;
 
         return $this;
     }
