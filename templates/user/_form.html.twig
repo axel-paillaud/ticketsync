@@ -15,39 +15,6 @@
         {{ form_errors(form.lastName) }}
     </div>
 
-    {# Alert Threshold Section #}
-    <div class="col-12">
-        <hr class="my-4">
-        <h6 class="mb-3">
-            <i class="bi bi-bell"></i>
-            {{ 'Monthly Alert Settings'|trans }}
-        </h6>
-    </div>
-
-    {# Enable Alert #}
-    <div class="col-12">
-        <div class="form-check">
-            {{ form_widget(form.alertThresholdEnabled, {'attr': {'class': 'form-check-input'}}) }}
-            {{ form_label(form.alertThresholdEnabled, null, {'label_attr': {'class': 'form-check-label'}}) }}
-            {{ form_errors(form.alertThresholdEnabled) }}
-        </div>
-        <small class="text-muted">
-            <i class="bi bi-info-circle"></i>
-            {{ 'Receive an email when your monthly time entries exceed the threshold'|trans }}
-        </small>
-    </div>
-
-    {# Threshold Amount #}
-    <div class="col-md-6">
-        {{ form_label(form.monthlyAlertThreshold, null, {'label_attr': {'class': 'form-label'}}) }}
-        <div class="input-group">
-            {{ form_widget(form.monthlyAlertThreshold, {'attr': {'class': 'form-control', 'placeholder': '0.00'}}) }}
-            <span class="input-group-text">€</span>
-        </div>
-        {{ form_errors(form.monthlyAlertThreshold) }}
-        <small class="text-muted">{{ 'Set the amount that triggers an alert'|trans }}</small>
-    </div>
-
     {# Submit Button #}
     <div class="col-12">
         <div class="d-flex gap-2 pt-3">
