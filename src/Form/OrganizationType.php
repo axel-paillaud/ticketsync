@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -39,6 +40,14 @@ class OrganizationType extends AbstractType
                     'placeholder' => '+33 1 23 45 67 89',
                     'class' => 'form-control',
                 ],
+            ])
+            ->add('url', UrlType::class, [
+                'label' => 'Website URL',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'https://example.com',
+                    'class' => 'form-control'
+                ]
             ])
             ->add('address', TextareaType::class, [
                 'label' => 'Address',
