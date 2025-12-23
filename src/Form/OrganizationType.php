@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Organization;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -67,6 +68,20 @@ class OrganizationType extends AbstractType
                     'maxlength' => 14,
                 ],
                 'help' => '14 digits',
+            ])
+            ->add('package', ChoiceType::class, [
+                'label' => 'Package',
+                'required' => false,
+                'choices' => [
+                    'No packages' => null,
+                    'Starter' => 'starter',
+                    'Comfort' => 'comfort',
+                    'Enterprise' => 'enterprise',
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Select a package',
+                ]
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'Active',
