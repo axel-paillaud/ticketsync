@@ -68,6 +68,7 @@ class Organization
     private ?string $url = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Choice(choices: ['starter', 'comfort', 'enterprise'])]
     private ?string $package = null;
 
     public function __construct()
