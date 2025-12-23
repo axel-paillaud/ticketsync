@@ -28,6 +28,7 @@
                                 <th>{{ 'Users'|trans }}</th>
                                 <th>{{ 'Tickets'|trans }}</th>
                                 <th>{{ 'Status'|trans }}</th>
+                                <th>{{ 'Package'|trans }}</th>
                                 <th>{{ 'Actions'|trans }}</th>
                             </tr>
                         </thead>
@@ -68,6 +69,13 @@
                                             <span class="badge bg-success">{{ 'Active'|trans }}</span>
                                         {% else %}
                                             <span class="badge bg-danger">{{ 'Inactive'|trans }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if organization.package %}
+                                            <span class="badge bg-info">{{ organization.package|trans }}</span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
                                         {% endif %}
                                     </td>
                                     <td>
