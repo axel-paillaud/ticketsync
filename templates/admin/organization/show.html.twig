@@ -50,6 +50,18 @@
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
+                        <div class="info-label">{{ 'Package'|trans }}</div>
+                        <div class="info-value">
+                            {% if organization.package %}
+                                <span class="badge bg-info">{{ organization.package|trans }}</span>
+                            {% else %}
+                                <span class="text-muted">{{ 'No package'|trans }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
                         <div class="info-label">{{ 'Email'|trans }}</div>
                         <div class="info-value">
                             {% if organization.email %}
@@ -66,6 +78,21 @@
                         <div class="info-value">
                             {% if organization.phone %}
                                 {{ organization.phone }}
+                            {% else %}
+                                <span class="text-muted">{{ 'Not set'|trans }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <div class="info-label">{{ 'Website URL'|trans }}</div>
+                        <div class="info-value">
+                            {% if organization.url %}
+                                <a href="{{ organization.url }}" target="_blank" rel="noopener noreferrer">
+                                    {{ organization.url }}
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
                             {% else %}
                                 <span class="text-muted">{{ 'Not set'|trans }}</span>
                             {% endif %}

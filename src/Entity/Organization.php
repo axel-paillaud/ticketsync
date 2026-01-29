@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OrganizationRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -61,6 +62,14 @@ class Organization
      */
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'organization')]
     private Collection $activities;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Url]
+    private ?string $url = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Choice(choices: ['starter', 'comfort', 'enterprise'])]
+    private ?string $package = null;
 
     public function __construct()
     {
@@ -272,6 +281,30 @@ class Organization
                 $activity->setOrganization(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): static
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getPackage(): ?string
+    {
+        return $this->package;
+    }
+
+    public function setPackage(?string $package): static
+    {
+        $this->package = $package;
 
         return $this;
     }

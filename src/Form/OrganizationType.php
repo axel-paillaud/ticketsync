@@ -5,10 +5,12 @@ namespace App\Form;
 use App\Entity\Organization;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -40,6 +42,14 @@ class OrganizationType extends AbstractType
                     'class' => 'form-control',
                 ],
             ])
+            ->add('url', UrlType::class, [
+                'label' => 'Website URL',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'https://example.com',
+                    'class' => 'form-control'
+                ]
+            ])
             ->add('address', TextareaType::class, [
                 'label' => 'Address',
                 'required' => false,
@@ -58,6 +68,20 @@ class OrganizationType extends AbstractType
                     'maxlength' => 14,
                 ],
                 'help' => '14 digits',
+            ])
+            ->add('package', ChoiceType::class, [
+                'label' => 'Package',
+                'required' => false,
+                'choices' => [
+                    'No packages' => null,
+                    'Starter' => 'starter',
+                    'Comfort' => 'comfort',
+                    'Enterprise' => 'enterprise',
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Select a package',
+                ]
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'Active',
