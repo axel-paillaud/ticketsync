@@ -29,7 +29,7 @@ class CommentType extends AbstractType
                 'required' => false,
                 'multiple' => true,
                 'attr' => [
-                    'accept' => 'image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar',
+                    'accept' => 'image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar,.mp4,.avi,.mov,.webm,.mkv',
                 ],
                 'constraints' => [
                     new All([
@@ -48,8 +48,13 @@ class CommentType extends AbstractType
                                 'text/plain',
                                 'application/zip',
                                 'application/x-rar-compressed',
+                                'video/mp4',
+                                'video/x-msvideo',
+                                'video/quicktime',
+                                'video/webm',
+                                'video/x-matroska',
                             ],
-                            'mimeTypesMessage' => 'Please upload a valid file (image, PDF, Word, Excel, text or archive)',
+                            'mimeTypesMessage' => 'Please upload a valid file (image, video, PDF, Word, Excel, text or archive)',
                         ])
                     ])
                 ],

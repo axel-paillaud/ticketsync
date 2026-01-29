@@ -53,7 +53,7 @@ class TicketType extends AbstractType
                'required' => false,
                'multiple' => true,
                'attr' => [
-                    'accept' => 'image/*,.pdf,.doc,.docx,.txt,.xlsx,.odt,.zip,.rar',
+                    'accept' => 'image/*,.pdf,.doc,.docx,.txt,.xlsx,.odt,.zip,.rar,.mp4,.avi,.mov,.webm,.mkv',
                ],
                'constraints' => [
                     new All([
@@ -69,9 +69,14 @@ class TicketType extends AbstractType
                                 'application/vnd.oasis.opendocument.text',
                                 'text/plain',
                                 'application/zip',
-                                'application/x-rar-compressed'
+                                'application/x-rar-compressed',
+                                'video/mp4',
+                                'video/x-msvideo',
+                                'video/quicktime',
+                                'video/webm',
+                                'video/x-matroska',
                             ],
-                            'mimeTypesMessage' => 'Please upload a valid file (image, PDF, Word, Excel, text, archive)',
+                            'mimeTypesMessage' => 'Please upload a valid file (image, video, PDF, Word, Excel, text, archive)',
                         ])
                     ])
                ]
