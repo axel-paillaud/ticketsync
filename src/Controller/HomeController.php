@@ -15,6 +15,11 @@ class HomeController extends AbstractController
         /** @var User|null $user */
         $user = $this->getUser();
 
+        // Admins go to the admin dashboard, not a specific organization
+        if ($user && $this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('app_admin_index');
+        }
+
         // If user is authenticated, redirect to their organization
         if ($user && $user->getOrganization()) {
             return $this->redirectToRoute('app_ticket_index', [
