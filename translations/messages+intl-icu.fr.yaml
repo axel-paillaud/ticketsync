@@ -211,7 +211,6 @@ Administrator: Administrateur
 'If you did not expect this invitation, you can safely ignore this email.': "Si vous n'attendiez pas cette invitation, vous pouvez ignorer cet email en toute sécurité."
 'This is an automated email, please do not reply.': 'Ceci est un email automatique, veuillez ne pas répondre.'
 'Ticket Management System by': 'Système de gestion de tickets par'
-'New ticket': 'Nouveau ticket'
 'A new ticket has been created.': 'Un nouveau ticket a été créé.'
 'Title:': 'Titre :'
 'Status:': 'Statut :'
@@ -293,7 +292,6 @@ Activities: Activités
 'Comfort': 'Confort'
 'Enterprise': 'Entreprise'
 Notifications: Notifications
-'New ticket': 'Nouveau ticket'
 'New comment on': 'Nouveau commentaire sur'
 'Status updated on': 'Statut mis à jour sur'
 'Mark all as read': 'Tout marquer comme lu'
