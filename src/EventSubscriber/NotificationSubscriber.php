@@ -3,6 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Comment;
+use App\Entity\Notification;
 use App\Entity\Organization;
 use App\Entity\Status;
 use App\Entity\Ticket;
@@ -26,46 +27,46 @@ class NotificationSubscriber
     ) {}
 
     /**
-    * Called after an entity is created in database
-    */
+     * Called after an entity is created in database
+     */
     public function postPersist(PostPersistEventArgs $args): void
     {
         $entity = $args->getObject();
 
         // Handle Ticket creation
         if ($entity instanceof Ticket) {
-            $this->notifyTicketCreated($entity);
+            $this->notifyTicketCreated($entity, $args);
         }
 
         // Handle Comment creation
         if ($entity instanceof Comment) {
-            $this->notifyCommentAdded($entity);
+            $this->notifyCommentAdded($entity, $args);
         }
     }
 
     /**
      * Called after an entity is updated in database
      */
-     public function postUpdate(PostUpdateEventArgs $args): void
-     {
-         $entity = $args->getObject();
+    public function postUpdate(PostUpdateEventArgs $args): void
+    {
+        $entity = $args->getObject();
 
-         if ($entity instanceof Ticket) {
-             $entityManager = $args->getObjectManager();
-             $uow = $entityManager->getUnitOfWork();
-             $changeSet = $uow->getEntityChangeSet($entity);
+        if ($entity instanceof Ticket) {
+            $entityManager = $args->getObjectManager();
+            $uow = $entityManager->getUnitOfWork();
+            $changeSet = $uow->getEntityChangeSet($entity);
 
-             if (isset($changeSet['status'])) {
-                 $oldStatus = $changeSet['status'][0];
-                 $newStatus = $changeSet['status'][1];
+            if (isset($changeSet['status'])) {
+                $oldStatus = $changeSet['status'][0];
+                $newStatus = $changeSet['status'][1];
 
-                 $this->notifyStatusChanged($entity, $oldStatus, $newStatus);
-             }
-         }
-     }
+                $this->notifyStatusChanged($entity, $oldStatus, $newStatus, $args);
+            }
+        }
+    }
 
     /**
-     * Get all recipients for notifications (admins + org users)
+     * Get all recipients for notifications (admins + org users, excluding one user)
      */
     private function getNotificationRecipients(Organization $organization, User $exclude): array
     {
@@ -90,7 +91,30 @@ class NotificationSubscriber
         return $recipients;
     }
 
-    private function notifyTicketCreated(Ticket $ticket): void
+    /**
+     * Persist an in-app Notification entity for a recipient
+     */
+    private function createNotification(
+        PostPersistEventArgs|PostUpdateEventArgs $args,
+        User $recipient,
+        string $type,
+        Ticket $ticket,
+        ?User $triggeredBy,
+    ): void {
+        $em = $args->getObjectManager();
+
+        $notification = new Notification();
+        $notification->setUser($recipient);
+        $notification->setType($type);
+        $notification->setTicket($ticket);
+        $notification->setTriggeredBy($triggeredBy);
+
+        // persist() is enough here — Doctrine picks it up in the current flush cycle.
+        // No recursion risk since our subscriber only reacts to Ticket and Comment, not Notification.
+        $em->persist($notification);
+    }
+
+    private function notifyTicketCreated(Ticket $ticket, PostPersistEventArgs $args): void
     {
         $recipients = $this->getNotificationRecipients(
             $ticket->getOrganization(),
@@ -99,10 +123,11 @@ class NotificationSubscriber
 
         foreach ($recipients as $recipient) {
             $this->emailService->sendTicketCreatedNotification($ticket, $recipient);
+            $this->createNotification($args, $recipient, 'ticket_created', $ticket, $ticket->getCreatedBy());
         }
     }
 
-    private function notifyCommentAdded(Comment $comment): void
+    private function notifyCommentAdded(Comment $comment, PostPersistEventArgs $args): void
     {
         $recipients = $this->getNotificationRecipients(
             $comment->getTicket()->getOrganization(),
@@ -111,10 +136,11 @@ class NotificationSubscriber
 
         foreach ($recipients as $recipient) {
             $this->emailService->sendCommentAddedNotification($comment, $recipient);
+            $this->createNotification($args, $recipient, 'comment_added', $comment->getTicket(), $comment->getAuthor());
         }
     }
 
-    private function notifyStatusChanged(Ticket $ticket, Status $oldStatus, Status $newStatus):void
+    private function notifyStatusChanged(Ticket $ticket, Status $oldStatus, Status $newStatus, PostUpdateEventArgs $args): void
     {
         $currentUser = $this->security->getUser();
 
@@ -126,6 +152,7 @@ class NotificationSubscriber
 
         foreach ($recipients as $recipient) {
             $this->emailService->sendStatusChangedNotification($ticket, $recipient, $oldStatus, $newStatus);
+            $this->createNotification($args, $recipient, 'status_changed', $ticket, $currentUser);
         }
     }
 }

@@ -1,0 +1,104 @@
+{# Notification bell dropdown for the navbar #}
+<li class="nav-item dropdown">
+    <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button"
+       data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell"></i>
+        {% if unreadNotificationCount > 0 %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge">
+                {{ unreadNotificationCount > 99 ? '99+' : unreadNotificationCount }}
+            </span>
+        {% endif %}
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">
+
+        {# Header #}
+        <li class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2">
+            <span class="fw-semibold">{{ 'Notifications'|trans }}</span>
+            {% if unreadNotificationCount > 0 %}
+                <span class="badge bg-danger rounded-pill">{{ unreadNotificationCount }}</span>
+            {% endif %}
+        </li>
+        <li><hr class="dropdown-divider my-0"></li>
+
+        {% if recentNotifications|length > 0 %}
+            {% for notification in recentNotifications %}
+                <li>
+                    <form method="post"
+                          action="{{ path('app_notification_read', {id: notification.id}) }}"
+                          class="d-block">
+                        <input type="hidden" name="_token"
+                               value="{{ csrf_token('notification_read_' ~ notification.id) }}">
+                        <button type="submit"
+                                class="dropdown-item notification-item px-3 py-2 {{ not notification.read ? 'notification-unread' : '' }}">
+                            <div class="d-flex align-items-start gap-2">
+                                {# Icon based on type #}
+                                <div class="notification-icon flex-shrink-0 mt-1">
+                                    {% if notification.type == 'ticket_created' %}
+                                        <i class="bi bi-ticket-perforated text-primary"></i>
+                                    {% elseif notification.type == 'comment_added' %}
+                                        <i class="bi bi-chat-left-text text-info"></i>
+                                    {% elseif notification.type == 'status_changed' %}
+                                        <i class="bi bi-flag text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-bell text-secondary"></i>
+                                    {% endif %}
+                                </div>
+
+                                {# Content #}
+                                <div class="notification-content flex-grow-1 text-start">
+                                    <div class="notification-message small fw-medium text-truncate">
+                                        {% if notification.type == 'ticket_created' %}
+                                            {{ 'New ticket'|trans }}: <strong>{{ notification.ticket.title }}</strong>
+                                        {% elseif notification.type == 'comment_added' %}
+                                            {{ 'New comment on'|trans }}: <strong>{{ notification.ticket.title }}</strong>
+                                        {% elseif notification.type == 'status_changed' %}
+                                            {{ 'Status updated on'|trans }}: <strong>{{ notification.ticket.title }}</strong>
+                                        {% endif %}
+                                    </div>
+                                    <div class="notification-meta d-flex gap-2 mt-1">
+                                        {% if notification.triggeredBy %}
+                                            <span class="notification-meta-text text-muted">
+                                                <i class="bi bi-person"></i>
+                                                {{ notification.triggeredBy.name }}
+                                            </span>
+                                        {% endif %}
+                                        <span class="notification-meta-text text-muted">
+                                            <i class="bi bi-clock"></i>
+                                            {{ notification.createdAt|date('M d, H:i') }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {# Unread dot #}
+                                {% if not notification.read %}
+                                    <div class="flex-shrink-0 mt-1">
+                                        <span class="notification-unread-dot"></span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+
+            {# Mark all as read #}
+            <li><hr class="dropdown-divider my-0"></li>
+            <li>
+                <form method="post" action="{{ path('app_notification_read_all') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('notification_read_all') }}">
+                    <button type="submit" class="dropdown-item text-center text-muted small py-2">
+                        <i class="bi bi-check2-all me-1"></i>
+                        {{ 'Mark all as read'|trans }}
+                    </button>
+                </form>
+            </li>
+        {% else %}
+            {# Empty state #}
+            <li class="px-3 py-4 text-center text-muted">
+                <i class="bi bi-bell-slash notification-empty-icon"></i>
+                <p class="small mb-0 mt-2">{{ 'No notifications yet'|trans }}</p>
+            </li>
+        {% endif %}
+    </ul>
+</li>

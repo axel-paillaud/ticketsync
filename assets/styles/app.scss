@@ -285,3 +285,60 @@ $dropdown-link-hover-bg: $bg-soft;
     padding-top: 1.5rem;
     border-top: 1px solid $border-color;
 }
+
+// Notification dropdown
+.notification-dropdown {
+    padding: 0;
+    width: 360px;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.notification-badge {
+    font-size: 0.6rem;
+}
+
+.notification-item {
+    white-space: normal;
+    border-radius: 0;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: $bg-soft;
+    }
+}
+
+.notification-unread {
+    background-color: rgba($color-primary, 0.06);
+
+    &:hover {
+        background-color: rgba($color-primary, 0.12);
+    }
+}
+
+.notification-icon {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.notification-content {
+    min-width: 0;
+}
+
+.notification-meta-text {
+    font-size: 0.75rem;
+}
+
+.notification-unread-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: $color-primary;
+}
+
+.notification-empty-icon {
+    font-size: 2rem;
+    opacity: 0.4;
+}
