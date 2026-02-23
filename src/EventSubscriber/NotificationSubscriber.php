@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\EmailService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Events;
@@ -18,8 +19,12 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsDoctrineListener(event: Events::postPersist)]
 #[AsDoctrineListener(event: Events::postUpdate)]
+#[AsDoctrineListener(event: Events::postFlush)]
 class NotificationSubscriber
 {
+    /** @var array<array{recipient: User, type: string, ticket: Ticket, triggeredBy: User|null}> */
+    private array $pendingNotifications = [];
+
     public function __construct(
         private EmailService $emailService,
         private UserRepository $userRepository,
@@ -35,12 +40,12 @@ class NotificationSubscriber
 
         // Handle Ticket creation
         if ($entity instanceof Ticket) {
-            $this->notifyTicketCreated($entity, $args);
+            $this->notifyTicketCreated($entity);
         }
 
         // Handle Comment creation
         if ($entity instanceof Comment) {
-            $this->notifyCommentAdded($entity, $args);
+            $this->notifyCommentAdded($entity);
         }
     }
 
@@ -60,9 +65,38 @@ class NotificationSubscriber
                 $oldStatus = $changeSet['status'][0];
                 $newStatus = $changeSet['status'][1];
 
-                $this->notifyStatusChanged($entity, $oldStatus, $newStatus, $args);
+                $this->notifyStatusChanged($entity, $oldStatus, $newStatus);
             }
         }
+    }
+
+    /**
+     * Called after flush completes — persists all collected in-app notifications.
+     * The pendingNotifications array is cleared before flush to avoid an infinite loop.
+     */
+    public function postFlush(PostFlushEventArgs $args): void
+    {
+        if (empty($this->pendingNotifications)) {
+            return;
+        }
+
+        $em = $args->getObjectManager();
+
+        // Grab and clear the queue before flushing to avoid re-entering this method
+        $pending = $this->pendingNotifications;
+        $this->pendingNotifications = [];
+
+        foreach ($pending as $data) {
+            $notification = new Notification();
+            $notification->setUser($data['recipient']);
+            $notification->setType($data['type']);
+            $notification->setTicket($data['ticket']);
+            $notification->setTriggeredBy($data['triggeredBy']);
+
+            $em->persist($notification);
+        }
+
+        $em->flush();
     }
 
     /**
@@ -92,29 +126,19 @@ class NotificationSubscriber
     }
 
     /**
-     * Persist an in-app Notification entity for a recipient
+     * Queue an in-app notification to be persisted in postFlush
      */
-    private function createNotification(
-        PostPersistEventArgs|PostUpdateEventArgs $args,
-        User $recipient,
-        string $type,
-        Ticket $ticket,
-        ?User $triggeredBy,
-    ): void {
-        $em = $args->getObjectManager();
-
-        $notification = new Notification();
-        $notification->setUser($recipient);
-        $notification->setType($type);
-        $notification->setTicket($ticket);
-        $notification->setTriggeredBy($triggeredBy);
-
-        // persist() is enough here — Doctrine picks it up in the current flush cycle.
-        // No recursion risk since our subscriber only reacts to Ticket and Comment, not Notification.
-        $em->persist($notification);
+    private function queueNotification(User $recipient, string $type, Ticket $ticket, ?User $triggeredBy): void
+    {
+        $this->pendingNotifications[] = [
+            'recipient'   => $recipient,
+            'type'        => $type,
+            'ticket'      => $ticket,
+            'triggeredBy' => $triggeredBy,
+        ];
     }
 
-    private function notifyTicketCreated(Ticket $ticket, PostPersistEventArgs $args): void
+    private function notifyTicketCreated(Ticket $ticket): void
     {
         $recipients = $this->getNotificationRecipients(
             $ticket->getOrganization(),
@@ -123,11 +147,11 @@ class NotificationSubscriber
 
         foreach ($recipients as $recipient) {
             $this->emailService->sendTicketCreatedNotification($ticket, $recipient);
-            $this->createNotification($args, $recipient, 'ticket_created', $ticket, $ticket->getCreatedBy());
+            $this->queueNotification($recipient, 'ticket_created', $ticket, $ticket->getCreatedBy());
         }
     }
 
-    private function notifyCommentAdded(Comment $comment, PostPersistEventArgs $args): void
+    private function notifyCommentAdded(Comment $comment): void
     {
         $recipients = $this->getNotificationRecipients(
             $comment->getTicket()->getOrganization(),
@@ -136,11 +160,11 @@ class NotificationSubscriber
 
         foreach ($recipients as $recipient) {
             $this->emailService->sendCommentAddedNotification($comment, $recipient);
-            $this->createNotification($args, $recipient, 'comment_added', $comment->getTicket(), $comment->getAuthor());
+            $this->queueNotification($recipient, 'comment_added', $comment->getTicket(), $comment->getAuthor());
         }
     }
 
-    private function notifyStatusChanged(Ticket $ticket, Status $oldStatus, Status $newStatus, PostUpdateEventArgs $args): void
+    private function notifyStatusChanged(Ticket $ticket, Status $oldStatus, Status $newStatus): void
     {
         $currentUser = $this->security->getUser();
 
@@ -152,7 +176,7 @@ class NotificationSubscriber
 
         foreach ($recipients as $recipient) {
             $this->emailService->sendStatusChangedNotification($ticket, $recipient, $oldStatus, $newStatus);
-            $this->createNotification($args, $recipient, 'status_changed', $ticket, $currentUser);
+            $this->queueNotification($recipient, 'status_changed', $ticket, $currentUser);
         }
     }
 }

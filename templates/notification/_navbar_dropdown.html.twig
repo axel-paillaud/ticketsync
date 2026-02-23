@@ -4,7 +4,7 @@
        data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-bell"></i>
         {% if unreadNotificationCount > 0 %}
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge">
+            <span class="position-absolute start-80 translate-middle badge rounded-pill bg-danger notification-badge">
                 {{ unreadNotificationCount > 99 ? '99+' : unreadNotificationCount }}
             </span>
         {% endif %}
