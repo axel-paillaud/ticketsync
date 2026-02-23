@@ -67,11 +67,18 @@ class Ticket
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'ticket', orphanRemoval: true)]
     private Collection $activities;
 
+    /**
+     * @var Collection<int, Notification>
+     */
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'ticket')]
+    private Collection $notifications;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->attachments = new ArrayCollection();
         $this->activities = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -300,5 +307,35 @@ class Ticket
             fn($carry, $entry) => $carry + (float) $entry->getHours(),
             0.0
         );
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setTicket($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getTicket() === $this) {
+                $notification->setTicket(null);
+            }
+        }
+
+        return $this;
     }
 }
