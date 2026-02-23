@@ -308,26 +308,89 @@ $dropdown-link-hover-bg: $bg-soft;
     }
 }
 
+// Unread: subtle tinted background + full color text
 .notification-unread {
     background-color: rgba($color-primary, 0.06);
 
     &:hover {
         background-color: rgba($color-primary, 0.12);
     }
+
+    .notification-row-main {
+        color: $fg;
+    }
 }
 
-.notification-icon {
-    font-size: 1rem;
-    width: 20px;
-    text-align: center;
+// Read: muted background, dimmed text
+.notification-read {
+    background-color: transparent;
+
+    .notification-row-main {
+        color: $color-muted;
+
+        strong {
+            font-weight: 500; // reduce emphasis on title
+        }
+
+        i {
+            opacity: 0.5;
+        }
+    }
+
+    .notification-row-meta {
+        opacity: 0.5;
+    }
 }
 
+// Left column: stacks the two rows
 .notification-content {
-    min-width: 0;
+    min-width: 0; // required for text-overflow in flex children
+    flex: 1;
 }
 
-.notification-meta-text {
+// Row 1: type icon + message (main, prominent)
+.notification-row-main {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    i {
+        flex-shrink: 0;
+        font-size: 0.9rem;
+    }
+}
+
+// Row 2: author + date (secondary, smaller, muted)
+.notification-row-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
     font-size: 0.75rem;
+    color: $color-muted;
+    margin-top: 0.2rem;
+
+    i {
+        flex-shrink: 0;
+        font-size: 0.7rem;
+    }
+}
+
+.notification-meta-separator {
+    opacity: 0.4;
+}
+
+// Right column: unread dot aligned with first row
+.notification-dot-wrapper {
+    flex-shrink: 0;
+    padding-top: 0.2rem;
 }
 
 .notification-unread-dot {

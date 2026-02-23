@@ -4,7 +4,7 @@
        data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-bell"></i>
         {% if unreadNotificationCount > 0 %}
-            <span class="position-absolute start-80 translate-middle badge rounded-pill bg-danger notification-badge">
+            <span class="position-absolute start-75 translate-middle badge rounded-pill bg-danger notification-badge">
                 {{ unreadNotificationCount > 99 ? '99+' : unreadNotificationCount }}
             </span>
         {% endif %}
@@ -30,52 +30,50 @@
                         <input type="hidden" name="_token"
                                value="{{ csrf_token('notification_read_' ~ notification.id) }}">
                         <button type="submit"
-                                class="dropdown-item notification-item px-3 py-2 {{ not notification.read ? 'notification-unread' : '' }}">
+                                class="dropdown-item notification-item px-3 py-2 {{ not notification.read ? 'notification-unread' : 'notification-read' }}">
+
                             <div class="d-flex align-items-start gap-2">
-                                {# Icon based on type #}
-                                <div class="notification-icon flex-shrink-0 mt-1">
-                                    {% if notification.type == 'ticket_created' %}
-                                        <i class="bi bi-ticket-perforated text-primary"></i>
-                                    {% elseif notification.type == 'comment_added' %}
-                                        <i class="bi bi-chat-left-text text-info"></i>
-                                    {% elseif notification.type == 'status_changed' %}
-                                        <i class="bi bi-flag text-warning"></i>
-                                    {% else %}
-                                        <i class="bi bi-bell text-secondary"></i>
-                                    {% endif %}
-                                </div>
 
-                                {# Content #}
-                                <div class="notification-content flex-grow-1 text-start">
-                                    <div class="notification-message small fw-medium text-truncate">
+                                {# Left column: stacked rows, grows to fill space #}
+                                <div class="notification-content">
+
+                                    {# Row 1: type icon + message (prominent) #}
+                                    <div class="notification-row-main">
                                         {% if notification.type == 'ticket_created' %}
-                                            {{ 'New ticket'|trans }}: <strong>{{ notification.ticket.title }}</strong>
+                                            <i class="bi bi-ticket-perforated text-primary"></i>
+                                            <span>{{ 'New ticket'|trans }}: <strong>{{ notification.ticket.title }}</strong></span>
                                         {% elseif notification.type == 'comment_added' %}
-                                            {{ 'New comment on'|trans }}: <strong>{{ notification.ticket.title }}</strong>
+                                            <i class="bi bi-chat-left-text text-info"></i>
+                                            <span>{{ 'New comment on'|trans }}: <strong>{{ notification.ticket.title }}</strong></span>
                                         {% elseif notification.type == 'status_changed' %}
-                                            {{ 'Status updated on'|trans }}: <strong>{{ notification.ticket.title }}</strong>
+                                            <i class="bi bi-flag text-warning"></i>
+                                            <span>{{ 'Status updated on'|trans }}: <strong>{{ notification.ticket.title }}</strong></span>
+                                        {% else %}
+                                            <i class="bi bi-bell text-secondary"></i>
+                                            <span>{{ notification.ticket.title }}</span>
                                         {% endif %}
                                     </div>
-                                    <div class="notification-meta d-flex gap-2 mt-1">
+
+                                    {# Row 2: author + date (secondary, muted) #}
+                                    <div class="notification-row-meta">
                                         {% if notification.triggeredBy %}
-                                            <span class="notification-meta-text text-muted">
-                                                <i class="bi bi-person"></i>
-                                                {{ notification.triggeredBy.name }}
-                                            </span>
+                                            <i class="bi bi-person"></i>
+                                            <span>{{ notification.triggeredBy.name }}</span>
+                                            <span class="notification-meta-separator">•</span>
                                         {% endif %}
-                                        <span class="notification-meta-text text-muted">
-                                            <i class="bi bi-clock"></i>
-                                            {{ notification.createdAt|date('M d, H:i') }}
-                                        </span>
+                                        <i class="bi bi-clock"></i>
+                                        <span>{{ notification.createdAt|date('M d, H:i') }}</span>
                                     </div>
+
                                 </div>
 
-                                {# Unread dot #}
+                                {# Right column: unread dot #}
                                 {% if not notification.read %}
-                                    <div class="flex-shrink-0 mt-1">
+                                    <div class="notification-dot-wrapper">
                                         <span class="notification-unread-dot"></span>
                                     </div>
                                 {% endif %}
+
                             </div>
                         </button>
                     </form>
