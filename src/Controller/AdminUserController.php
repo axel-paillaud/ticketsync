@@ -108,22 +108,16 @@ class AdminUserController extends AbstractController
             return $this->redirectToRoute('app_admin_user_show', ['id' => $user->getId()]);
         }
 
-        // Create a new invitation (invalidates the old one)
-        $entityManager->remove($invitation);
-        $entityManager->flush();
-
-        $newInvitation = new UserInvitation();
-        $newInvitation->setUser($user);
-        $entityManager->persist($newInvitation);
+        $invitation->renew();
         $entityManager->flush();
 
         // Generate invitation URL
         $invitationUrl = $this->generateUrl('app_invitation_accept', [
-            'token' => $newInvitation->getToken(),
+            'token' => $invitation->getToken(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         // Send invitation email
-        $emailService->sendUserInvitation($newInvitation, $invitationUrl);
+        $emailService->sendUserInvitation($invitation, $invitationUrl);
 
         $this->addFlash('success', sprintf($translator->trans('Invitation email has been resent to %s.'), $user->getEmail()));
 

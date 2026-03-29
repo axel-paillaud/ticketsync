@@ -132,6 +132,15 @@ class UserInvitation
     }
 
     /**
+     * Reset token and expiry to allow resending the invitation
+     */
+    public function renew(): void
+    {
+        $this->generateToken();
+        $this->setExpirationDate();
+    }
+
+    /**
      * Generate a cryptographically secure random token
      */
     private function generateToken(): void
