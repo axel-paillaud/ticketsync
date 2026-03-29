@@ -53,7 +53,7 @@ class TicketType extends AbstractType
                'required' => false,
                'multiple' => true,
                'attr' => [
-                    'accept' => 'image/*,.pdf,.doc,.docx,.txt,.xlsx,.odt,.zip,.rar,.mp4,.avi,.mov,.webm,.mkv',
+                    'accept' => 'image/*,text/*,application/pdf,.doc,.docx,.xlsx,.odt,.zip,.rar,.mp4,.avi,.mov,.webm,.mkv,.php,.js,.ts,.json,.yaml,.yml,.xml,.html,.css,.scss,.twig,.tpl,.sh,.sql,.md,.csv,.env',
                ],
                'constraints' => [
                     new All([
@@ -67,7 +67,7 @@ class TicketType extends AbstractType
                                 'application/vnd.ms-excel',
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                                 'application/vnd.oasis.opendocument.text',
-                                'text/plain',
+                                'text/*',
                                 'application/zip',
                                 'application/x-rar-compressed',
                                 'video/mp4',
