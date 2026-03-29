@@ -102,6 +102,8 @@ Delete: Supprimer
 'Enter ticket title': 'Saisissez le titre du ticket'
 'Describe the issue or request in detail...': 'Décrivez le problème ou la demande en détail...'
 'Supported: Images, PDF, Word, Excel, Text, Archives | Max 10MB per file': 'Formats supportés : Images, PDF, Word, Excel, Texte, Archives | Max 10 Mo par fichier'
+'Markdown is supported.': 'Le Markdown est supporté.'
+'Learn more': 'En savoir plus'
 Save: Enregistrer
 Cancel: Annuler
 Comments: Commentaires

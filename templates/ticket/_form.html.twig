@@ -13,6 +13,11 @@
         {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 6, 'placeholder': 'Describe the issue or request in detail...'|trans}}) }}
         {{ form_errors(form.description) }}
+        <small class="text-muted">
+            <i class="bi bi-markdown me-1"></i>
+            {{ 'Markdown is supported.'|trans }}
+            <a href="https://www.markdownguide.org/basic-syntax/" target="_blank" rel="noopener noreferrer" class="text-muted">{{ 'Learn more'|trans }}</a>
+        </small>
     </div>
 
     {# Status #}
