@@ -12,6 +12,11 @@
         {{ form_label(commentForm.content, 'Your Comment'|trans, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(commentForm.content, {'attr': {'class': 'form-control comment-textarea', 'rows': 4, 'placeholder': 'Write your comment here...'|trans}}) }}
         {{ form_errors(commentForm.content) }}
+        <small class="text-muted">
+            <i class="bi bi-markdown me-1"></i>
+            {{ 'Markdown is supported.'|trans }}
+            <a href="https://www.markdownguide.org/basic-syntax/" target="_blank" rel="noopener noreferrer" class="text-muted">{{ 'Learn more'|trans }}</a>
+        </small>
     </div>
 
     {# Attachments #}
