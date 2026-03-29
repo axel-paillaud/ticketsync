@@ -151,6 +151,15 @@ class Attachment
         return str_starts_with($this->mimeType, 'image/');
     }
 
+    public function isViewable(): bool
+    {
+        return str_starts_with($this->mimeType, 'image/')
+            || str_starts_with($this->mimeType, 'text/')
+            || str_starts_with($this->mimeType, 'video/')
+            || str_starts_with($this->mimeType, 'audio/')
+            || $this->mimeType === 'application/pdf';
+    }
+
     public function getFormattedSize(): string
     {
         $units = ['o', 'Ko', 'Mo', 'Go'];

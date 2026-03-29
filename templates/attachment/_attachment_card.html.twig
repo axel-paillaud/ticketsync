@@ -102,21 +102,40 @@
                     {% endif %}
                 </small>
             </p>
-            <a href="{{ commentId is defined
-                ? path('app_comment_attachment_download', {
-                    'organizationSlug': currentOrganization.slug,
-                    'ticketId': ticketId,
-                    'commentId': commentId,
-                    'attachmentId': attachment.id
-                })
-                : path('app_attachment_download', {
-                    'organizationSlug': currentOrganization.slug,
-                    'ticketId': ticketId,
-                    'attachmentId': attachment.id
-                })
-            }}" class="btn btn-sm btn-primary w-100" download>
-                <i class="bi bi-download"></i> {{ 'Download'|trans }}
-            </a>
+            <div class="d-flex gap-1">
+                {% if attachment.isViewable %}
+                    <a href="{{ commentId is defined
+                        ? path('app_comment_attachment_view', {
+                            'organizationSlug': currentOrganization.slug,
+                            'ticketId': ticketId,
+                            'commentId': commentId,
+                            'attachmentId': attachment.id
+                        })
+                        : path('app_attachment_view', {
+                            'organizationSlug': currentOrganization.slug,
+                            'ticketId': ticketId,
+                            'attachmentId': attachment.id
+                        })
+                    }}" class="btn btn-sm btn-outline-secondary flex-fill" target="_blank" rel="noopener noreferrer">
+                        <i class="bi bi-eye"></i> {{ 'View'|trans }}
+                    </a>
+                {% endif %}
+                <a href="{{ commentId is defined
+                    ? path('app_comment_attachment_download', {
+                        'organizationSlug': currentOrganization.slug,
+                        'ticketId': ticketId,
+                        'commentId': commentId,
+                        'attachmentId': attachment.id
+                    })
+                    : path('app_attachment_download', {
+                        'organizationSlug': currentOrganization.slug,
+                        'ticketId': ticketId,
+                        'attachmentId': attachment.id
+                    })
+                }}" class="btn btn-sm btn-primary flex-fill" download>
+                    <i class="bi bi-download"></i> {{ 'Download'|trans }}
+                </a>
+            </div>
         </div>
     </div>
 </div>

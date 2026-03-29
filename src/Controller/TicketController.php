@@ -18,9 +18,11 @@ use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 // Note : we can use this instead of $user = $this->getUser() everywhere
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Routing\Attribute\Route;
@@ -446,6 +448,37 @@ final class TicketController extends AbstractController
         return $this->file($filePath, $attachment->getFilename());
     }
 
+    #[Route('/tickets/{ticketId}/attachment/{attachmentId}/view', name: 'app_attachment_view', methods: ['GET'])]
+    public function viewAttachment(
+        Organization $organization,
+        int $ticketId,
+        #[MapEntity(id: 'attachmentId')] Attachment $attachment,
+        FileUploader $fileUploader
+    ): Response
+    {
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
+
+        if ($attachment->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Attachment does not belong to this ticket.');
+        }
+
+        if (!$this->isGranted('ROLE_ADMIN') && $attachment->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Attachment not found in this organization.');
+        }
+
+        $filePath = $fileUploader->getTargetDirectory() . '/' . $attachment->getStoredFilename();
+
+        if (!file_exists($filePath)) {
+            throw $this->createNotFoundException('File not found.');
+        }
+
+        $response = new BinaryFileResponse($filePath);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $attachment->getFilename());
+        $response->headers->set('Content-Type', $attachment->getMimeType());
+
+        return $response;
+    }
+
     #[Route('/tickets/{ticketId}/attachment/{attachmentId}/delete', name: 'app_attachment_delete', methods: ['POST'])]
     public function deleteAttachment(
         Organization $organization,
@@ -531,6 +564,42 @@ final class TicketController extends AbstractController
         }
 
         return $this->file($filePath, $attachment->getFilename());
+    }
+
+    #[Route('/tickets/{ticketId}/comment/{commentId}/attachment/{attachmentId}/view', name: 'app_comment_attachment_view', methods: ['GET'])]
+    public function viewCommentAttachment(
+        Organization $organization,
+        int $ticketId,
+        int $commentId,
+        #[MapEntity(id: 'attachmentId')] Attachment $attachment,
+        FileUploader $fileUploader
+    ): Response
+    {
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
+
+        if (!$attachment->getComment() || $attachment->getComment()->getId() !== $commentId) {
+            throw $this->createNotFoundException('Attachment does not belong to this comment.');
+        }
+
+        if ($attachment->getComment()->getTicket()->getId() !== $ticketId) {
+            throw $this->createNotFoundException('Comment does not belong to this ticket.');
+        }
+
+        if (!$this->isGranted('ROLE_ADMIN') && $attachment->getComment()->getTicket()->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Attachment not found in this organization.');
+        }
+
+        $filePath = $fileUploader->getTargetDirectory() . '/' . $attachment->getStoredFilename();
+
+        if (!file_exists($filePath)) {
+            throw $this->createNotFoundException('File not found.');
+        }
+
+        $response = new BinaryFileResponse($filePath);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $attachment->getFilename());
+        $response->headers->set('Content-Type', $attachment->getMimeType());
+
+        return $response;
     }
 
     #[Route('/tickets/{ticketId}/comment/{commentId}/attachment/{attachmentId}/delete', name: 'app_comment_attachment_delete', methods: ['POST'])]
