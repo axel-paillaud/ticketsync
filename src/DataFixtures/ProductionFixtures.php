@@ -52,19 +52,19 @@ class ProductionFixtures extends Fixture implements FixtureGroupInterface
 
         // CREATE PRIORITY
         $priorityA = new Priority();
-        $priorityA->setName('Priority A');
+        $priorityA->setName('A');
         $priorityA->setLevel(3);
         $priorityA->setColor('#cc241d'); // Gruvbox red
         $manager->persist($priorityA);
 
         $priorityB = new Priority();
-        $priorityB->setName('Priority B');
+        $priorityB->setName('B');
         $priorityB->setLevel(2);
         $priorityB->setColor('#d79921'); // Gruvbox yellow
         $manager->persist($priorityB);
 
         $priorityC = new Priority();
-        $priorityC->setName('Priority C');
+        $priorityC->setName('C');
         $priorityC->setLevel(1);
         $priorityC->setColor('#928374'); // Gruvbox gray
         $manager->persist($priorityC);

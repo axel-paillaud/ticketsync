@@ -33,7 +33,14 @@ class TicketType extends AbstractType
             ])
             ->add('priority', EntityType::class, [
                 'class' => Priority::class,
-                'choice_label' => 'name',
+                'choice_label' => function (Priority $priority): string {
+                    $descriptions = [
+                        'A' => 'A — High priority',
+                        'B' => 'B — Medium priority',
+                        'C' => 'C — Low priority',
+                    ];
+                    return $descriptions[$priority->getName()] ?? $priority->getName();
+                },
                 'label' => 'Priority',
             ]);
 
