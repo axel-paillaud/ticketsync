@@ -96,6 +96,46 @@ task('database:prepare', function () {
     run("chmod 666 $dbPath");
 })->desc('Prepare database file');
 
+// Pre-migration backups (run on the host over SSH, not inside the container).
+// The db/ directory is itself archived by borg.
+set('backup_dir', '/mnt/backup/ticketsync/db');
+set('backup_keep', 10);
+
+task('database:backup', function () {
+    $dbPath = '{{deploy_path}}/shared/var/data_prod.db';
+    $dir = get('backup_dir');
+
+    if (!test("[ -s $dbPath ]")) {
+        info('No database yet, skipping backup.');
+        return;
+    }
+
+    // The directory lives on the backup disk: if it is missing, the disk is probably not mounted
+    if (!test("[ -d $dir ] && [ -w $dir ]")) {
+        throw error("Backup directory $dir is missing or not writable (is the backup disk mounted?).");
+    }
+
+    if (!test('command -v sqlite3 >/dev/null 2>&1')) {
+        throw error('sqlite3 is required on the host to back up the database.');
+    }
+
+    $file = "$dir/data_prod_predeploy_release-{{release_name}}_" . date('Y-m-d_His') . '.db';
+
+    // ".backup" uses SQLite's online backup API: the copy stays consistent even if the app writes meanwhile
+    run("sqlite3 $dbPath \".backup '$file'\"");
+    run("chmod 600 $file");
+
+    if (trim(run("sqlite3 $file 'PRAGMA integrity_check'")) !== 'ok') {
+        throw error("Backup $file failed the integrity check.");
+    }
+
+    // Keep only the most recent pre-deploy backups; manual backups are left untouched
+    $keep = (int) get('backup_keep');
+    run("ls -1t $dir/data_prod_predeploy_*.db | tail -n +" . ($keep + 1) . " | xargs -r rm -f --");
+
+    info("Database backed up to $file");
+})->desc('Back up the SQLite database before migrations');
+
 task('database:migrate', function () {
     $dbPath = '{{deploy_path}}/shared/var/data_prod.db';
 
@@ -137,6 +177,7 @@ after('deploy:shared', 'deploy:fix_permissions');
 after('deploy:vendors', 'deploy:assets');
 after('deploy:assets', 'database:prepare');
 after('database:prepare', 'database:migrate');
+before('database:migrate', 'database:backup');
 after('deploy:symlink', 'docker:restart');
 after('rollback', 'docker:restart');
 
