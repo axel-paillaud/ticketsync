@@ -15,7 +15,7 @@ class UserInvitation
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'invitation', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
     #[ORM\Column(length: 255, unique: true)]

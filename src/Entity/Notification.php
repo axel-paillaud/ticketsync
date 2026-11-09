@@ -16,10 +16,11 @@ class Notification
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Ticket $ticket = null;
 
     #[ORM\Column(length: 50)]
@@ -38,6 +39,7 @@ class Notification
     }
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?User $triggeredBy = null;
 
     public function getId(): ?int

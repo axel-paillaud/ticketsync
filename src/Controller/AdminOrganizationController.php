@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Organization;
 use App\Form\OrganizationType;
 use App\Repository\OrganizationRepository;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -83,8 +84,16 @@ class AdminOrganizationController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete-organization-' . $organization->getId(), $request->request->get('_token'))) {
             $name = $organization->getName();
-            $entityManager->remove($organization);
-            $entityManager->flush();
+
+            try {
+                $entityManager->remove($organization);
+                $entityManager->flush();
+            } catch (ForeignKeyConstraintViolationException) {
+                // Users, tickets and activities keep a RESTRICT link to their organization
+                $this->addFlash('error', sprintf($translator->trans('Organization "%s" cannot be deleted because it still has users, tickets or activities.'), $name));
+
+                return $this->redirectToRoute('app_admin_organization_index');
+            }
 
             $this->addFlash('success', sprintf($translator->trans('Organization "%s" has been deleted successfully.'), $name));
         }

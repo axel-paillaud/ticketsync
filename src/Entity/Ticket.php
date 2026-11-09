@@ -31,14 +31,15 @@ class Ticket
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private ?Organization $organization = null;
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne(inversedBy: 'assignedTickets')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?User $assignedTo = null;
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
@@ -70,7 +71,7 @@ class Ticket
     /**
      * @var Collection<int, Notification>
      */
-    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'ticket')]
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'ticket', orphanRemoval: true)]
     private Collection $notifications;
 
     public function __construct()

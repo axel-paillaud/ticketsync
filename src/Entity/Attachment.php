@@ -30,13 +30,15 @@ class Attachment
     private ?\DateTimeImmutable $uploadedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'attachments')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Ticket $ticket = null;
 
     #[ORM\ManyToOne(inversedBy: 'attachments')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Comment $comment = null;
 
     #[ORM\ManyToOne(inversedBy: 'attachments')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?User $uploadedBy = null;
 
     public function getId(): ?int

@@ -7,6 +7,7 @@ use App\Entity\UserInvitation;
 use App\Form\UserInvitationType;
 use App\Repository\UserRepository;
 use App\Service\EmailService;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -135,8 +136,16 @@ class AdminUserController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete-user-' . $user->getId(), $request->request->get('_token'))) {
             $email = $user->getEmail();
-            $entityManager->remove($user);
-            $entityManager->flush();
+
+            try {
+                $entityManager->remove($user);
+                $entityManager->flush();
+            } catch (ForeignKeyConstraintViolationException) {
+                // Tickets, comments and activities keep a RESTRICT link to their author
+                $this->addFlash('error', sprintf($translator->trans('User "%s" cannot be deleted because they still own tickets, comments or activities.'), $email));
+
+                return $this->redirectToRoute('app_admin_user_index');
+            }
 
             $this->addFlash('success', sprintf($translator->trans('User "%s" has been deleted successfully.'), $email));
         }

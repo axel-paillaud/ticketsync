@@ -4,6 +4,7 @@
 'Organization "%s" has been created successfully.': 'Organisation "%s" créée avec succès.'
 'Organization "%s" has been updated successfully.': 'Organisation "%s" mise à jour avec succès.'
 'Organization "%s" has been deleted successfully.': 'Organisation "%s" supprimée avec succès.'
+'Organization "%s" cannot be deleted because it still has users, tickets or activities.': 'L''organisation "%s" ne peut pas être supprimée car elle contient encore des utilisateurs, tickets ou activités.'
 'This invitation link is invalid or has expired.': "Ce lien d'invitation est invalide ou a expiré."
 'Your password has been set successfully. You can now log in with your credentials.': 'Votre mot de passe a été défini avec succès. Vous pouvez maintenant vous connecter avec vos identifiants.'
 'Comment added successfully!': 'Commentaire ajouté avec succès !'
@@ -15,6 +16,7 @@
 'This invitation has already been accepted.': 'Cette invitation a déjà été acceptée.'
 'Invitation email has been resent to %s.': "Email d'invitation renvoyé à %s."
 'User "%s" has been deleted successfully.': 'Utilisateur "%s" supprimé avec succès.'
+'User "%s" cannot be deleted because they still own tickets, comments or activities.': 'L''utilisateur "%s" ne peut pas être supprimé car il possède encore des tickets, commentaires ou activités.'
 'Account created! Please log in.': 'Compte créé ! Veuillez vous connecter.'
 'Your email address has been verified.': 'Votre adresse email a été vérifiée.'
 '[TicketSync] New ticket #%d': '[TicketSync] Nouveau ticket #%d'

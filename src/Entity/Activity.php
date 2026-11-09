@@ -32,15 +32,15 @@ class Activity
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Ticket $ticket = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private ?Organization $organization = null;
 
     public function getId(): ?int

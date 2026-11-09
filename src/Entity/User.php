@@ -46,7 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $lastName = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private ?Organization $organization = null;
 
     /**
@@ -88,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Notification>
      */
-    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $notifications;
 
     public function __construct()
