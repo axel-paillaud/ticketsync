@@ -303,3 +303,12 @@ Notifications: Notifications
 'Status updated on': 'Statut mis à jour sur'
 'Mark all as read': 'Tout marquer comme lu'
 'No notifications yet': 'Aucune notification pour le moment'
+Close: Fermer
+'Delete permanently': 'Supprimer définitivement'
+'Mark as resolved': 'Marquer comme résolu'
+'Is the request handled?': 'La demande est traitée ?'
+'Mark it as resolved instead: the ticket and its history stay available.': "Marquez-le plutôt comme résolu : le ticket et son historique restent consultables."
+'Its comments, attachments and logged hours will be deleted as well. This action cannot be undone.': 'Ses commentaires, pièces jointes et heures saisies seront aussi supprimés. Cette action est irréversible.'
+'Ticket marked as resolved.': 'Ticket marqué comme résolu.'
+'This ticket is already closed.': 'Ce ticket est déjà clôturé.'
+'The "Resolved" status does not exist.': "Le statut « Résolu » n'existe pas."

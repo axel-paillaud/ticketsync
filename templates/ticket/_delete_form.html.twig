@@ -1,4 +1,7 @@
 <form method="post" action="{{ path('app_ticket_delete', {'organizationSlug': currentOrganization.slug, 'ticketId': ticket.id}) }}">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ticket.id) }}">
-    <button type="submit" class="btn btn-danger">{{ 'Delete'|trans }}</button>
+    <button type="submit" class="btn btn-outline-danger">
+        <i class="bi bi-trash"></i>
+        {{ 'Delete permanently'|trans }}
+    </button>
 </form>

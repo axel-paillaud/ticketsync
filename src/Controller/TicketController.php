@@ -301,6 +301,53 @@ final class TicketController extends AbstractController
         );
     }
 
+    /**
+     * Offered in the delete modal as a safer alternative to deletion: the ticket
+     * and its history (comments, attachments, logged hours) are kept.
+     */
+    #[Route('/tickets/{ticketId}/resolve', name: 'app_ticket_resolve', methods: ['POST'])]
+    public function resolve(Organization $organization, Request $request, #[MapEntity(id: 'ticketId')] Ticket $ticket, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
+    {
+        $this->denyAccessUnlessGranted('ORGANIZATION_ACCESS', $organization);
+
+        if (!$this->isGranted('ROLE_ADMIN') && $ticket->getOrganization() !== $organization) {
+            throw $this->createNotFoundException('Ticket not found in this organization.');
+        }
+
+        // Non-admins cannot change the status in the edit form, but whoever may
+        // delete a ticket may also close it, which is the less destructive option.
+        $this->denyAccessUnlessGranted('TICKET_DELETE', $ticket);
+
+        $redirect = $this->redirectToRoute('app_ticket_show', [
+            'organizationSlug' => $organization->getSlug(),
+            'ticketId' => $ticket->getId(),
+        ], Response::HTTP_SEE_OTHER);
+
+        if (!$this->isCsrfTokenValid('resolve'.$ticket->getId(), $request->getPayload()->getString('_token'))) {
+            return $redirect;
+        }
+
+        if ($ticket->getStatus()?->isClosed()) {
+            $this->addFlash('info', $translator->trans('This ticket is already closed.'));
+
+            return $redirect;
+        }
+
+        $resolved = $entityManager->getRepository(Status::class)->findOneBy(['slug' => 'resolved']);
+        if (!$resolved) {
+            $this->addFlash('danger', $translator->trans('The "Resolved" status does not exist.'));
+
+            return $redirect;
+        }
+
+        $ticket->setStatus($resolved);
+        $entityManager->flush();
+
+        $this->addFlash('success', $translator->trans('Ticket marked as resolved.'));
+
+        return $redirect;
+    }
+
     #[Route('/tickets/{ticketId}/comment/{commentId}/delete', name: 'app_comment_delete', methods: ['POST'])]
     public function deleteComment(
         Organization $organization,
