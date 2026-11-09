@@ -1,0 +1,7 @@
+<form method="post" action="{{ path('app_ticket_resolve', {'organizationSlug': ticket.organization.slug, 'ticketId': ticket.id}) }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('resolve' ~ ticket.id) }}">
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-lg"></i>
+        {{ 'Mark as resolved'|trans }}
+    </button>
+</form>

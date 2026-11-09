@@ -27,13 +27,7 @@
                 <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
                 {{ include('ticket/_delete_form.html.twig') }}
                 {% if not isClosed %}
-                    <form method="post" action="{{ path('app_ticket_resolve', {'organizationSlug': currentOrganization.slug, 'ticketId': ticket.id}) }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('resolve' ~ ticket.id) }}">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-lg"></i>
-                            {{ 'Mark as resolved'|trans }}
-                        </button>
-                    </form>
+                    {{ include('ticket/_resolve_form.html.twig') }}
                 {% endif %}
             </div>
         </div>

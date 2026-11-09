@@ -34,7 +34,7 @@ class TicketResolveTest extends FunctionalTestCase
         $this->assertSame('resolved', $ticket->getStatus()->getSlug());
     }
 
-    public function testClosedTicketModalOnlyOffersDeletion(): void
+    public function testClosedTicketOnlyOffersDeletion(): void
     {
         $ticket = $this->createTicket($this->member, $this->createStatus('resolved', true));
         $ticketId = $ticket->getId();
@@ -46,6 +46,29 @@ class TicketResolveTest extends FunctionalTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorNotExists(sprintf('#deleteModal form[action$="/tickets/%d/resolve"]', $ticketId));
         $this->assertSelectorExists(sprintf('#deleteModal form[action$="/tickets/%d/delete"]', $ticketId));
+        $this->assertSelectorNotExists('[data-bs-target="#resolveModal"]');
+        $this->assertSelectorNotExists('#resolveModal');
+    }
+
+    public function testMemberCanResolveTicketFromShowPageButton(): void
+    {
+        $this->createStatus('resolved', true);
+        $ticket = $this->createTicket($this->member);
+        $ticketId = $ticket->getId();
+        $slug = $this->organization->getSlug();
+
+        $this->rebootKernel();
+        $this->client->loginUser($this->member);
+
+        $crawler = $this->client->request('GET', sprintf('/%s/tickets/%d', $slug, $ticketId));
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('[data-bs-target="#resolveModal"]');
+        $form = $crawler->filter(sprintf('#resolveModal form[action$="/tickets/%d/resolve"]', $ticketId))->form();
+        $this->client->submit($form);
+
+        $this->assertResponseRedirects(sprintf('/%s/tickets/%d', $slug, $ticketId));
+        $this->em->clear();
+        $this->assertSame('resolved', $this->em->getRepository(Ticket::class)->find($ticketId)->getStatus()->getSlug());
     }
 
     public function testResolveRequiresValidCsrfToken(): void

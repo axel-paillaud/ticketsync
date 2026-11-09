@@ -312,3 +312,5 @@ Close: Fermer
 'Ticket marked as resolved.': 'Ticket marqué comme résolu.'
 'This ticket is already closed.': 'Ce ticket est déjà clôturé.'
 'The "Resolved" status does not exist.': "Le statut « Résolu » n'existe pas."
+'Is your request fully handled? The ticket will be closed.': 'Votre demande est-elle entièrement traitée ? Le ticket sera clôturé.'
+'If the problem comes back, add a comment and the ticket can be reopened.': 'Si le problème revient, ajoutez un commentaire et le ticket pourra être rouvert.'

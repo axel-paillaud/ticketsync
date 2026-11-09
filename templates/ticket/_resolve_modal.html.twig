@@ -1,0 +1,22 @@
+{# Confirmation before closing the ticket, so a misclick does not resolve it #}
+<div class="modal fade" id="resolveModal" tabindex="-1" aria-labelledby="resolveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resolveModalLabel">{{ 'Mark as resolved'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|trans }}"></button>
+            </div>
+            <div class="modal-body">
+                <p>{{ 'Is your request fully handled? The ticket will be closed.'|trans }}</p>
+                <p class="mb-0 text-body-secondary">
+                    <i class="bi bi-info-circle"></i>
+                    {{ 'If the problem comes back, add a comment and the ticket can be reopened.'|trans }}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
+                {{ include('ticket/_resolve_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
