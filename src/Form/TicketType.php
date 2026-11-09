@@ -13,9 +13,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TicketType extends AbstractType
 {
+    public function __construct(private TranslatorInterface $translator)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -33,7 +38,14 @@ class TicketType extends AbstractType
             ])
             ->add('priority', EntityType::class, [
                 'class' => Priority::class,
-                'choice_label' => 'name',
+                'choice_label' => function (Priority $priority): string {
+                    $descriptions = [
+                        'A' => 'A — ' . $this->translator->trans('High priority'),
+                        'B' => 'B — ' . $this->translator->trans('Medium priority'),
+                        'C' => 'C — ' . $this->translator->trans('Low priority'),
+                    ];
+                    return $descriptions[$priority->getName()] ?? $priority->getName();
+                },
                 'label' => 'Priority',
             ]);
 
@@ -53,7 +65,7 @@ class TicketType extends AbstractType
                'required' => false,
                'multiple' => true,
                'attr' => [
-                    'accept' => 'image/*,.pdf,.doc,.docx,.txt,.xlsx,.odt,.zip,.rar,.mp4,.avi,.mov,.webm,.mkv',
+                    'accept' => 'image/*,text/*,application/pdf,.doc,.docx,.xlsx,.odt,.zip,.rar,.mp4,.avi,.mov,.webm,.mkv,.php,.js,.ts,.json,.yaml,.yml,.xml,.html,.css,.scss,.twig,.tpl,.sh,.sql,.md,.csv,.env',
                ],
                'constraints' => [
                     new All([
@@ -67,7 +79,7 @@ class TicketType extends AbstractType
                                 'application/vnd.ms-excel',
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                                 'application/vnd.oasis.opendocument.text',
-                                'text/plain',
+                                'text/*',
                                 'application/zip',
                                 'application/x-rar-compressed',
                                 'video/mp4',

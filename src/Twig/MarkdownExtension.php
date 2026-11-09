@@ -19,6 +19,9 @@ class MarkdownExtension extends AbstractExtension
         $config = [
             'html_input' => 'escape', // Escape HTML for security
             'allow_unsafe_links' => false, // Prevent javascript: links
+            'renderer' => [
+                'soft_break' => "<br />\n", // Single newline renders as <br>
+            ],
         ];
 
         $environment = new Environment($config);
