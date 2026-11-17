@@ -58,9 +58,11 @@
                                             {{ ticket.title }}
                                         </a>
                                     </h5>
+                                    {% if ticket.description %}
                                     <p class="card-text text-muted mb-2 ticket-description">
                                         {{ (ticket.description|length > 100 ? ticket.description|slice(0, 100) ~ '...' : ticket.description)|markdown_to_html|striptags|raw }}
                                     </p>
+                                    {% endif %}
                                     <div class="d-flex gap-2 flex-wrap">
                                         <span class="badge bg-primary">
                                             <i class="bi bi-flag-fill"></i>

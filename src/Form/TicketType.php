@@ -29,6 +29,7 @@ class TicketType extends AbstractType
             ])
             ->add('description', null, [
                 'label' => 'Description',
+                'required' => false,
             ])
             ->add('status', EntityType::class, [
                 'class' => Status::class,

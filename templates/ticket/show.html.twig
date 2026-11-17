@@ -89,6 +89,7 @@
             </div>
 
             {# Description #}
+            {% if ticket.description %}
             <div class="description-section">
                 <h5 class="mb-2">
                     <i class="bi bi-file-text"></i>
@@ -98,6 +99,7 @@
                     {{ ticket.description|markdown_to_html|raw }}
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 
