@@ -1,0 +1,19 @@
+mcp:
+    servers:
+        default:
+            name: TicketSync
+            version: 0.1.0
+            # Sent to the client at connection time: general context for the model.
+            instructions: |
+                TicketSync is the ticketing tool of a freelance PrestaShop/web developer
+                doing maintenance (TMA) for several clients. Each client is an
+                "organization" identified by a slug. Ticket ids are global and are the
+                numbers used everywhere ("ticket 48" = id 48).
+
+            # Only our own tools, not the ones third-party bundles might ship.
+            registry: 'App\Mcp\'
+
+            http:
+                path: /mcp
+                # DNS rebinding protection: only answer requests sent to our own host.
+                allowed_hosts: ['localhost', '%env(key:host:url:DEFAULT_URI)%']

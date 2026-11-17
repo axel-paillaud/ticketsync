@@ -13,6 +13,14 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        # MCP endpoint: no session or cookie, every request carries
+        # "Authorization: Bearer <token>" (see app:api-token:create).
+        mcp:
+            pattern: ^/mcp
+            stateless: true
+            provider: app_user_provider
+            access_token:
+                token_handler: App\Security\ApiTokenHandler
         main:
             lazy: true
             provider: app_user_provider
@@ -46,6 +54,9 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+
+        # MCP tools are admin-only for now.
+        - { path: ^/mcp, roles: ROLE_ADMIN }
 
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
