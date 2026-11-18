@@ -2,6 +2,9 @@
 
 namespace App\Mcp;
 
+use App\Entity\Activity;
+use App\Entity\Attachment;
+use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Repository\OrganizationRepository;
 use App\Repository\TicketRepository;
@@ -65,6 +68,69 @@ final class TicketTools
         return [
             'count' => \count($tickets),
             'tickets' => array_map($this->summarize(...), $tickets),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[McpTool(
+        name: 'get_ticket',
+        description: 'Get one ticket in full: description, comment thread (oldest first), '
+            .'logged activities (time spent) and attachment names. '
+            .'In comments, authorIsAdmin=true means the developer wrote it, false means the client did.',
+        annotations: new ToolAnnotations(readOnlyHint: true),
+    )]
+    public function getTicket(
+        #[Schema(description: 'Ticket id, e.g. 48 for "ticket 48" or "#48".', minimum: 1)]
+        int $id,
+    ): array {
+        $ticket = $this->ticketRepository->find($id);
+
+        // Same answer for "does not exist" and "not yours": do not reveal other clients' tickets.
+        if ($ticket === null || !$this->security->isGranted('ORGANIZATION_ACCESS', $ticket->getOrganization())) {
+            throw new ToolCallException(sprintf('Ticket #%d not found.', $id));
+        }
+
+        $comments = $ticket->getComments()->toArray();
+        usort($comments, static fn (Comment $a, Comment $b) => $a->getCreatedAt() <=> $b->getCreatedAt());
+
+        $activities = $ticket->getActivities()->toArray();
+        usort($activities, static fn (Activity $a, Activity $b) => [$a->getWorkDate(), $a->getCreatedAt()] <=> [$b->getWorkDate(), $b->getCreatedAt()]);
+
+        return $this->summarize($ticket) + [
+            'description' => $ticket->getDescription(),
+            'createdBy' => $ticket->getCreatedBy()->getName(),
+            'assignedTo' => $ticket->getAssignedTo()?->getName(),
+            'attachments' => array_map($this->describeAttachment(...), $ticket->getAttachments()->toArray()),
+            'comments' => array_map(fn (Comment $comment) => [
+                'id' => $comment->getId(),
+                'author' => $comment->getAuthor()->getName(),
+                'authorIsAdmin' => \in_array('ROLE_ADMIN', $comment->getAuthor()->getRoles(), true),
+                'createdAt' => $comment->getCreatedAt()->format(\DateTimeInterface::ATOM),
+                'content' => $comment->getContent(),
+                'attachments' => array_map($this->describeAttachment(...), $comment->getAttachments()->toArray()),
+            ], $comments),
+            'activities' => array_map(static fn (Activity $activity) => [
+                'id' => $activity->getId(),
+                'workDate' => $activity->getWorkDate()->format('Y-m-d'),
+                'hours' => (float) $activity->getHours(),
+                'description' => $activity->getDescription(),
+                'author' => $activity->getCreatedBy()->getName(),
+            ], $activities),
+            'totalHours' => array_sum(array_map(static fn (Activity $activity) => (float) $activity->getHours(), $activities)),
+        ];
+    }
+
+    /**
+     * @return array{filename: string, mimeType: string, size: string}
+     */
+    private function describeAttachment(Attachment $attachment): array
+    {
+        return [
+            'filename' => $attachment->getFilename(),
+            'mimeType' => $attachment->getMimeType(),
+            'size' => $attachment->getFormattedSize(),
         ];
     }
 

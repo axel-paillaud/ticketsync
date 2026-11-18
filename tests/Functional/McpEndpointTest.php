@@ -2,7 +2,9 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\Activity;
 use App\Entity\ApiToken;
+use App\Entity\Comment;
 use App\Entity\User;
 
 /**
@@ -60,9 +62,67 @@ class McpEndpointTest extends FunctionalTestCase
         $this->assertNotNull($stored->getLastUsedAt());
     }
 
+    public function testGetTicketReturnsThreadAndActivities(): void
+    {
+        $ticket = $this->createTicket($this->member);
+        // Persisted out of order on purpose: the tool must sort them by date.
+        $this->em->persist((new Comment())->setTicket($ticket)->setAuthor($this->admin)->setContent('Fixed.'));
+        $this->em->persist((new Comment())->setTicket($ticket)->setAuthor($this->member)->setContent('It is broken.'));
+        foreach ([['2026-03-02', '1.25'], ['2026-03-01', '0.50']] as [$date, $hours]) {
+            $this->em->persist((new Activity())
+                ->setTicket($ticket)->setOrganization($this->organization)->setCreatedBy($this->admin)
+                ->setWorkDate(new \DateTimeImmutable($date))->setHours($hours)->setDescription('Work on '.$date));
+        }
+        $this->em->flush();
+        // createdAt is forced to "now" on persist, so set the real dates directly.
+        $connection = $this->em->getConnection();
+        $connection->executeStatement("UPDATE comment SET created_at = '2026-03-02 10:00:00' WHERE content = 'Fixed.'");
+        $connection->executeStatement("UPDATE comment SET created_at = '2026-03-01 09:00:00' WHERE content = 'It is broken.'");
+        $this->em->clear();
+
+        $result = $this->callTool('get_ticket', ['id' => $ticket->getId()]);
+
+        $this->assertFalse($result['isError'] ?? false);
+        $data = $result['structuredContent'];
+        $this->assertSame('Broken printer', $data['title']);
+        $this->assertSame('It does not print.', $data['description']);
+        $this->assertSame(['It is broken.', 'Fixed.'], array_column($data['comments'], 'content'));
+        $this->assertSame([false, true], array_column($data['comments'], 'authorIsAdmin'));
+        $this->assertSame(['2026-03-01', '2026-03-02'], array_column($data['activities'], 'workDate'));
+        $this->assertEqualsWithDelta(1.75, $data['totalHours'], 0.001);
+    }
+
+    public function testGetUnknownTicketReturnsAToolError(): void
+    {
+        $result = $this->callTool('get_ticket', ['id' => 999]);
+
+        $this->assertTrue($result['isError']);
+        $this->assertSame('Ticket #999 not found.', $result['content'][0]['text']);
+    }
+
+    /**
+     * Opens an MCP session as admin and calls one tool.
+     *
+     * @param array<string, mixed> $arguments
+     *
+     * @return array<string, mixed>
+     */
+    private function callTool(string $name, array $arguments): array
+    {
+        $token = $this->createToken($this->admin);
+        $this->postJsonRpc($token, 'initialize', $this->initializeParams());
+        $sessionId = $this->client->getResponse()->headers->get('Mcp-Session-Id');
+
+        $response = $this->postJsonRpc($token, 'tools/call', ['name' => $name, 'arguments' => $arguments], $sessionId);
+        $this->assertResponseIsSuccessful();
+
+        return $response['result'];
+    }
+
     private function createToken(User $user): string
     {
-        [$token, $plainToken] = ApiToken::generate($user, 'test');
+        // getReference() also works when the entity manager was cleared since $user was loaded.
+        [$token, $plainToken] = ApiToken::generate($this->em->getReference(User::class, $user->getId()), 'test');
         $this->em->persist($token);
         $this->em->flush();
 
