@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TicketRepository::class)]
 #[HasLifecycleCallbacks]
@@ -19,6 +20,8 @@ class Ticket
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Please enter a title.')]
+    #[Assert\Length(max: 255)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -32,6 +35,7 @@ class Ticket
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
+    #[Assert\NotNull(message: 'Please select an organization.')]
     private ?Organization $organization = null;
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
@@ -44,10 +48,12 @@ class Ticket
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Please select a status.')]
     private ?Status $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Please select a priority.')]
     private ?Priority $priority = null;
 
     /**

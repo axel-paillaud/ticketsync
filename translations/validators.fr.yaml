@@ -183,3 +183,7 @@ Error: Erreur
 'There is already an account with this email': 'Un compte existe déjà avec cette adresse email'
 'Please upload a valid file (image, PDF, Word, Excel, text or archive)': 'Veuillez télécharger un fichier valide (image, PDF, Word, Excel, texte ou archive)'
 'Please upload a valid file (image, PDF, Word, Excel, text, archive)': 'Veuillez télécharger un fichier valide (image, PDF, Word, Excel, texte, archive)'
+'Please enter a title.': 'Veuillez saisir un titre.'
+'Please select an organization.': 'Veuillez choisir une organisation.'
+'Please select a status.': 'Veuillez choisir un statut.'
+'Please select a priority.': 'Veuillez choisir une priorité.'
