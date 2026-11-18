@@ -7,6 +7,7 @@ use App\Entity\Organization;
 use App\Entity\Ticket;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<Activity>
@@ -29,8 +30,8 @@ class ActivityRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('a')
             ->andWhere('a.ticket = :ticket')
             ->setParameter('ticket', $ticket)
-            ->orderBy('a.workDate', 'DESC')
-            ->addOrderBy('a.createdAt', 'DESC')
+            ->orderBy('a.workDate', SortDirection::Descending)
+            ->addOrderBy('a.createdAt', SortDirection::Descending)
             ->getQuery()
             ->getResult();
     }
@@ -49,8 +50,8 @@ class ActivityRepository extends ServiceEntityRepository
             ->leftJoin('a.createdBy', 'u')
             ->andWhere('a.organization = :organization')
             ->setParameter('organization', $organization)
-            ->orderBy('a.workDate', 'DESC')
-            ->addOrderBy('a.createdAt', 'DESC')
+            ->orderBy('a.workDate', SortDirection::Descending)
+            ->addOrderBy('a.createdAt', SortDirection::Descending)
             ->getQuery()
             ->getResult();
     }
@@ -67,8 +68,8 @@ class ActivityRepository extends ServiceEntityRepository
             ->leftJoin('a.ticket', 't')
             ->leftJoin('a.organization', 'o')
             ->leftJoin('a.createdBy', 'u')
-            ->orderBy('a.workDate', 'DESC')
-            ->addOrderBy('a.createdAt', 'DESC')
+            ->orderBy('a.workDate', SortDirection::Descending)
+            ->addOrderBy('a.createdAt', SortDirection::Descending)
             ->getQuery()
             ->getResult();
     }
@@ -105,8 +106,8 @@ class ActivityRepository extends ServiceEntityRepository
                ->setParameter('organization', $organization);
         }
 
-        return $qb->orderBy('a.workDate', 'DESC')
-                  ->addOrderBy('a.createdAt', 'DESC')
+        return $qb->orderBy('a.workDate', SortDirection::Descending)
+                  ->addOrderBy('a.createdAt', SortDirection::Descending)
                   ->getQuery()
                   ->getResult();
     }

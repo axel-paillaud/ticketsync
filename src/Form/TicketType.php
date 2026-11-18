@@ -69,10 +69,10 @@ class TicketType extends AbstractType
                     'accept' => 'image/*,text/*,application/pdf,.doc,.docx,.xlsx,.odt,.zip,.rar,.mp4,.avi,.mov,.webm,.mkv,.php,.js,.ts,.json,.yaml,.yml,.xml,.html,.css,.scss,.twig,.tpl,.sh,.sql,.md,.csv,.env',
                ],
                'constraints' => [
-                    new All([
-                        new File([
-                            'maxSize' => '10M',
-                            'mimeTypes' => [
+                    new All(constraints: [
+                        new File(
+                            maxSize: '10M',
+                            mimeTypes: [
                                 'image/*',
                                 'application/pdf',
                                 'application/msword',
@@ -89,8 +89,8 @@ class TicketType extends AbstractType
                                 'video/webm',
                                 'video/x-matroska',
                             ],
-                            'mimeTypesMessage' => 'Please upload a valid file (image, video, PDF, Word, Excel, text, archive)',
-                        ])
+                            mimeTypesMessage: 'Please upload a valid file (image, video, PDF, Word, Excel, text, archive)',
+                        )
                     ])
                ]
             ]);

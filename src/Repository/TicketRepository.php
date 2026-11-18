@@ -6,6 +6,7 @@ use App\Entity\Organization;
 use App\Entity\Ticket;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<Ticket>
@@ -42,9 +43,9 @@ class TicketRepository extends ServiceEntityRepository
         // Order by: resolved status (non-resolved first), then priority, then creation date
         $qb->addSelect('CASE WHEN s.slug = :resolvedSlugOrder THEN 1 ELSE 0 END as HIDDEN is_resolved')
            ->setParameter('resolvedSlugOrder', 'resolved')
-           ->orderBy('is_resolved', 'ASC')
-           ->addOrderBy('p.level', 'DESC')
-           ->addOrderBy('t.createdAt', 'DESC');
+           ->orderBy('is_resolved', SortDirection::Ascending)
+           ->addOrderBy('p.level', SortDirection::Descending)
+           ->addOrderBy('t.createdAt', SortDirection::Descending);
 
         return $qb->getQuery()->getResult();
     }
@@ -71,9 +72,9 @@ class TicketRepository extends ServiceEntityRepository
         // Order by: resolved status (non-resolved first), then priority, then creation date
         $qb->addSelect('CASE WHEN s.slug = :resolvedSlugOrder THEN 1 ELSE 0 END as HIDDEN is_resolved')
            ->setParameter('resolvedSlugOrder', 'resolved')
-           ->orderBy('is_resolved', 'ASC')
-           ->addOrderBy('p.level', 'DESC')
-           ->addOrderBy('t.createdAt', 'DESC');
+           ->orderBy('is_resolved', SortDirection::Ascending)
+           ->addOrderBy('p.level', SortDirection::Descending)
+           ->addOrderBy('t.createdAt', SortDirection::Descending);
 
         return $qb->getQuery()->getResult();
     }

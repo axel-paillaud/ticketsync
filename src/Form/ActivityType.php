@@ -25,9 +25,9 @@ class ActivityType extends AbstractType
                     'placeholder' => 'Describe the work performed...'
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please provide a description of the work.'
-                    ])
+                    new NotBlank(
+                        message: 'Please provide a description of the work.'
+                    )
                 ]
             ])
             ->add('hours', NumberType::class, [
@@ -40,17 +40,17 @@ class ActivityType extends AbstractType
                 ],
                 'html5' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter the hours worked.'
-                    ]),
-                    new GreaterThan([
-                        'value' => 0,
-                        'message' => 'Hours must be greater than 0.'
-                    ]),
-                    new LessThanOrEqual([
-                        'value' => 24,
-                        'message' => 'Hours cannot exceed 24 per entry.'
-                    ])
+                    new NotBlank(
+                        message: 'Please enter the hours worked.'
+                    ),
+                    new GreaterThan(
+                        value: 0,
+                        message: 'Hours must be greater than 0.'
+                    ),
+                    new LessThanOrEqual(
+                        value: 24,
+                        message: 'Hours cannot exceed 24 per entry.'
+                    )
                 ]
             ])
             ->add('workDate', DateType::class, [
@@ -61,9 +61,9 @@ class ActivityType extends AbstractType
                     'max' => (new \DateTime())->format('Y-m-d'),
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please select the work date.'
-                    ])
+                    new NotBlank(
+                        message: 'Please select the work date.'
+                    )
                 ]
             ])
         ;

@@ -81,39 +81,41 @@
                                         </div>
                                     </td>
                                 </tr>
-
-                                {# Delete Modal #}
-                                <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">{{ 'Delete User'|trans }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>{{ 'Are you sure you want to delete'|trans }} <strong>{{ user.email }}</strong>?</p>
-                                                <p class="text-danger mb-0">
-                                                    <i class="bi bi-exclamation-triangle"></i>
-                                                    {{ 'This will also delete all associated tickets and data. This action cannot be undone.'|trans }}
-                                                </p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
-                                                <form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}" class="d-inline">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
-                                                    <button type="submit" class="btn btn-danger">
-                                                        <i class="bi bi-trash"></i>
-                                                        {{ 'Delete'|trans }}
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+
+                {# Delete modals live outside the table: a <div> or <form> inside <tbody> is invalid HTML #}
+                {% for user in users %}
+                    <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">{{ 'Delete User'|trans }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>{{ 'Are you sure you want to delete'|trans }} <strong>{{ user.email }}</strong>?</p>
+                                    <p class="text-danger mb-0">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        {{ 'This will also delete all associated tickets and data. This action cannot be undone.'|trans }}
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
+                                    <form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}" class="d-inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                            {{ 'Delete'|trans }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     {% else %}
