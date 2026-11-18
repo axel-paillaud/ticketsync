@@ -71,6 +71,8 @@ RUN { \
     echo '    AllowOverride None'; \
     echo '    Require all granted'; \
     echo '    FallbackResource /index.php'; \
+    echo '    # Pass the "Authorization: Bearer" header to PHP (MCP API tokens)'; \
+    echo '    CGIPassAuth On'; \
     echo '</Directory>'; \
     echo ''; \
     echo '<Directory ${APACHE_DOCUMENT_ROOT}/bundles>'; \
