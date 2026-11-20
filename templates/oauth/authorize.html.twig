@@ -30,7 +30,8 @@
                         {{ 'Access can be revoked at any time with app:api-token:revoke.'|trans }}
                     </p>
 
-                    <form method="post" action="{{ path('oauth_authorize') }}">
+                    {# No Turbo: the redirect to the client must be a real top-level navigation, not a fetch. #}
+                    <form method="post" action="{{ path('oauth_authorize') }}" data-turbo="false">
                         {% for name, value in params %}
                             <input type="hidden" name="{{ name }}" value="{{ value }}">
                         {% endfor %}
