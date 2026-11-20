@@ -100,6 +100,88 @@ class McpEndpointTest extends FunctionalTestCase
         $this->assertSame('Ticket #999 not found.', $result['content'][0]['text']);
     }
 
+    public function testLogActivityCreatesThenUpdatesTheSameSession(): void
+    {
+        $ticket = $this->createTicket($this->member);
+        $arguments = [
+            'ticketId' => $ticket->getId(),
+            'orgId' => '3f2a9c4e-0000-4000-8000-000000000001',
+            'workDate' => '2026-11-18',
+            'minutes' => 27,
+            'description' => 'Fix VAT rounding in `HTMLTemplateInvoice::getHeader()`.',
+        ];
+
+        $first = $this->callTool('log_activity', $arguments)['structuredContent'];
+        $this->assertSame('created', $first['result']);
+        // JSON numbers: compare values, 1.0 may come back as 1.
+        $this->assertEquals(0.5, $first['hours']);
+        $this->assertEquals(0.5, $first['ticketTotalHours']);
+
+        // More time clocked on the same org session, then synced again.
+        $second = $this->callTool('log_activity', ['minutes' => 50, 'description' => 'Fix VAT rounding, credit notes included.'] + $arguments)['structuredContent'];
+        $this->assertSame('updated', $second['result']);
+        $this->assertSame($first['activityId'], $second['activityId']);
+        $this->assertEquals(1.0, $second['hours']);
+
+        $this->em->clear();
+        $activities = $this->em->getRepository(Activity::class)->findAll();
+        $this->assertCount(1, $activities, 'Re-syncing a session must not create a duplicate.');
+        // SQLite NUMERIC stores 1.00 as 1: compare the value (display always uses number_format).
+        $this->assertEquals(1.0, (float) $activities[0]->getHours());
+        $this->assertSame('Fix VAT rounding, credit notes included.', $activities[0]->getDescription());
+        $this->assertSame('admin@example.com', $activities[0]->getCreatedBy()->getEmail());
+        $this->assertSame($this->organization->getId(), $activities[0]->getOrganization()->getId());
+    }
+
+    public function testLogActivityRefusesAnOrgIdAlreadyUsedOnAnotherTicket(): void
+    {
+        $first = $this->createTicket($this->member);
+        $second = $this->createTicket($this->member);
+        $arguments = ['orgId' => 'same-id', 'workDate' => '2026-11-18', 'minutes' => 10, 'description' => 'Work.'];
+
+        $this->callTool('log_activity', ['ticketId' => $first->getId()] + $arguments);
+        $result = $this->callTool('log_activity', ['ticketId' => $second->getId()] + $arguments);
+
+        $this->assertTrue($result['isError']);
+        $this->assertStringContainsString('already used by an activity of ticket #'.$first->getId(), $result['content'][0]['text']);
+    }
+
+    public function testLogActivityRejectsInvalidDates(): void
+    {
+        $ticket = $this->createTicket($this->member);
+        $arguments = ['ticketId' => $ticket->getId(), 'orgId' => 'some-id', 'minutes' => 10, 'description' => 'Work.'];
+
+        $future = $this->callTool('log_activity', ['workDate' => (new \DateTimeImmutable('+2 days'))->format('Y-m-d')] + $arguments);
+        $this->assertTrue($future['isError']);
+        $this->assertStringContainsString('in the future', $future['content'][0]['text']);
+
+        // Rejected by the JSON schema ("format: date") before the tool even runs.
+        $invalid = $this->callTool('log_activity', ['workDate' => '2026-02-30'] + $arguments);
+        $this->assertArrayHasKey('protocolError', $invalid);
+
+        $this->assertSame(0, $this->em->getRepository(Activity::class)->count([]));
+    }
+
+    public function testLogActivityLeavesManualActivitiesAlone(): void
+    {
+        $ticket = $this->createTicket($this->member);
+        $this->em->persist((new Activity())
+            ->setTicket($ticket)->setOrganization($this->organization)->setCreatedBy($this->admin)
+            ->setWorkDate(new \DateTimeImmutable('2026-11-17'))->setHours('0.25')->setDescription('Entered by hand.'));
+        $this->em->flush();
+
+        $result = $this->callTool('log_activity', [
+            'ticketId' => $ticket->getId(), 'orgId' => 'new-session', 'workDate' => '2026-11-18', 'minutes' => 20, 'description' => 'Synced.',
+        ])['structuredContent'];
+
+        $this->assertSame('created', $result['result']);
+        $this->assertEquals(0.75, $result['ticketTotalHours']);
+        $this->em->clear();
+        $manual = $this->em->getRepository(Activity::class)->findOneBy(['description' => 'Entered by hand.']);
+        $this->assertNull($manual->getOrgId());
+        $this->assertEquals(0.25, (float) $manual->getHours());
+    }
+
     /**
      * Opens an MCP session as admin and calls one tool.
      *
@@ -116,7 +198,8 @@ class McpEndpointTest extends FunctionalTestCase
         $response = $this->postJsonRpc($token, 'tools/call', ['name' => $name, 'arguments' => $arguments], $sessionId);
         $this->assertResponseIsSuccessful();
 
-        return $response['result'];
+        // Arguments rejected by the tool's input schema come back as a JSON-RPC error, not a result.
+        return $response['result'] ?? ['protocolError' => $response['error']];
     }
 
     private function createToken(User $user): string

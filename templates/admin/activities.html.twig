@@ -91,8 +91,10 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                                {{ entry.description }}
+                                            {# One-line summary: Markdown rendered then stripped, full text on hover #}
+                                            {% set plainDescription = entry.description|markdown_to_html|striptags|trim %}
+                                            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ plainDescription }}">
+                                                {{ plainDescription }}
                                             </div>
                                         </td>
                                         <td class="text-end">

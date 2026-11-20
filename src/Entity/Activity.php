@@ -31,6 +31,13 @@ class Activity
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * Org-mode entry (":ID:" property) this activity was synced from.
+     * Null for activities entered by hand in the web interface.
+     */
+    #[ORM\Column(length: 64, unique: true, nullable: true)]
+    private ?string $orgId = null;
+
     #[ORM\ManyToOne(inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Ticket $ticket = null;
@@ -140,6 +147,18 @@ class Activity
     public function setOrganization(?Organization $organization): static
     {
         $this->organization = $organization;
+
+        return $this;
+    }
+
+    public function getOrgId(): ?string
+    {
+        return $this->orgId;
+    }
+
+    public function setOrgId(?string $orgId): static
+    {
+        $this->orgId = $orgId;
 
         return $this;
     }
