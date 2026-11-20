@@ -20,7 +20,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - Route admin: `/admin` (tous les tickets, toutes organizations)
 - Route home: `/` (redirige vers l'organization de l'utilisateur ou login)
 - `OrganizationValueResolver`: Charge automatiquement l'organization depuis l'URL
-- Variable Twig globale `currentOrganization` disponible partout
+- Variable Twig globale `currentOrganization` disponible partout : l'organization de l'URL (`organizationSlug`) si l'utilisateur y a accès, sinon celle de l'utilisateur (ex. sur `/admin`). Un admin qui consulte un client voit donc ce client (titre, liens, heures mensuelles)
 
 ### Gestion des Tickets
 - CRUD complet sur les tickets
@@ -93,7 +93,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - `CommentVoter`: Gère les permissions COMMENT_EDIT et COMMENT_DELETE (auteur uniquement, sauf admins)
 
 ### Twig Extensions
-- `OrganizationExtension`: Injecte `currentOrganization` globalement dans tous les templates
+- `OrganizationExtension`: Injecte `currentOrganization` (organization consultée, voir Multi-tenant) globalement dans tous les templates
 
 ### Templates (Partials)
 - `attachment/_attachment_card.html.twig`: Carte d'attachment réutilisable (tickets et commentaires)
