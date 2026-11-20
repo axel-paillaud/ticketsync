@@ -14,15 +14,14 @@ final class TicketVoter extends Voter
 {
     public const EDIT = 'TICKET_EDIT';
     public const DELETE = 'TICKET_DELETE';
+    public const RESOLVE = 'TICKET_RESOLVE';
 
     public function __construct(private Security $security)
     {}
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        // replace with your own logic
-        // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::EDIT, self::DELETE])
+        return in_array($attribute, [self::EDIT, self::DELETE, self::RESOLVE])
             && $subject instanceof Ticket;
     }
 
@@ -42,8 +41,17 @@ final class TicketVoter extends Voter
             return true;
         }
 
-        // For now, all users in the same organization can edit/delete
-        // You can add more specific logic here if needed
-        return $user->getOrganization() === $ticket->getOrganization();
+        if ($user->getOrganization() !== $ticket->getOrganization()) {
+            return false;
+        }
+
+        // Once a ticket has been worked on (comments or logged activities),
+        // only admins may delete it, so its history is kept. Members can still
+        // delete an unused ticket created by mistake, or resolve it instead.
+        if ($attribute === self::DELETE) {
+            return $ticket->getComments()->isEmpty() && $ticket->getActivities()->isEmpty();
+        }
+
+        return true;
     }
 }

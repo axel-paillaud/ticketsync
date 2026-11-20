@@ -302,8 +302,8 @@ final class TicketController extends AbstractController
     }
 
     /**
-     * Offered in the delete modal as a safer alternative to deletion: the ticket
-     * and its history (comments, attachments, logged hours) are kept.
+     * Safer alternative to deletion: the ticket and its history (comments,
+     * attachments, logged hours) are kept.
      */
     #[Route('/tickets/{ticketId}/resolve', name: 'app_ticket_resolve', methods: ['POST'])]
     public function resolve(Organization $organization, Request $request, #[MapEntity(id: 'ticketId')] Ticket $ticket, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
@@ -314,9 +314,9 @@ final class TicketController extends AbstractController
             throw $this->createNotFoundException('Ticket not found in this organization.');
         }
 
-        // Non-admins cannot change the status in the edit form, but whoever may
-        // delete a ticket may also close it, which is the less destructive option.
-        $this->denyAccessUnlessGranted('TICKET_DELETE', $ticket);
+        // Non-admins cannot change the status in the edit form, but organization
+        // members may close a ticket, which keeps its history.
+        $this->denyAccessUnlessGranted('TICKET_RESOLVE', $ticket);
 
         $redirect = $this->redirectToRoute('app_ticket_show', [
             'organizationSlug' => $organization->getSlug(),

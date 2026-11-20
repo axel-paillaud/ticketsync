@@ -1,5 +1,3 @@
-{# Delete confirmation modal, suggesting to resolve the ticket instead of deleting it #}
-{% set isClosed = ticket.status and ticket.status.closed %}
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -8,15 +6,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|trans }}"></button>
             </div>
             <div class="modal-body">
-                {% if not isClosed %}
-                    <div class="alert alert-success d-flex gap-2 mb-3" role="note">
-                        <i class="bi bi-check-circle"></i>
-                        <div>
-                            <strong>{{ 'Is the request handled?'|trans }}</strong><br>
-                            {{ 'Mark it as resolved instead: the ticket and its history stay available.'|trans }}
-                        </div>
-                    </div>
-                {% endif %}
                 <p>{{ 'Are you sure you want to delete this ticket?'|trans }}</p>
                 <p class="mb-0 text-danger">
                     <i class="bi bi-exclamation-triangle"></i>
@@ -26,9 +15,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
                 {{ include('ticket/_delete_form.html.twig') }}
-                {% if not isClosed %}
-                    {{ include('ticket/_resolve_form.html.twig') }}
-                {% endif %}
             </div>
         </div>
     </div>

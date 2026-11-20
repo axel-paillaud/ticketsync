@@ -79,7 +79,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 
 ### Security (Voters)
 - `OrganizationVoter`: Admins peuvent accéder à toutes les organizations
-- `TicketVoter`: Gère les permissions TICKET_EDIT et TICKET_DELETE
+- `TicketVoter`: Gère TICKET_EDIT, TICKET_RESOLVE et TICKET_DELETE (un membre ne peut supprimer qu'un ticket vide, sans commentaire ni activité ; sinon admin uniquement)
 - `CommentVoter`: Gère les permissions COMMENT_EDIT et COMMENT_DELETE (auteur uniquement, sauf admins)
 
 ### Twig Extensions

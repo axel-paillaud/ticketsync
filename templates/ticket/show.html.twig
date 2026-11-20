@@ -22,7 +22,7 @@
                 </h2>
             </div>
             <div class="btn-group">
-                {% if is_granted('TICKET_DELETE', ticket) and not ticket.status.closed %}
+                {% if is_granted('TICKET_RESOLVE', ticket) and not ticket.status.closed %}
                     <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#resolveModal">
                         <i class="bi bi-check-circle"></i>
                         {{ 'Mark as resolved'|trans }}
@@ -176,7 +176,7 @@
 </div>
 
 {# Resolve Modal #}
-{% if is_granted('TICKET_DELETE', ticket) and not ticket.status.closed %}
+{% if is_granted('TICKET_RESOLVE', ticket) and not ticket.status.closed %}
     {{ include('ticket/_resolve_modal.html.twig') }}
 {% endif %}
 
