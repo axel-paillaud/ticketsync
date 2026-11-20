@@ -314,3 +314,16 @@ Close: Fermer
 'The "Resolved" status does not exist.': "Le statut « Résolu » n'existe pas."
 'Is your request fully handled? The ticket will be closed.': 'Votre demande est-elle entièrement traitée ? Le ticket sera clôturé.'
 'If the problem comes back, add a comment and the ticket can be reopened.': 'Si le problème revient, ajoutez un commentaire et le ticket pourra être rouvert.'
+'Connect Claude': 'Connecter Claude'
+'Claude wants to access TicketSync as': 'Claude souhaite accéder à TicketSync en tant que'
+'It will be able to:': 'Il pourra :'
+'read the tickets of all organizations, with their comments and activities;': 'lire les tickets de toutes les organisations, avec leurs commentaires et activités ;'
+'log activities (time spent) on tickets.': 'saisir des activités (temps passé) sur les tickets.'
+'You will be sent back to': 'Vous serez redirigé vers'
+'Access can be revoked at any time with app:api-token:revoke.': "L'accès peut être révoqué à tout moment avec app:api-token:revoke."
+Deny: Refuser
+Allow: Autoriser
+'Unknown OAuth client.': 'Client OAuth inconnu.'
+'This redirect URI is not allowed.': "Cette URI de redirection n'est pas autorisée."
+'Only administrators can connect an assistant to TicketSync.': 'Seuls les administrateurs peuvent connecter un assistant à TicketSync.'
+'Invalid security token, please try again.': 'Jeton de sécurité invalide, veuillez réessayer.'

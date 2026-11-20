@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Connect Claude'|trans }} - TicketSync{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-5">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h1 class="h3 mb-2">
+                            <i class="bi bi-plug text-primary"></i>
+                            {{ 'Connect Claude'|trans }}
+                        </h1>
+                        <p class="text-muted mb-0">
+                            {{ 'Claude wants to access TicketSync as'|trans }}
+                            <strong>{{ app.user.userIdentifier }}</strong>.
+                        </p>
+                    </div>
+
+                    <p>{{ 'It will be able to:'|trans }}</p>
+                    <ul>
+                        <li>{{ 'read the tickets of all organizations, with their comments and activities;'|trans }}</li>
+                        <li>{{ 'log activities (time spent) on tickets.'|trans }}</li>
+                    </ul>
+
+                    <p class="small text-muted">
+                        {{ 'You will be sent back to'|trans }} <code>{{ redirect_host }}</code>.
+                        {{ 'Access can be revoked at any time with app:api-token:revoke.'|trans }}
+                    </p>
+
+                    <form method="post" action="{{ path('oauth_authorize') }}">
+                        {% for name, value in params %}
+                            <input type="hidden" name="{{ name }}" value="{{ value }}">
+                        {% endfor %}
+                        <input type="hidden" name="_token" value="{{ csrf_token('oauth_authorize') }}">
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-secondary w-50" type="submit" name="decision" value="deny">
+                                {{ 'Deny'|trans }}
+                            </button>
+                            <button class="btn btn-primary w-50" type="submit" name="decision" value="allow">
+                                <i class="bi bi-check-lg me-1"></i>
+                                {{ 'Allow'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

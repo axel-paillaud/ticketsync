@@ -13,14 +13,23 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        # OAuth discovery documents and token endpoint: called server to server
+        # by the MCP client, which authenticates with its client secret.
+        oauth_public:
+            pattern: ^/(\.well-known/oauth-|oauth/token$)
+            security: false
         # MCP endpoint: no session or cookie, every request carries
-        # "Authorization: Bearer <token>" (see app:api-token:create).
+        # "Authorization: Bearer <token>" (see app:api-token:create, or the
+        # OAuth flow of OAuthController used by claude.ai).
         mcp:
             pattern: ^/mcp
             stateless: true
             provider: app_user_provider
+            # 401 responses point OAuth clients to the metadata (see OAuthController).
+            entry_point: App\Security\McpUnauthorizedResponder
             access_token:
                 token_handler: App\Security\ApiTokenHandler
+                failure_handler: App\Security\McpUnauthorizedResponder
         main:
             lazy: true
             provider: app_user_provider

@@ -7,6 +7,10 @@ parameters:
     app.attachments_dir: '%kernel.project_dir%/var/uploads/attachments'
     mailer.from_address: '%env(MAILER_FROM_ADDRESS)%'
     mailer.from_name: '%env(MAILER_FROM_NAME)%'
+    # Where the OAuth client (claude.ai custom connector) may be sent back after consent.
+    app.oauth.redirect_uris:
+        - 'https://claude.ai/api/mcp/auth_callback'
+        - 'https://claude.com/api/mcp/auth_callback'
 
 services:
     # default configuration for services in *this* file
