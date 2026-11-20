@@ -151,7 +151,7 @@
                 <div class="card-body">
                     {% if user.tickets|length > 0 %}
                         <p>
-                            {{ 'This user has created {ticketsLength} ticket(s).'|trans({ 'ticketsLength': user.tickets|length }) }}
+                            {{ 'This user has created {ticketsLength} ticket(s).'|trans({ '{ticketsLength}': user.tickets|length }) }}
                         </p>
                     {% else %}
                         <p class="text-muted mb-0">{{ 'No tickets created yet.'|trans }}</p>
