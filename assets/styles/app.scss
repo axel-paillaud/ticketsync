@@ -171,13 +171,23 @@ $dropdown-link-hover-bg: $bg-soft;
     padding-bottom: 2rem;
 }
 
+// Badges used as links (e.g. organization in admin lists)
+a.badge {
+    text-decoration: none;
+    transition: filter 0.15s ease-in-out;
+
+    &:hover,
+    &:focus-visible {
+        filter: brightness(0.85);
+    }
+}
+
 // Info boxes
 .info-box {
     background: $bg-hard;
     padding: 1rem;
     border-radius: $border-radius;
     border: 1px solid $border-color;
-    border-left: 3px solid $color-primary;
 }
 
 .info-label {

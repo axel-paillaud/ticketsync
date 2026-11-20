@@ -86,9 +86,10 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <span class="badge bg-secondary">
+                                            <a href="{{ path('app_ticket_index', {organizationSlug: entry.organization.slug}) }}"
+                                               class="badge bg-secondary" title="{{ 'View Tickets'|trans }}">
                                                 {{ entry.organization.name }}
-                                            </span>
+                                            </a>
                                         </td>
                                         <td>
                                             {# One-line summary: Markdown rendered then stripped, full text on hover #}

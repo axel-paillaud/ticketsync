@@ -39,7 +39,8 @@
                 <tr>
                     <td>{{ ticket.id }}</td>
                     <td>
-                        <span class="badge bg-info">{{ ticket.organization.name }}</span>
+                        <a href="{{ path('app_ticket_index', {organizationSlug: ticket.organization.slug}) }}"
+                           class="badge bg-info" title="{{ 'View Tickets'|trans }}">{{ ticket.organization.name }}</a>
                     </td>
                     <td>{{ ticket.title }}</td>
                     <td>
