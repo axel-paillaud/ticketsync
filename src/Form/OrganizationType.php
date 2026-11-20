@@ -5,8 +5,9 @@ namespace App\Form;
 use App\Entity\Organization;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -69,19 +70,28 @@ class OrganizationType extends AbstractType
                 ],
                 'help' => '14 digits',
             ])
-            ->add('package', ChoiceType::class, [
-                'label' => 'Package',
+            ->add('monthlyHours', NumberType::class, [
+                'label' => 'Monthly hours',
                 'required' => false,
-                'choices' => [
-                    'No packages' => null,
-                    'Starter' => 'starter',
-                    'Comfort' => 'comfort',
-                    'Enterprise' => 'enterprise',
-                ],
+                'input' => 'string',
+                'scale' => 2,
+                'html5' => true,
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Select a package',
-                ]
+                    'placeholder' => 'e.g. 3',
+                    'step' => '0.25',
+                    'min' => 0,
+                ],
+                'help' => 'Hours included each month. Empty: billed on actual hours.',
+            ])
+            ->add('overageTolerance', IntegerType::class, [
+                'label' => 'Overage tolerance (%)',
+                'attr' => [
+                    'class' => 'form-control',
+                    'min' => 0,
+                    'max' => 500,
+                ],
+                'help' => 'Overage accepted before the client is notified.',
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'Active',

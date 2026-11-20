@@ -28,7 +28,7 @@
                                 <th>{{ 'Users'|trans }}</th>
                                 <th>{{ 'Tickets'|trans }}</th>
                                 <th>{{ 'Status'|trans }}</th>
-                                <th>{{ 'Package'|trans }}</th>
+                                <th>{{ 'This month'|trans }}</th>
                                 <th>{{ 'Actions'|trans }}</th>
                             </tr>
                         </thead>
@@ -72,10 +72,14 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if organization.package %}
-                                            <span class="badge bg-info">{{ organization.package|trans }}</span>
+                                        {% set quota = monthly_quota(organization) %}
+                                        {% if quota %}
+                                            {% set colors = {ok: 'success', tolerated: 'warning', exceeded: 'danger'} %}
+                                            <span class="badge bg-{{ colors[quota.state.value] }}">
+                                                {{ quota.consumedHours|format_hours }} / {{ quota.monthlyHours|format_hours }}
+                                            </span>
                                         {% else %}
-                                            <span class="text-muted">{{ 'No packages'|trans }}</span>
+                                            <span class="text-muted">-</span>
                                         {% endif %}
                                     </td>
                                     <td>

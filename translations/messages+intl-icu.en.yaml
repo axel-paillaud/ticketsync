@@ -1,0 +1,13 @@
+# English messages using ICU syntax (dates, named placeholders).
+# Without an entry here, the English locale falls back to the plain
+# formatter, which leaves the ICU braces in the output.
+
+'Maintenance package – {month, date, ::MMMMyyyy}': 'Maintenance package – {month, date, ::MMMMyyyy}'
+'{consumed} used out of {included}': '{consumed} used out of {included}'
+'This month’s maintenance package has been used. Your new requests are still recorded and will be handled from {date, date, ::dMMMM}, or sooner if you approve additional hours.': 'This month’s maintenance package has been used. Your new requests are still recorded and will be handled from {date, date, ::dMMMM}, or sooner if you approve additional hours.'
+'This month’s maintenance package has been used: this ticket will be scheduled from {date, date, ::dMMMM}, unless it is urgent.': 'This month’s maintenance package has been used: this ticket will be scheduled from {date, date, ::dMMMM}, unless it is urgent.'
+'Monthly hours – {month, date, ::MMMMyyyy}': 'Monthly hours – {month, date, ::MMMMyyyy}'
+'{consumed} / {included} (tolerance {tolerance}% up to {limit})': '{consumed} / {included} (tolerance {tolerance}% up to {limit})'
+'tolerance {tolerance}%': 'tolerance {tolerance}%'
+'The maintenance package of {month, date, ::MMMMyyyy} for {organization} has been used.': 'The maintenance package of {month, date, ::MMMMyyyy} for {organization} has been used.'
+'Your new requests are still recorded and will be handled from {date, date, ::dMMMM}.': 'Your new requests are still recorded and will be handled from {date, date, ::dMMMM}.'

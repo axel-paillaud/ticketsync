@@ -67,9 +67,28 @@ class Organization
     #[Assert\Url]
     private ?string $url = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Choice(choices: ['starter', 'comfort', 'enterprise'])]
-    private ?string $package = null;
+    /**
+     * Development hours included in the contract each month.
+     * Null means no monthly hours: billed on actual hours at the end of the month.
+     */
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
+    #[Assert\PositiveOrZero]
+    private ?string $monthlyHours = null;
+
+    /**
+     * Overage accepted silently, in percent of monthlyHours.
+     * The client is only warned once consumption goes beyond it.
+     */
+    #[ORM\Column(options: ['default' => 30])]
+    #[Assert\Range(min: 0, max: 500)]
+    private int $overageTolerance = 30;
+
+    /**
+     * Month ("Y-m") for which the client was last emailed about exceeding
+     * the tolerance, so the email goes out once per month.
+     */
+    #[ORM\Column(length: 7, nullable: true)]
+    private ?string $quotaExceededNotifiedMonth = null;
 
     public function __construct()
     {
@@ -297,14 +316,43 @@ class Organization
         return $this;
     }
 
-    public function getPackage(): ?string
+    public function getMonthlyHours(): ?string
     {
-        return $this->package;
+        return $this->monthlyHours;
     }
 
-    public function setPackage(?string $package): static
+    public function setMonthlyHours(?string $monthlyHours): static
     {
-        $this->package = $package;
+        $this->monthlyHours = $monthlyHours;
+
+        return $this;
+    }
+
+    public function hasMonthlyHours(): bool
+    {
+        return $this->monthlyHours !== null && (float) $this->monthlyHours > 0;
+    }
+
+    public function getOverageTolerance(): int
+    {
+        return $this->overageTolerance;
+    }
+
+    public function setOverageTolerance(int $overageTolerance): static
+    {
+        $this->overageTolerance = $overageTolerance;
+
+        return $this;
+    }
+
+    public function getQuotaExceededNotifiedMonth(): ?string
+    {
+        return $this->quotaExceededNotifiedMonth;
+    }
+
+    public function setQuotaExceededNotifiedMonth(?string $month): static
+    {
+        $this->quotaExceededNotifiedMonth = $month;
 
         return $this;
     }

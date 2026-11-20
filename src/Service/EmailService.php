@@ -8,6 +8,7 @@ use App\Entity\Status;
 use App\Entity\Ticket;
 use App\Entity\User;
 use App\Entity\UserInvitation;
+use App\Model\MonthlyQuota;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -79,6 +80,25 @@ class EmailService
 
            $this->mailer->send($email);
        }
+
+    /**
+     * Send email when an organization goes beyond its monthly hours tolerance
+     */
+    public function sendQuotaExceededNotification(Organization $organization, MonthlyQuota $quota, User $recipient): void
+    {
+        $email = (new TemplatedEmail())
+            ->from(new Address($this->fromAddress, $this->fromName))
+            ->to($recipient->getEmail())
+            ->subject(sprintf($this->translator->trans('[TicketSync] Maintenance package used for %s'), $organization->getName()))
+            ->htmlTemplate('emails/quota_exceeded.html.twig')
+            ->context([
+                'organization' => $organization,
+                'quota' => $quota,
+                'recipient' => $recipient,
+            ]);
+
+        $this->mailer->send($email);
+    }
 
        /**
          * Send invitation email to a new user

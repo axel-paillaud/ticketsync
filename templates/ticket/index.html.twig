@@ -35,6 +35,16 @@
         </div>
     </div>
 
+    {# Monthly package: only for organizations with included hours #}
+    {% set quota = monthly_quota(currentOrganization) %}
+    {% if quota %}
+        {% if is_granted('ROLE_ADMIN') %}
+            {{ include('quota/_admin_gauge.html.twig', {quota: quota}) }}
+        {% else %}
+            {{ include('quota/_client_gauge.html.twig', {quota: quota}) }}
+        {% endif %}
+    {% endif %}
+
     {% if tickets|length > 0 %}
         {# Tickets Grid #}
         <div class="row g-3">

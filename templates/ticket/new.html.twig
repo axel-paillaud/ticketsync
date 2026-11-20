@@ -24,6 +24,17 @@
         </p>
     </div>
 
+    {# Package used beyond tolerance: tell the client before they submit, without blocking #}
+    {% set quota = monthly_quota(currentOrganization) %}
+    {% if quota and quota.exceeded and not is_granted('ROLE_ADMIN') %}
+        <div class="alert alert-info quota-exceeded-notice">
+            <i class="bi bi-calendar-event"></i>
+            {{ 'This month’s maintenance package has been used: this ticket will be scheduled from {date, date, ::dMMMM}, unless it is urgent.'|trans({
+                date: quota.nextMonthStart.timestamp
+            }) }}
+        </div>
+    {% endif %}
+
     {# Form Card #}
     <div class="card">
         <div class="card-header">

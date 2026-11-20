@@ -6,6 +6,7 @@ use App\Entity\Activity;
 use App\Entity\Organization;
 use App\Entity\Ticket;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\ManagerRegistry;
 use SortDirection;
 
@@ -72,6 +73,28 @@ class ActivityRepository extends ServiceEntityRepository
             ->addOrderBy('a.createdAt', SortDirection::Descending)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Total hours logged for an organization with a work date in [start, end).
+     */
+    public function sumHoursForOrganization(
+        Organization $organization,
+        \DateTimeImmutable $start,
+        \DateTimeImmutable $end
+    ): float {
+        $total = $this->createQueryBuilder('a')
+            ->select('SUM(a.hours)')
+            ->andWhere('a.organization = :organization')
+            ->andWhere('a.workDate >= :start')
+            ->andWhere('a.workDate < :end')
+            ->setParameter('organization', $organization)
+            ->setParameter('start', $start, Types::DATE_IMMUTABLE)
+            ->setParameter('end', $end, Types::DATE_IMMUTABLE)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (float) $total;
     }
 
     /**

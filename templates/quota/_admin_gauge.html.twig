@@ -1,0 +1,39 @@
+{#
+    Admin view of the monthly hours, including the tolerance.
+    Expects: quota (App\Model\MonthlyQuota)
+#}
+{% set colors = {ok: 'success', tolerated: 'warning', exceeded: 'danger'} %}
+{% set labels = {ok: 'Within monthly hours', tolerated: 'Tolerated overage', exceeded: 'Exceeded'} %}
+{% set state = quota.state.value %}
+{# Gauge scaled on the tolerance limit, with a mark where the package ends #}
+{% set scale = max(quota.toleranceLimit, quota.consumedHours) %}
+{% set width = scale > 0 ? quota.consumedHours / scale * 100 : 0 %}
+{% set mark = scale > 0 ? quota.monthlyHours / scale * 100 : 100 %}
+<div class="card mb-4 quota-gauge quota-gauge-admin" data-quota-state="{{ state }}">
+    <div class="card-body py-3">
+        <div class="d-flex justify-content-between align-items-baseline mb-2 flex-wrap gap-2">
+            <span class="fw-semibold">
+                <i class="bi bi-clock-history"></i>
+                {{ 'Monthly hours – {month, date, ::MMMMyyyy}'|trans({month: quota.monthStart.timestamp}) }}
+                <span class="badge bg-{{ colors[state] }} ms-1">{{ labels[state]|trans }}</span>
+            </span>
+            <span class="text-muted small">
+                {{ '{consumed} / {included} (tolerance {tolerance}% up to {limit})'|trans({
+                    consumed: quota.consumedHours|format_hours,
+                    included: quota.monthlyHours|format_hours,
+                    tolerance: quota.tolerancePercent,
+                    limit: quota.toleranceLimit|format_hours,
+                }) }}
+            </span>
+        </div>
+        <div class="position-relative">
+            <div class="progress" role="progressbar" style="height: 10px;"
+                 aria-valuenow="{{ quota.percent|round }}" aria-valuemin="0" aria-valuemax="{{ (scale / quota.monthlyHours * 100)|round }}">
+                <div class="progress-bar bg-{{ colors[state] }}" style="width: {{ width|round(1) }}%"></div>
+            </div>
+            <div class="position-absolute top-0 border-start border-2 border-dark"
+                 style="left: {{ mark|round(1) }}%; height: 10px;"
+                 title="{{ 'Monthly hours'|trans }}: {{ quota.monthlyHours|format_hours }}"></div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+{% extends 'emails/_layout.html.twig' %}
+
+{% block title %}
+    {{ 'Maintenance package used'|trans }}
+{% endblock %}
+
+{% block content %}
+    <p class="greeting">{{ 'Hello'|trans }} <strong>{{ recipient.firstName }}</strong>,</p>
+
+    <p>
+        {{ 'The maintenance package of {month, date, ::MMMMyyyy} for {organization} has been used.'|trans({
+            month: quota.monthStart.timestamp,
+            organization: organization.name,
+        }) }}
+    </p>
+
+    <div class="info-box">
+        <p>
+            {{ 'Your new requests are still recorded and will be handled from {date, date, ::dMMMM}.'|trans({
+                date: quota.nextMonthStart.timestamp
+            }) }}
+        </p>
+        <p>
+            {{ 'If one of them cannot wait, simply reply to this email and we will agree on additional hours together.'|trans }}
+        </p>
+    </div>
+
+    <a href="{{ url('app_ticket_index', {organizationSlug: organization.slug}) }}" class="button">
+        {{ 'View my tickets'|trans }}
+    </a>
+{% endblock %}

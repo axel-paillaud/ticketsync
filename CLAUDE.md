@@ -46,6 +46,15 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - Gestion lors de l'édition (tickets et commentaires)
 - Partial réutilisable `_attachment_card.html.twig`
 
+### Heures mensuelles (forfait de maintenance)
+- `Organization.monthlyHours` (null = pas de forfait, facturé au réel → rien n'est affiché) et `overageTolerance` (%, défaut 30)
+- `MonthlyQuotaCalculator` → `App\Model\MonthlyQuota` (état `QuotaState` : ok / tolerated / exceeded), heures des activités par `workDate` sur le mois civil
+- Twig : `monthly_quota(organization)` et filtre `format_hours` (2.25 → 2h15)
+- Client : jauge toujours visible sur la liste des tickets, la tolérance n'est jamais montrée ; message neutre (liste + création de ticket) seulement au-delà de la tolérance
+- Admin : jauge avec tolérance (liste tickets, fiche organization), colonne « This month » dans la liste des organizations
+- Email : `QuotaExceededSubscriber` (Doctrine) prévient les membres de l'organization + admins une seule fois par mois au dépassement de la tolérance (`quotaExceededNotifiedMonth`)
+- Traductions ICU : toute clé avec syntaxe ICU (`{date, date, ...}`) ou placeholder `{x}` passé sans accolades doit aussi exister dans `messages+intl-icu.en.yaml`, sinon la locale `en` affiche la syntaxe brute
+
 ### Système de Notifications Email
 - **NotificationSubscriber**: EventSubscriber Doctrine écoutant `postPersist` et `postUpdate`
 - **EmailService**: Service centralisé pour l'envoi d'emails avec templates Twig
@@ -54,6 +63,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
   - Nouveau ticket créé → Notifie admins + users de l'organization (sauf créateur)
   - Nouveau commentaire → Notifie admins + users de l'organization (sauf auteur)
   - Changement de status → Notifie admins + users de l'organization (sauf utilisateur qui modifie)
+  - Heures mensuelles dépassées au-delà de la tolérance → admins + users de l'organization, une fois par mois
 - **Détection changements**: UnitOfWork Doctrine pour tracker les modifications (changeSet)
 - **Exclusion**: L'auteur de l'action est exclu des notifications (via `Security::getUser()`)
 - **URLs dynamiques**: Utilisation de `url()` Twig pour générer des liens absolus (emails)

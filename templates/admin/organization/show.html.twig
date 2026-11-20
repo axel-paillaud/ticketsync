@@ -50,12 +50,13 @@
                 </div>
                 <div class="col-md-6">
                     <div class="info-box">
-                        <div class="info-label">{{ 'Package'|trans }}</div>
+                        <div class="info-label">{{ 'Monthly hours'|trans }}</div>
                         <div class="info-value">
-                            {% if organization.package %}
-                                <span class="badge bg-info">{{ organization.package|trans }}</span>
+                            {% if organization.hasMonthlyHours %}
+                                {{ organization.monthlyHours|format_hours }}
+                                <small class="text-muted">({{ 'tolerance {tolerance}%'|trans({tolerance: organization.overageTolerance}) }})</small>
                             {% else %}
-                                <span class="text-muted">{{ 'No package'|trans }}</span>
+                                <span class="text-muted">{{ 'No monthly hours (billed on actual hours)'|trans }}</span>
                             {% endif %}
                         </div>
                     </div>
@@ -128,6 +129,11 @@
             </div>
         </div>
     </div>
+
+    {% set quota = monthly_quota(organization) %}
+    {% if quota %}
+        {{ include('quota/_admin_gauge.html.twig', {quota: quota}) }}
+    {% endif %}
 
     <div class="row">
         <div class="col-md-6">
