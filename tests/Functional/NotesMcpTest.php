@@ -61,7 +61,9 @@ class NotesMcpTest extends FunctionalTestCase
 
     public function testEachServerOnlyListsItsOwnTools(): void
     {
-        $this->assertSame(['capture_note'], $this->listTools('/mcp/notes', ApiToken::SCOPE_NOTES));
+        $notesTools = $this->listTools('/mcp/notes', ApiToken::SCOPE_NOTES);
+        sort($notesTools);
+        $this->assertSame(['capture_note', 'list_notes', 'outline_note', 'read_note', 'search_notes'], $notesTools);
 
         $tmaTools = $this->listTools('/mcp', ApiToken::SCOPE_TMA);
         $this->assertContains('log_activity', $tmaTools);
@@ -175,6 +177,115 @@ class NotesMcpTest extends FunctionalTestCase
         $this->assertSame([], glob(self::SERVER.'/inbox/*.org'));
     }
 
+    public function testListNotesShowsOnlyReadableOrgFiles(): void
+    {
+        $this->pushUserNotes();
+
+        $data = $this->callTool('list_notes', [])['structuredContent'];
+
+        $paths = array_column($data['files'], 'path');
+        sort($paths);
+        $this->assertSame(['freelance/client.org', 'refile.org', 'restauration-james-cook.org'], $paths);
+        $byPath = array_column($data['files'], null, 'path');
+        $this->assertSame("Restauration Mercedes 207D 'James Cook' de 1982", $byPath['restauration-james-cook.org']['title']);
+        $this->assertNotNull($byPath['refile.org']['modified']);
+
+        $this->assertSame(['freelance/client.org'], array_column($this->callTool('list_notes', ['directory' => 'freelance'])['structuredContent']['files'], 'path'));
+        $this->assertTrue($this->callTool('list_notes', ['directory' => '../'])['isError']);
+    }
+
+    public function testOutlineThenReadOneSection(): void
+    {
+        $this->pushUserNotes();
+
+        $outline = $this->callTool('outline_note', ['path' => 'restauration-james-cook.org'])['structuredContent']['headings'];
+
+        $this->assertSame(['Carrosserie [0%]', 'Partie avant [1/7]', 'Masquage', 'Caisson de siège', 'Moteur'], array_column($outline, 'title'));
+        $this->assertSame(['TODO', 'TODO', 'DONE', 'TODO', null], array_column($outline, 'todo'));
+        $this->assertSame(['mercedes'], $outline[4]['tags']);
+
+        $caisson = $outline[3];
+        $section = $this->callTool('read_note', ['path' => 'restauration-james-cook.org', 'headingLine' => $caisson['line']])['structuredContent'];
+        $this->assertSame("*** TODO Caisson de siège\nPonçage à faire.\n", $section['content']);
+        $this->assertFalse($section['truncated']);
+
+        $notAHeading = $this->callTool('read_note', ['path' => 'restauration-james-cook.org', 'headingLine' => 2]);
+        $this->assertTrue($notAHeading['isError']);
+    }
+
+    public function testLongNotesAreReadInPages(): void
+    {
+        file_put_contents(self::USER.'/long.org', str_repeat(str_repeat('x', 99)."\n", 1000));
+        $this->userGit('add long.org');
+        $this->userGit('commit --quiet -m long');
+        $this->userGit('push --quiet');
+
+        $first = $this->callTool('read_note', ['path' => 'long.org'])['structuredContent'];
+        $this->assertTrue($first['truncated']);
+        $this->assertSame(600, $first['lastLine']);
+        $this->assertSame(601, $first['nextLine']);
+
+        $second = $this->callTool('read_note', ['path' => 'long.org', 'fromLine' => $first['nextLine']])['structuredContent'];
+        $this->assertFalse($second['truncated']);
+        $this->assertSame(1000, $second['lastLine']);
+    }
+
+    public function testForbiddenPathsLookLikeMissingNotes(): void
+    {
+        $this->pushUserNotes();
+
+        foreach (['secret.org', 'private/plans.org', 'evil.org', '.hidden.org', '../ticketsync-test-org-notes-user/refile.org', '/etc/passwd', '.git/config', 'freelance', 'missing.org'] as $path) {
+            $result = $this->callTool('read_note', ['path' => $path]);
+            $this->assertTrue($result['isError'] ?? false, $path);
+            $this->assertSame(sprintf('No readable note "%s". Use list_notes to see the files.', $path), $result['content'][0]['text'], $path);
+        }
+    }
+
+    public function testSearchIgnoresCaseAndAccentsAndSkipsExcludedFiles(): void
+    {
+        $this->pushUserNotes();
+
+        $data = $this->callTool('search_notes', ['query' => 'PONCAGE siege'])['structuredContent'];
+        $this->assertSame(0, $data['count'], 'All words must be on the same line.');
+
+        $data = $this->callTool('search_notes', ['query' => 'ponçage'])['structuredContent'];
+        $this->assertSame(1, $data['count']);
+        $this->assertSame(['path' => 'restauration-james-cook.org', 'line' => 10, 'text' => 'Ponçage à faire.', 'heading' => 'Carrosserie [0%] > Partie avant [1/7] > Caisson de siège'], $data['results'][0]);
+
+        $this->assertSame(0, $this->callTool('search_notes', ['query' => 'motdepasse'])['structuredContent']['count']);
+    }
+
+    /**
+     * Notes pushed by the user after the server clone was made: the first read pulls them.
+     */
+    private function pushUserNotes(): void
+    {
+        file_put_contents(self::USER.'/restauration-james-cook.org', <<<'ORG'
+            #+description: Restauration Mercedes 207D 'James Cook' de 1982
+
+            * TODO Carrosserie [0%]
+            ** TODO Partie avant [1/7]
+            *** DONE Masquage
+            :LOGBOOK:
+            CLOCK: [2025-04-20 dim. 16:00]--[2025-04-20 dim. 18:00] =>  2:00
+            :END:
+            *** TODO Caisson de siège
+            Ponçage à faire.
+            * Moteur :mercedes:
+            Rien.
+            ORG);
+        mkdir(self::USER.'/freelance');
+        file_put_contents(self::USER.'/freelance/client.org', "* Client\n");
+        file_put_contents(self::USER.'/secret.org', "* Secret\nmotdepasse\n");
+        mkdir(self::USER.'/private');
+        file_put_contents(self::USER.'/private/plans.org', "* Plans\nmotdepasse\n");
+        file_put_contents(self::USER.'/.hidden.org', "* Hidden\n");
+        symlink('/etc/passwd', self::USER.'/evil.org');
+        $this->userGit('add -A');
+        $this->userGit('commit --quiet -m notes');
+        $this->userGit('push --quiet');
+    }
+
     /**
      * @param array<string, mixed> $arguments
      *
@@ -182,11 +293,21 @@ class NotesMcpTest extends FunctionalTestCase
      */
     private function callCapture(array $arguments): array
     {
+        return $this->callTool('capture_note', $arguments);
+    }
+
+    /**
+     * @param array<string, mixed> $arguments
+     *
+     * @return array<string, mixed>
+     */
+    private function callTool(string $name, array $arguments): array
+    {
         $token = $this->createToken($this->admin, ApiToken::SCOPE_NOTES);
         $this->postJsonRpc('/mcp/notes', $token, 'initialize', $this->initializeParams());
         $sessionId = $this->client->getResponse()->headers->get('Mcp-Session-Id');
 
-        $response = $this->postJsonRpc('/mcp/notes', $token, 'tools/call', ['name' => 'capture_note', 'arguments' => $arguments], $sessionId);
+        $response = $this->postJsonRpc('/mcp/notes', $token, 'tools/call', ['name' => $name, 'arguments' => $arguments], $sessionId);
         $this->assertResponseIsSuccessful();
 
         return $response['result'] ?? ['protocolError' => $response['error']];

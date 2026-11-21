@@ -27,6 +27,8 @@ final class OrgNotesGit
     private const AUTHOR_EMAIL = 'ticketsync-bot@localhost';
     private const PUSH_ATTEMPTS = 3;
     private const GIT_TIMEOUT_SECONDS = 30;
+    /** Reads pull at most this often, so a burst of tool calls stays fast. */
+    private const REFRESH_INTERVAL_SECONDS = 60;
 
     public function __construct(
         #[Autowire(env: 'ORG_NOTES_DIR')]
@@ -42,6 +44,29 @@ final class OrgNotesGit
     }
 
     /**
+     * Pulls before reading, unless the last pull is recent.
+     *
+     * @return bool false if the pull failed (the local copy is still readable)
+     */
+    public function refresh(): bool
+    {
+        if (!$this->isConfigured()) {
+            return false;
+        }
+
+        return $this->locked(function (): bool {
+            // FETCH_HEAD is rewritten by every successful pull.
+            $fetchHead = $this->directory.'/.git/FETCH_HEAD';
+            clearstatcache(true, $fetchHead);
+            if (is_file($fetchHead) && time() - filemtime($fetchHead) < self::REFRESH_INTERVAL_SECONDS) {
+                return true;
+            }
+
+            return $this->pull();
+        });
+    }
+
+    /**
      * Saves the note as a new inbox file, or rewrites the inbox file of the
      * note with the same ID (a correction, as long as the user has not
      * refiled it yet).
@@ -54,13 +79,7 @@ final class OrgNotesGit
             throw new \RuntimeException('The notes repository is not configured on the server (ORG_NOTES_DIR).');
         }
 
-        // One capture at a time: two concurrent git runs in one clone would fail.
-        $lock = fopen($this->directory.'/.git/ticketsync-capture.lock', 'c');
-        if ($lock === false || !flock($lock, \LOCK_EX)) {
-            throw new \RuntimeException('Could not lock the notes repository.');
-        }
-
-        try {
+        return $this->locked(function () use ($capture, $replace): SaveResult {
             $warnings = [];
             if (!$this->pull()) {
                 $warnings[] = 'Could not pull the latest notes before writing (offline?): the note is saved, the push may fail.';
@@ -99,6 +118,27 @@ final class OrgNotesGit
             }
 
             return new SaveResult($path, $replace ? 'updated' : 'created', $pushed, $warnings);
+        });
+    }
+
+    /**
+     * One git operation at a time: two concurrent git runs in one clone would fail.
+     *
+     * @template T
+     *
+     * @param callable(): T $callback
+     *
+     * @return T
+     */
+    private function locked(callable $callback): mixed
+    {
+        $lock = fopen($this->directory.'/.git/ticketsync-capture.lock', 'c');
+        if ($lock === false || !flock($lock, \LOCK_EX)) {
+            throw new \RuntimeException('Could not lock the notes repository.');
+        }
+
+        try {
+            return $callback();
         } finally {
             flock($lock, \LOCK_UN);
             fclose($lock);

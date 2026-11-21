@@ -22,6 +22,7 @@
                     <p>{{ 'It will be able to:'|trans }}</p>
                     <ul>
                         {% if scope == 'notes' %}
+                            <li>{{ 'read all your org-mode notes;'|trans }}</li>
                             <li>{{ 'write new notes to the inbox of your org-mode notes.'|trans }}</li>
                         {% else %}
                             <li>{{ 'read the tickets of all organizations, with their comments and activities;'|trans }}</li>

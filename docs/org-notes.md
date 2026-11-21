@@ -14,6 +14,11 @@ depuis le téléphone) y enregistre des notes dans le dépôt git des notes org
 - Correction d'une note pas encore triée : `replaceId` réécrit le même fichier.
 - Si le push échoue (GitHub injoignable), la note reste commitée sur le serveur
   et part avec la note suivante ; l'outil le signale dans `warnings`.
+- Lecture seule de tous les `.org` : `list_notes` (titre, date du dernier
+  commit), `outline_note` (titres avec numéros de ligne), `read_note` (fichier
+  ou sous-arbre d'un titre, découpé en pages de 60 ko), `search_notes` (tous
+  les mots sur une même ligne, sans tenir compte de la casse ni des accents).
+  Avant de lire, le serveur fait un `pull` (au plus une fois par minute).
 - Sur le poste : `M-x axel/org-inbox-merge` (config Doom) fait un pull puis
   déplace les notes d'`inbox/` à la fin de `refile.org`. `org-auto-push.sh`
   fait un `pull --rebase` avant de pousser.
@@ -27,6 +32,12 @@ depuis le téléphone) y enregistre des notes dans le dépôt git des notes org
 - Un client OAuth par connecteur : c'est le client qui fixe la portée du token,
   le code est lié au client, et le paramètre `resource` (RFC 8707) doit
   correspondre.
+- Lecture : chemins relatifs uniquement, pas de `..` ni de segment caché
+  (`.git`, `.env`…), extension `.org`, liens symboliques refusés (le chemin
+  résolu doit rester dans le clone). `ORG_NOTES_EXCLUDE` (globs séparés par des
+  virgules, ex. `tma.org,freelance/*`) masque des fichiers : un fichier exclu
+  est indiscernable d'un fichier absent, et n'apparaît ni dans la liste ni
+  dans la recherche.
 - Admin uniquement (`access_control` sur `^/mcp`, plus une vérification dans l'outil).
 - Deploy key limitée au dépôt `org-notes` ; protection de la branche `main`
   sur GitHub (force-push et suppression interdits) pour qu'une clé volée ne
@@ -71,6 +82,7 @@ l'uid 1000 (`axel` sur l'hôte) : tout est créé en tant qu'`axel`, sur l'hôte
 
    ```sh
    ORG_NOTES_DIR=/var/www/ticketsync/shared/org-notes
+   ORG_NOTES_EXCLUDE=              # facultatif, ex. tma.org,freelance/*
    OAUTH_NOTES_CLIENT_ID=...       # php -r 'echo bin2hex(random_bytes(32)), PHP_EOL;'
    OAUTH_NOTES_CLIENT_SECRET=...   # idem, différent de OAUTH_CLIENT_*
    ```
