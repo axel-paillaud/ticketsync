@@ -11,6 +11,8 @@ parameters:
     app.oauth.redirect_uris:
         - 'https://claude.ai/api/mcp/auth_callback'
         - 'https://claude.com/api/mcp/auth_callback'
+    # Local time of the user: clock lines and note dates in the org files.
+    app.org_notes.timezone: 'Europe/Paris'
 
 services:
     # default configuration for services in *this* file

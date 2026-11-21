@@ -55,6 +55,12 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - Email : `QuotaExceededSubscriber` (Doctrine) prévient les membres de l'organization + admins une seule fois par mois au dépassement de la tolérance (`quotaExceededNotifiedMonth`)
 - Traductions ICU : toute clé avec syntaxe ICU (`{date, date, ...}`) ou placeholder `{x}` passé sans accolades doit aussi exister dans `messages+intl-icu.en.yaml`, sinon la locale `en` affiche la syntaxe brute
 
+### Serveurs MCP (Claude)
+- `/mcp` (serveur `default`, outils `App\Mcp\Tma\`) : tickets et activités, tokens de portée `tma`
+- `/mcp/notes` (serveur `notes`, outils `App\Mcp\Notes\`) : notes org-mode personnelles, tokens de portée `notes`, voir `docs/org-notes.md`
+- Un token (`ApiToken.scope`) n'ouvre que le serveur de sa portée ; un client OAuth par connecteur claude.ai (`OAUTH_CLIENT_*`, `OAUTH_NOTES_CLIENT_*`)
+- `capture_note` : `OrgCapture` (rendu org, validation) + `OrgNotesGit` (un fichier par note dans `inbox/` du clone `ORG_NOTES_DIR`, commit + push)
+
 ### Système de Notifications Email
 - **NotificationSubscriber**: EventSubscriber Doctrine écoutant `postPersist` et `postUpdate`
 - **EmailService**: Service centralisé pour l'envoi d'emails avec templates Twig
