@@ -25,17 +25,21 @@ final class McpUnauthorizedResponder implements AuthenticationEntryPointInterfac
 
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
-        return $this->unauthorized(null);
+        return $this->unauthorized($request, null);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
-        return $this->unauthorized('invalid_token');
+        return $this->unauthorized($request, 'invalid_token');
     }
 
-    private function unauthorized(?string $error): Response
+    private function unauthorized(Request $request, ?string $error): Response
     {
-        $metadataUrl = $this->urlGenerator->generate('oauth_protected_resource_metadata_mcp', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        // Each MCP server is its own protected resource, with its own metadata.
+        $route = str_starts_with($request->getPathInfo(), '/mcp/notes')
+            ? 'oauth_protected_resource_metadata_mcp_notes'
+            : 'oauth_protected_resource_metadata_mcp';
+        $metadataUrl = $this->urlGenerator->generate($route, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $challenge = sprintf('Bearer resource_metadata="%s"', $metadataUrl);
         if ($error !== null) {

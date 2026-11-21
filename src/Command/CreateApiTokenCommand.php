@@ -9,6 +9,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -29,7 +30,8 @@ class CreateApiTokenCommand extends Command
     {
         $this
             ->addArgument('email', InputArgument::REQUIRED, 'Email of the user the token acts as')
-            ->addArgument('name', InputArgument::REQUIRED, 'Label to recognize the token, e.g. "claude-code-laptop"');
+            ->addArgument('name', InputArgument::REQUIRED, 'Label to recognize the token, e.g. "claude-code-laptop"')
+            ->addOption('scope', null, InputOption::VALUE_REQUIRED, sprintf('MCP server the token opens: %s (/mcp) or %s (/mcp/notes)', ApiToken::SCOPE_TMA, ApiToken::SCOPE_NOTES), ApiToken::SCOPE_TMA);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -43,11 +45,18 @@ class CreateApiTokenCommand extends Command
             return Command::FAILURE;
         }
 
-        [$token, $plainToken] = ApiToken::generate($user, $input->getArgument('name'));
+        $scope = $input->getOption('scope');
+        if (!\in_array($scope, ApiToken::SCOPES, true)) {
+            $io->error(sprintf('Unknown scope "%s", expected one of: %s.', $scope, implode(', ', ApiToken::SCOPES)));
+
+            return Command::FAILURE;
+        }
+
+        [$token, $plainToken] = ApiToken::generate($user, $input->getArgument('name'), $scope);
         $this->entityManager->persist($token);
         $this->entityManager->flush();
 
-        $io->success(sprintf('Token #%d "%s" created for %s.', $token->getId(), $token->getName(), $user->getEmail()));
+        $io->success(sprintf('Token #%d "%s" (%s) created for %s.', $token->getId(), $token->getName(), $scope, $user->getEmail()));
         $io->warning('Copy it now, it cannot be displayed again:');
         $output->writeln($plainToken);
 

@@ -15,6 +15,9 @@ class OAuthFlowTest extends FunctionalTestCase
 {
     private const REDIRECT_URI = 'https://claude.ai/api/mcp/auth_callback';
     private const VERIFIER = 'a-long-random-code-verifier-of-at-least-43-characters-0123456789';
+    /** Both clients are configured in .env.test. */
+    private const TMA_CLIENT = ['id' => 'test-client', 'secret' => 'test-secret', 'resource' => 'http://localhost/mcp'];
+    private const NOTES_CLIENT = ['id' => 'test-notes-client', 'secret' => 'test-notes-secret', 'resource' => 'http://localhost/mcp/notes'];
 
     public function testMcpChallengePointsToTheMetadata(): void
     {
@@ -145,13 +148,77 @@ class OAuthFlowTest extends FunctionalTestCase
         $this->assertStringContainsString('state=xyz', $location);
     }
 
+    public function testNotesClientGetsATokenForTheNotesServerOnly(): void
+    {
+        $this->client->request('GET', '/.well-known/oauth-protected-resource/mcp/notes');
+        $this->assertSame('http://localhost/mcp/notes', json_decode($this->client->getResponse()->getContent(), true)['resource']);
+
+        $code = $this->authorizeAs($this->admin, self::NOTES_CLIENT);
+        $token = $this->exchange($code, self::NOTES_CLIENT)['access_token'];
+
+        $this->assertSame(ApiToken::SCOPE_NOTES, $this->em->getRepository(ApiToken::class)->findOneBy(['name' => OAuthController::NOTES_TOKEN_NAME])->getScope());
+        $this->initializeMcp('/mcp/notes', $token);
+        $this->assertResponseIsSuccessful();
+        $this->initializeMcp('/mcp', $token);
+        $this->assertResponseStatusCodeSame(401);
+    }
+
+    public function testConsentPageTellsWhatTheNotesClientCanDo(): void
+    {
+        $this->client->loginUser($this->admin);
+        $this->client->request('GET', '/oauth/authorize?'.http_build_query($this->authorizeQuery(self::NOTES_CLIENT)));
+
+        $this->assertSelectorTextContains('main, body', 'org-mode');
+        $this->assertSelectorTextNotContains('main, body', 'tickets');
+    }
+
+    public function testBothConnectorsKeepTheirOwnToken(): void
+    {
+        $this->exchange($this->authorizeAs($this->admin));
+        $this->exchange($this->authorizeAs($this->admin, self::NOTES_CLIENT), self::NOTES_CLIENT);
+
+        $this->assertSame(2, $this->em->getRepository(ApiToken::class)->count([]));
+    }
+
+    public function testClientCannotAskForTheOtherResource(): void
+    {
+        $this->client->loginUser($this->admin);
+        $this->client->request('GET', '/oauth/authorize?'.http_build_query(['resource' => 'http://localhost/mcp'] + $this->authorizeQuery(self::NOTES_CLIENT)));
+
+        $this->assertStringStartsWith(self::REDIRECT_URI.'?error=invalid_target', $this->client->getResponse()->headers->get('Location'));
+    }
+
+    public function testCodeIsBoundToItsClient(): void
+    {
+        $code = $this->authorizeAs($this->admin, self::NOTES_CLIENT);
+
+        $response = $this->exchange($code);
+
+        $this->assertResponseStatusCodeSame(400);
+        $this->assertSame('invalid_grant', $response['error']);
+    }
+
+    private function initializeMcp(string $path, string $token): void
+    {
+        $this->client->request('POST', $path, server: [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json, text/event-stream',
+            'HTTP_AUTHORIZATION' => 'Bearer '.$token,
+        ], content: json_encode([
+            'jsonrpc' => '2.0', 'id' => 1, 'method' => 'initialize',
+            'params' => ['protocolVersion' => '2025-11-25', 'capabilities' => new \stdClass(), 'clientInfo' => ['name' => 'phpunit', 'version' => '1']],
+        ]));
+    }
+
     /**
      * Logs in, opens the consent page, allows, and returns the code.
+     *
+     * @param array{id: string, secret: string, resource: string} $oauthClient
      */
-    private function authorizeAs(User $user): string
+    private function authorizeAs(User $user, array $oauthClient = self::TMA_CLIENT): string
     {
         $this->client->loginUser($user);
-        $this->client->request('GET', '/oauth/authorize?'.http_build_query($this->authorizeQuery()));
+        $this->client->request('GET', '/oauth/authorize?'.http_build_query($this->authorizeQuery($oauthClient)));
         $this->assertResponseIsSuccessful();
 
         $this->client->submitForm('Allow');
@@ -165,37 +232,42 @@ class OAuthFlowTest extends FunctionalTestCase
     }
 
     /**
-     * @param array<string, string> $overrides
+     * @param array{id: string, secret: string, resource: string}|array<string, string> $clientOrOverrides
      *
      * @return array<string, mixed>
      */
-    private function exchange(string $code, array $overrides = []): array
+    private function exchange(string $code, array $clientOrOverrides = []): array
     {
+        $oauthClient = isset($clientOrOverrides['resource']) ? $clientOrOverrides : self::TMA_CLIENT;
+        $overrides = isset($clientOrOverrides['resource']) ? [] : $clientOrOverrides;
+
         $this->client->request('POST', '/oauth/token', $overrides + [
             'grant_type' => 'authorization_code',
             'code' => $code,
             'redirect_uri' => self::REDIRECT_URI,
             'code_verifier' => self::VERIFIER,
-            'client_id' => 'test-client',
-            'client_secret' => 'test-secret',
+            'client_id' => $oauthClient['id'],
+            'client_secret' => $oauthClient['secret'],
         ]);
 
         return json_decode($this->client->getResponse()->getContent(), true);
     }
 
     /**
+     * @param array{id: string, secret: string, resource: string} $oauthClient
+     *
      * @return array<string, string>
      */
-    private function authorizeQuery(): array
+    private function authorizeQuery(array $oauthClient = self::TMA_CLIENT): array
     {
         return [
             'response_type' => 'code',
-            'client_id' => 'test-client',
+            'client_id' => $oauthClient['id'],
             'redirect_uri' => self::REDIRECT_URI,
             'code_challenge' => rtrim(strtr(base64_encode(hash('sha256', self::VERIFIER, true)), '+/', '-_'), '='),
             'code_challenge_method' => 'S256',
             'state' => 'xyz',
-            'resource' => 'http://localhost/mcp',
+            'resource' => $oauthClient['resource'],
         ];
     }
 }

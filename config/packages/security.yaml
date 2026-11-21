@@ -18,6 +18,16 @@ security:
         oauth_public:
             pattern: ^/(\.well-known/oauth-|oauth/token$)
             security: false
+        # Notes MCP server (personal org-mode notes): same as below, but only
+        # accepts "notes" tokens. Must come before the "mcp" firewall.
+        mcp_notes:
+            pattern: ^/mcp/notes
+            stateless: true
+            provider: app_user_provider
+            entry_point: App\Security\McpUnauthorizedResponder
+            access_token:
+                token_handler: app.security.notes_api_token_handler
+                failure_handler: App\Security\McpUnauthorizedResponder
         # MCP endpoint: no session or cookie, every request carries
         # "Authorization: Bearer <token>" (see app:api-token:create, or the
         # OAuth flow of OAuthController used by claude.ai).
@@ -64,7 +74,7 @@ security:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
-        # MCP tools are admin-only for now.
+        # MCP tools are admin-only (both /mcp and /mcp/notes).
         - { path: ^/mcp, roles: ROLE_ADMIN }
 
         - { path: ^/login, roles: PUBLIC_ACCESS }

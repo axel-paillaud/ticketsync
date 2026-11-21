@@ -18,16 +18,31 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Minimal OAuth 2.1 authorization server so that claude.ai (custom connector)
- * can use the MCP server: authorization code + PKCE (S256), one confidential
- * client configured through OAUTH_CLIENT_ID / OAUTH_CLIENT_SECRET.
+ * Minimal OAuth 2.1 authorization server so that claude.ai (custom connectors)
+ * can use the MCP servers: authorization code + PKCE (S256).
  *
- * The access token handed out is a regular ApiToken, so the /mcp firewall
- * accepts it without any change and it can be revoked with app:api-token:revoke.
+ * One confidential client per MCP server, i.e. per claude.ai connector:
+ * OAUTH_CLIENT_ID / OAUTH_CLIENT_SECRET for TicketSync (/mcp), and
+ * OAUTH_NOTES_CLIENT_ID / OAUTH_NOTES_CLIENT_SECRET for the notes (/mcp/notes).
+ * The client decides the scope of the token, so a connector never gets
+ * access to the other server.
+ *
+ * The access token handed out is a regular ApiToken, so the MCP firewalls
+ * accept it without any change and it can be revoked with app:api-token:revoke.
  */
 class OAuthController extends AbstractController
 {
     public const TOKEN_NAME = 'claude.ai (OAuth)';
+    public const NOTES_TOKEN_NAME = 'claude.ai notes (OAuth)';
+
+    /** MCP endpoint (protected resource) of each token scope. */
+    private const RESOURCE_PATHS = [
+        ApiToken::SCOPE_TMA => '/mcp',
+        ApiToken::SCOPE_NOTES => '/mcp/notes',
+    ];
+
+    /** @var array<string, array{id: string, secret: string}> scope => client */
+    private array $clients;
 
     /**
      * @param list<string> $redirectUris
@@ -38,12 +53,24 @@ class OAuthController extends AbstractController
         private ApiTokenRepository $apiTokenRepository,
         private EntityManagerInterface $entityManager,
         #[Autowire(env: 'OAUTH_CLIENT_ID')]
-        private string $clientId,
+        string $clientId,
         #[Autowire(env: 'OAUTH_CLIENT_SECRET')]
-        private string $clientSecret,
+        string $clientSecret,
+        #[Autowire(env: 'OAUTH_NOTES_CLIENT_ID')]
+        string $notesClientId,
+        #[Autowire(env: 'OAUTH_NOTES_CLIENT_SECRET')]
+        string $notesClientSecret,
         #[Autowire(param: 'app.oauth.redirect_uris')]
         private array $redirectUris,
-    ) {}
+    ) {
+        $this->clients = [
+            ApiToken::SCOPE_TMA => ['id' => $clientId, 'secret' => $clientSecret],
+            ApiToken::SCOPE_NOTES => ['id' => $notesClientId, 'secret' => $notesClientSecret],
+        ];
+        if ($clientId !== '' && $clientId === $notesClientId) {
+            throw new \LogicException('OAUTH_CLIENT_ID and OAUTH_NOTES_CLIENT_ID must be different.');
+        }
+    }
 
     /**
      * Protected resource metadata (RFC 9728), linked from the 401 of /mcp.
@@ -52,8 +79,19 @@ class OAuthController extends AbstractController
     #[Route('/.well-known/oauth-protected-resource/mcp', name: 'oauth_protected_resource_metadata_mcp', methods: ['GET'])]
     public function protectedResourceMetadata(Request $request): JsonResponse
     {
+        return $this->resourceMetadata($request, ApiToken::SCOPE_TMA);
+    }
+
+    #[Route('/.well-known/oauth-protected-resource/mcp/notes', name: 'oauth_protected_resource_metadata_mcp_notes', methods: ['GET'])]
+    public function notesProtectedResourceMetadata(Request $request): JsonResponse
+    {
+        return $this->resourceMetadata($request, ApiToken::SCOPE_NOTES);
+    }
+
+    private function resourceMetadata(Request $request, string $scope): JsonResponse
+    {
         return new JsonResponse([
-            'resource' => $request->getSchemeAndHttpHost().'/mcp',
+            'resource' => $request->getSchemeAndHttpHost().self::RESOURCE_PATHS[$scope],
             'authorization_servers' => [$request->getSchemeAndHttpHost()],
             'bearer_methods_supported' => ['header'],
         ]);
@@ -89,7 +127,8 @@ class OAuthController extends AbstractController
         $state = $params->getString('state');
 
         // Never redirect to an unchecked URI: show the error here instead.
-        if (!$this->isClientEnabled() || !hash_equals($this->clientId, $clientId)) {
+        $scope = $this->scopeOfClient($clientId);
+        if ($scope === null) {
             return $this->authorizeError('Unknown OAuth client.');
         }
         if (!\in_array($redirectUri, $this->redirectUris, true)) {
@@ -102,6 +141,11 @@ class OAuthController extends AbstractController
         $codeChallenge = $params->getString('code_challenge');
         if ($codeChallenge === '' || $params->getString('code_challenge_method') !== 'S256') {
             return $this->redirectWithError($redirectUri, 'invalid_request', $state, 'PKCE with S256 is required.');
+        }
+        // RFC 8707: a client may only ask for the MCP server it belongs to.
+        $resource = $params->getString('resource');
+        if ($resource !== '' && rtrim($resource, '/') !== $request->getSchemeAndHttpHost().self::RESOURCE_PATHS[$scope]) {
+            return $this->redirectWithError($redirectUri, 'invalid_target', $state, 'This client cannot access this resource.');
         }
 
         /** @var User $user */
@@ -119,7 +163,9 @@ class OAuthController extends AbstractController
                     'code_challenge' => $codeChallenge,
                     'code_challenge_method' => 'S256',
                     'state' => $state,
+                    'resource' => $resource,
                 ],
+                'scope' => $scope,
                 'redirect_host' => parse_url($redirectUri, \PHP_URL_HOST),
             ]);
         }
@@ -131,7 +177,7 @@ class OAuthController extends AbstractController
             return $this->redirectWithError($redirectUri, 'access_denied', $state);
         }
 
-        $code = $this->codeStore->issue($user->getId(), $redirectUri, $codeChallenge);
+        $code = $this->codeStore->issue($user->getId(), $clientId, $redirectUri, $codeChallenge);
 
         return $this->redirectToClient($redirectUri, ['code' => $code, 'state' => $state]);
     }
@@ -143,9 +189,8 @@ class OAuthController extends AbstractController
     public function token(Request $request): JsonResponse
     {
         [$clientId, $clientSecret] = $this->clientCredentials($request);
-        if (!$this->isClientEnabled()
-            || !hash_equals($this->clientId, $clientId)
-            || !hash_equals($this->clientSecret, $clientSecret)) {
+        $scope = $this->scopeOfClient($clientId);
+        if ($scope === null || !hash_equals($this->clients[$scope]['secret'], $clientSecret)) {
             return $this->tokenError('invalid_client', Response::HTTP_UNAUTHORIZED);
         }
 
@@ -154,7 +199,10 @@ class OAuthController extends AbstractController
         }
 
         $data = $this->codeStore->consume($request->request->getString('code'));
-        if ($data === null || $data['redirectUri'] !== $request->request->getString('redirect_uri')) {
+        // A code is bound to the client it was issued to.
+        if ($data === null
+            || !hash_equals($data['clientId'], $clientId)
+            || $data['redirectUri'] !== $request->request->getString('redirect_uri')) {
             return $this->tokenError('invalid_grant');
         }
 
@@ -170,10 +218,11 @@ class OAuthController extends AbstractController
         }
 
         // One token per user for this client: reconnecting replaces the old one.
-        foreach ($this->apiTokenRepository->findBy(['owner' => $user, 'name' => self::TOKEN_NAME]) as $old) {
+        $tokenName = $scope === ApiToken::SCOPE_NOTES ? self::NOTES_TOKEN_NAME : self::TOKEN_NAME;
+        foreach ($this->apiTokenRepository->findBy(['owner' => $user, 'name' => $tokenName, 'scope' => $scope]) as $old) {
             $this->entityManager->remove($old);
         }
-        [$token, $plainToken] = ApiToken::generate($user, self::TOKEN_NAME);
+        [$token, $plainToken] = ApiToken::generate($user, $tokenName, $scope);
         $this->entityManager->persist($token);
         $this->entityManager->flush();
 
@@ -183,9 +232,19 @@ class OAuthController extends AbstractController
         );
     }
 
-    private function isClientEnabled(): bool
+    /**
+     * Scope of the configured client with this id, or null if there is none
+     * (a client without id or secret is disabled).
+     */
+    private function scopeOfClient(string $clientId): ?string
     {
-        return $this->clientId !== '' && $this->clientSecret !== '';
+        foreach ($this->clients as $scope => $client) {
+            if ($client['id'] !== '' && $client['secret'] !== '' && hash_equals($client['id'], $clientId)) {
+                return $scope;
+            }
+        }
+
+        return null;
     }
 
     /**

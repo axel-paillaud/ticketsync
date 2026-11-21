@@ -21,13 +21,14 @@ final class AuthorizationCodeStore
         private CacheItemPoolInterface $cache,
     ) {}
 
-    public function issue(int $userId, string $redirectUri, string $codeChallenge): string
+    public function issue(int $userId, string $clientId, string $redirectUri, string $codeChallenge): string
     {
         $code = bin2hex(random_bytes(32));
 
         $item = $this->cache->getItem($this->key($code));
         $item->set([
             'userId' => $userId,
+            'clientId' => $clientId,
             'redirectUri' => $redirectUri,
             'codeChallenge' => $codeChallenge,
         ]);
@@ -41,7 +42,7 @@ final class AuthorizationCodeStore
      * Returns the data bound to the code and invalidates it, or null if the
      * code is unknown, expired or already used.
      *
-     * @return array{userId: int, redirectUri: string, codeChallenge: string}|null
+     * @return array{userId: int, clientId: string, redirectUri: string, codeChallenge: string}|null
      */
     public function consume(string $code): ?array
     {

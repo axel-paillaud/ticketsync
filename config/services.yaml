@@ -33,6 +33,16 @@ services:
         tags:
             - { name: controller.argument_value_resolver, priority: 150 }
 
+    # One token handler per MCP server, each accepting only its own token scope.
+    App\Security\ApiTokenHandler:
+        arguments:
+            $scope: !php/const App\Entity\ApiToken::SCOPE_TMA
+
+    app.security.notes_api_token_handler:
+        class: App\Security\ApiTokenHandler
+        arguments:
+            $scope: !php/const App\Entity\ApiToken::SCOPE_NOTES
+
     App\Service\FileUploader:
         arguments:
             $targetDirectory: '%app.attachments_dir%'

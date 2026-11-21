@@ -36,10 +36,11 @@ class RevokeApiTokenCommand extends Command
 
         if ($id === null) {
             $io->table(
-                ['Id', 'Name', 'Owner', 'Created', 'Last used'],
+                ['Id', 'Name', 'Scope', 'Owner', 'Created', 'Last used'],
                 array_map(static fn ($token) => [
                     $token->getId(),
                     $token->getName(),
+                    $token->getScope(),
                     $token->getOwner()->getEmail(),
                     $token->getCreatedAt()->format('Y-m-d H:i'),
                     $token->getLastUsedAt()?->format('Y-m-d H:i') ?? 'never',

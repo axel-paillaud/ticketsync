@@ -1,5 +1,6 @@
 mcp:
     servers:
+        # TicketSync (tickets, activities): /mcp, "tma" tokens.
         default:
             name: TicketSync
             version: 0.1.0
@@ -16,4 +17,36 @@ mcp:
             http:
                 path: /mcp
                 # DNS rebinding protection: only answer requests sent to our own host.
+                allowed_hosts: ['localhost', '%env(key:host:url:DEFAULT_URI)%']
+
+        # Personal org-mode notes: /mcp/notes, "notes" tokens, its own claude.ai
+        # connector. Kept apart from TicketSync on purpose: a conversation that
+        # reads client tickets should not be able to reach the notes.
+        notes:
+            name: Org notes
+            version: 0.1.0
+            instructions: |
+                Personal notes of the user (a freelance web developer), kept in
+                org-mode files in Emacs. The user often dictates by voice from their
+                phone: turn what they say into clean notes, in their language
+                (usually French), without inventing anything.
+
+                If you have any doubts about a sentence—perhaps because it was transcribed
+                incorrectly via voice input—ask the user; however, try to figure it out on your own whenever possible.
+
+                New notes go to an inbox (one file per note); the user sorts them
+                later into their org files. Two common kinds:
+                - ideas or things to remember, captured on the go;
+                - work logs on personal projects, with the hours worked (clocked),
+                  in particular the restoration of a Mercedes 207D Westfalia
+                  "James Cook" from 1982 (tag "mercedes", file
+                  restauration-james-cook.org).
+
+                After saving, confirm in one short sentence (title, clocked time):
+                the user is often listening, not reading.
+
+            registry: 'App\Mcp\Notes\'
+
+            http:
+                path: /mcp/notes
                 allowed_hosts: ['localhost', '%env(key:host:url:DEFAULT_URI)%']
