@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mcp;
+namespace App\Mcp\Tma;
 
 use App\Entity\Activity;
 use App\Entity\User;

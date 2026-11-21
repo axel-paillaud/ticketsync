@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit;
 
-use App\Mcp\ActivityTools;
+use App\Mcp\Tma\ActivityTools;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

@@ -11,7 +11,7 @@ mcp:
                 numbers used everywhere ("ticket 48" = id 48).
 
             # Only our own tools, not the ones third-party bundles might ship.
-            registry: 'App\Mcp\'
+            registry: 'App\Mcp\Tma\'
 
             http:
                 path: /mcp
