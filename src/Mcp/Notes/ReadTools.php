@@ -8,17 +8,22 @@ use Mcp\Capability\Attribute\McpTool;
 use Mcp\Capability\Attribute\Schema;
 use Mcp\Exception\ToolCallException;
 use Mcp\Schema\ToolAnnotations;
+use Monolog\Attribute\WithMonologChannel;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
- * Read-only MCP tools over the user's org-mode notes.
+ * Read-only MCP tools over the user's org-mode notes. Every call is logged
+ * to the "org_notes" channel (var/log/org_notes.log in prod): who read what.
  */
+#[WithMonologChannel('org_notes')]
 final class ReadTools
 {
     public function __construct(
         private OrgNotesReader $reader,
         private OrgNotesGit $git,
         private Security $security,
+        private LoggerInterface $logger,
     ) {}
 
     /**
@@ -107,9 +112,9 @@ final class ReadTools
     }
 
     /**
-     * Shared checks and pull of every read tool.
+     * Shared checks, pull and audit log of every read tool.
      *
-     * @param array<string, mixed>          $arguments
+     * @param array<string, mixed>          $arguments logged as is
      * @param callable(): array<string, mixed> $read
      *
      * @return array<string, mixed>
@@ -122,12 +127,17 @@ final class ReadTools
         }
 
         $fresh = $this->git->refresh();
+        $context = ['tool' => $tool, 'user' => $this->security->getUser()?->getUserIdentifier()] + array_filter($arguments, static fn ($v) => $v !== null);
 
         try {
             $result = $read();
         } catch (\InvalidArgumentException|\RuntimeException $e) {
+            $this->logger->info('org-notes read refused', $context + ['reason' => $e->getMessage()]);
+
             throw new ToolCallException($e->getMessage());
         }
+
+        $this->logger->info('org-notes read', $context);
 
         if (!$fresh) {
             $result['warnings'] = ['Could not pull the latest notes: this is the last copy synced on the server.'];
