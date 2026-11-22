@@ -59,7 +59,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 - `/mcp` (serveur `default`, outils `App\Mcp\Tma\`) : tickets et activités, tokens de portée `tma`
 - `/mcp/notes` (serveur `notes`, outils `App\Mcp\Notes\`) : notes org-mode personnelles, tokens de portée `notes`, voir `docs/org-notes.md`
 - Un token (`ApiToken.scope`) n'ouvre que le serveur de sa portée ; un client OAuth par connecteur claude.ai (`OAUTH_CLIENT_*`, `OAUTH_NOTES_CLIENT_*`)
-- `capture_note` : `OrgCapture` (rendu org, validation) + `OrgNotesGit` (un fichier par note dans `inbox/` du clone `ORG_NOTES_DIR`, commit + push)
+- `capture_note` : `OrgCapture` (rendu org, validation) + `OrgNotesGit` (un fichier par note dans `inbox/` du clone `ORG_NOTES_DIR`, dépôt dédié `org-inbox`, commit + push)
 
 ### Système de Notifications Email
 - **NotificationSubscriber**: EventSubscriber Doctrine écoutant `postPersist` et `postUpdate`

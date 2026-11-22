@@ -8,8 +8,9 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 /**
- * Writes captured notes to the inbox/ directory of the org-notes git clone
- * (ORG_NOTES_DIR), then commits and pushes.
+ * Writes captured notes to the inbox/ directory of the org-inbox git clone
+ * (ORG_NOTES_DIR), then commits and pushes. That repository holds nothing but
+ * the inbox: the user's org notes never reach the server.
  *
  * Conflicts are avoided by design rather than resolved: the server only
  * creates or rewrites its own files in inbox/, one file per note, and never
