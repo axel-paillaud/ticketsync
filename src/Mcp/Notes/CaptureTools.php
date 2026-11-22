@@ -33,7 +33,8 @@ final class CaptureTools
     #[McpTool(
         name: 'capture_note',
         description: 'Save a note to the inbox of the user\'s org-mode notes (one new file per note, the user refiles it later in Emacs). '
-            .'Use it for ideas and for work logs, e.g. "today I worked from 8 to 12, I primed the part under the bench seat...". '
+            .'Use it for ideas and for work logs on personal projects, e.g. "today I worked from 8 to 12, I primed the part under the bench seat...". '
+            .'Not for client work billed through TicketSync (use log_activity of the TicketSync connector). '
             .'Write a clean, faithful synthesis of what the user said, in the user\'s language (usually French): fix the dictation, '
             .'structure it (short paragraphs, "- " lists), but never invent facts, numbers or steps. '
             .'Times are only clocked when the user gives them: then pass them in "clocks", the server writes the org CLOCK lines. '

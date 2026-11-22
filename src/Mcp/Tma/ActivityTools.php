@@ -34,6 +34,7 @@ final class ActivityTools
     #[McpTool(
         name: 'log_activity',
         description: 'Create or update the activity (time spent) synced from one org-mode work session. '
+            .'Client work only, visible to the client: personal notes and personal projects go to capture_note of the Org Inbox connector. '
             .'One org sub-heading under a ticket = one activity, identified by its org ":ID:" property: '
             .'calling again with the same orgId updates that activity instead of creating a duplicate, '
             .'so it is safe to re-sync a session after clocking more time on it. '

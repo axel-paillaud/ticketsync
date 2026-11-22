@@ -11,6 +11,12 @@ mcp:
                 "organization" identified by a slug. Ticket ids are global and are the
                 numbers used everywhere ("ticket 48" = id 48).
 
+                Only for this client work: tickets and time billed to clients.
+                Personal notes, ideas and personal projects (e.g. the Mercedes
+                restoration) belong to the separate "Org Inbox" connector, never
+                to an activity here. If it is unclear whether the user means a
+                client ticket or a personal note, ask.
+
             # Only our own tools, not the ones third-party bundles might ship.
             registry: 'App\Mcp\Tma\'
 
@@ -23,7 +29,7 @@ mcp:
         # connector. Kept apart from TicketSync on purpose: a conversation that
         # reads client tickets should not be able to reach the notes.
         notes:
-            name: Org notes
+            name: Org Inbox
             version: 0.1.0
             instructions: |
                 Personal notes of the user (a freelance web developer), kept in
@@ -41,6 +47,15 @@ mcp:
                   in particular the restoration of a Mercedes 207D Westfalia
                   "James Cook" from 1982 (tag "mercedes", file
                   restauration-james-cook.org).
+
+                This server can only write to the inbox: it cannot read the user's
+                notes, so do not claim to know what is in them.
+
+                Never use it for client maintenance work (TMA): tickets, client
+                names, or time to bill a client belong to the separate
+                "TicketSync" connector (log_activity), never to a note here. If it
+                is unclear whether the user means a client ticket or a personal
+                note, ask.
 
                 After saving, confirm in one short sentence (title, clocked time):
                 the user is often listening, not reading.
