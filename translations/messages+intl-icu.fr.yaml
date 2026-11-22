@@ -308,7 +308,6 @@ Close: Fermer
 'It will be able to:': 'Il pourra :'
 'read the tickets of all organizations, with their comments and activities;': 'lire les tickets de toutes les organisations, avec leurs commentaires et activités ;'
 'log activities (time spent) on tickets.': 'saisir des activités (temps passé) sur les tickets.'
-'read all your org-mode notes;': 'lire toutes vos notes org-mode ;'
 'write new notes to the inbox of your org-mode notes.': 'écrire de nouvelles notes dans l’inbox de vos notes org-mode.'
 'You will be sent back to': 'Vous serez redirigé vers'
 'Access can be revoked at any time with app:api-token:revoke.': "L'accès peut être révoqué à tout moment avec app:api-token:revoke."

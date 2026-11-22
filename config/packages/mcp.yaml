@@ -42,15 +42,8 @@ mcp:
                   "James Cook" from 1982 (tag "mercedes", file
                   restauration-james-cook.org).
 
-                The notes can also be read (never modified): list_notes, then
-                outline_note / search_notes to find a section, and read_note to read
-                it. Read only what the question needs, a section rather than a
-                whole big file. Before a work log, the outline of the project file
-                gives a precise refileTarget ("file > heading > sub-heading").
-
                 After saving, confirm in one short sentence (title, clocked time):
-                the user is often listening, not reading. Answers read aloud stay
-                short too: summarize, do not recite the notes.
+                the user is often listening, not reading.
 
             registry: 'App\Mcp\Notes\'
 
