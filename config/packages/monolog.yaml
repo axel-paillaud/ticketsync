@@ -1,7 +1,6 @@
 monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
-        - org_notes # Audit log of the notes MCP server: who read which note
 
 when@dev:
     monolog:
@@ -49,13 +48,6 @@ when@prod:
                 type: console
                 process_psr_3_messages: false
                 channels: ["!event", "!doctrine"]
-            # var/log is shared between releases: the log survives deploys.
-            org_notes:
-                type: rotating_file
-                path: "%kernel.logs_dir%/org_notes.log"
-                level: info
-                max_files: 90
-                channels: [org_notes]
             deprecation:
                 type: stream
                 channels: [deprecation]

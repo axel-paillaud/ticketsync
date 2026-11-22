@@ -38,9 +38,6 @@ depuis le téléphone) y enregistre des notes dans le dépôt git des notes org
   virgules, ex. `tma.org,freelance/*`) masque des fichiers : un fichier exclu
   est indiscernable d'un fichier absent, et n'apparaît ni dans la liste ni
   dans la recherche.
-- Journal des lectures : chaque appel (outil, utilisateur, chemin ou requête)
-  dans `var/log/org_notes-AAAA-MM-JJ.log` (90 jours, `var/log` est partagé
-  entre les releases).
 - Admin uniquement (`access_control` sur `^/mcp`, plus une vérification dans l'outil).
 - Deploy key limitée au dépôt `org-notes` ; protection de la branche `main`
   sur GitHub (force-push et suppression interdits) pour qu'une clé volée ne
