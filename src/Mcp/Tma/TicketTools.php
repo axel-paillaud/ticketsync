@@ -5,9 +5,14 @@ namespace App\Mcp\Tma;
 use App\Entity\Activity;
 use App\Entity\Attachment;
 use App\Entity\Comment;
+use App\Entity\Organization;
 use App\Entity\Ticket;
+use App\Entity\User;
 use App\Repository\OrganizationRepository;
+use App\Repository\PriorityRepository;
+use App\Repository\StatusRepository;
 use App\Repository\TicketRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Mcp\Capability\Attribute\McpTool;
 use Mcp\Capability\Attribute\Schema;
 use Mcp\Exception\ToolCallException;
@@ -22,9 +27,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 final class TicketTools
 {
+    private const PRIORITY_LEVELS = ['A' => 3, 'B' => 2, 'C' => 1];
+
     public function __construct(
         private TicketRepository $ticketRepository,
         private OrganizationRepository $organizationRepository,
+        private PriorityRepository $priorityRepository,
+        private StatusRepository $statusRepository,
+        private EntityManagerInterface $entityManager,
         private Security $security,
         private UrlGeneratorInterface $urlGenerator,
     ) {}
@@ -51,17 +61,7 @@ final class TicketTools
             }
             $tickets = $this->ticketRepository->findAllOrderedByPriority($includeResolved);
         } else {
-            $org = $this->organizationRepository->findOneBy(['slug' => $organization]);
-            if ($org === null || !$this->security->isGranted('ORGANIZATION_ACCESS', $org)) {
-                $slugs = array_map(
-                    static fn ($o) => $o->getSlug(),
-                    array_filter(
-                        $this->organizationRepository->findAll(),
-                        fn ($o) => $this->security->isGranted('ORGANIZATION_ACCESS', $o),
-                    ),
-                );
-                throw new ToolCallException(sprintf('Unknown organization "%s". Known slugs: %s.', $organization, implode(', ', $slugs)));
-            }
+            $org = $this->findOrganization($organization);
             $tickets = $this->ticketRepository->findByOrganizationOrderedByPriority($org, $includeResolved);
         }
 
@@ -120,6 +120,106 @@ final class TicketTools
             ], $activities),
             'totalHours' => array_sum(array_map(static fn (Activity $activity) => (float) $activity->getHours(), $activities)),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[McpTool(
+        name: 'create_ticket',
+        description: 'Open a new ticket for a client, e.g. a request received by phone or email. '
+            .'The client\'s members and the admins are emailed, as when a ticket is created on the website, '
+            .'so check with list_tickets that it does not already exist, and call this only once per request. '
+            .'Title and description are read by the client: write them in the client\'s language (usually French), '
+            .'faithful to the request, without inventing details.',
+        annotations: new ToolAnnotations(readOnlyHint: false, destructiveHint: false, idempotentHint: false),
+    )]
+    public function createTicket(
+        #[Schema(description: 'Client (organization) slug, e.g. "insectosphere".')]
+        string $organization,
+        #[Schema(description: 'Short title stating the problem or request.', minLength: 1, maxLength: 255)]
+        string $title,
+        #[Schema(description: 'Markdown: the request in detail (context, steps, URLs...).', maxLength: 20000)]
+        string $description = '',
+        #[Schema(description: 'A = high (blocking, urgent), B = medium, C = low.', enum: ['A', 'B', 'C'])]
+        string $priority = 'B',
+        #[Schema(description: 'Email of the client member who made the request: the ticket is created in their name. Omit to create it in your own name.', format: 'email')]
+        ?string $requestedBy = null,
+    ): array {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
+            throw new ToolCallException('Creating tickets is admin-only.');
+        }
+
+        $org = $this->findOrganization($organization);
+
+        $title = trim($title);
+        if ($title === '') {
+            throw new ToolCallException('The title cannot be empty.');
+        }
+
+        if ($requestedBy === null) {
+            /** @var User $author */
+            $author = $this->security->getUser();
+        } else {
+            $author = null;
+            foreach ($org->getUsers() as $member) {
+                if (strcasecmp($member->getEmail(), $requestedBy) === 0) {
+                    $author = $member;
+                    break;
+                }
+            }
+            if ($author === null) {
+                throw new ToolCallException(sprintf(
+                    'No member of "%s" has the email "%s". Members: %s.',
+                    $org->getSlug(),
+                    $requestedBy,
+                    implode(', ', array_map(static fn (User $u) => $u->getEmail(), $org->getUsers()->toArray())) ?: 'none',
+                ));
+            }
+        }
+
+        // Matched on the level, priority names differ between environments ("A" vs "Priority A").
+        $priorityEntity = $this->priorityRepository->findOneBy(['level' => self::PRIORITY_LEVELS[$priority] ?? 0]);
+        $status = $this->statusRepository->findOneBy(['slug' => 'open']);
+        if ($priorityEntity === null || $status === null) {
+            throw new ToolCallException(sprintf('Priority "%s" or status "open" is not configured.', $priority));
+        }
+
+        $description = trim($description);
+        $ticket = (new Ticket())
+            ->setTitle($title)
+            ->setDescription($description === '' ? null : $description)
+            ->setOrganization($org)
+            ->setCreatedBy($author)
+            ->setStatus($status)
+            ->setPriority($priorityEntity);
+        $this->entityManager->persist($ticket);
+        $this->entityManager->flush();
+
+        return $this->summarize($ticket) + [
+            'description' => $ticket->getDescription(),
+            'createdBy' => $author->getName(),
+        ];
+    }
+
+    /**
+     * Same error for an unknown slug and a client the user cannot access.
+     */
+    private function findOrganization(string $slug): Organization
+    {
+        $org = $this->organizationRepository->findOneBy(['slug' => $slug]);
+        if ($org === null || !$this->security->isGranted('ORGANIZATION_ACCESS', $org)) {
+            $slugs = array_map(
+                static fn (Organization $o) => $o->getSlug(),
+                array_filter(
+                    $this->organizationRepository->findAll(),
+                    fn (Organization $o) => $this->security->isGranted('ORGANIZATION_ACCESS', $o),
+                ),
+            );
+            throw new ToolCallException(sprintf('Unknown organization "%s". Known slugs: %s.', $slug, implode(', ', $slugs)));
+        }
+
+        return $org;
     }
 
     /**

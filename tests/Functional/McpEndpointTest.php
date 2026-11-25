@@ -5,7 +5,11 @@ namespace App\Tests\Functional;
 use App\Entity\Activity;
 use App\Entity\ApiToken;
 use App\Entity\Comment;
+use App\Entity\Organization;
+use App\Entity\Priority;
+use App\Entity\Ticket;
 use App\Entity\User;
+use Symfony\Component\Mime\Email;
 
 /**
  * The /mcp endpoint: bearer token authentication, admin-only access, and a
@@ -180,6 +184,93 @@ class McpEndpointTest extends FunctionalTestCase
         $manual = $this->em->getRepository(Activity::class)->findOneBy(['description' => 'Entered by hand.']);
         $this->assertNull($manual->getOrgId());
         $this->assertEquals(0.25, (float) $manual->getHours());
+    }
+
+    public function testCreateTicketInTheAdminName(): void
+    {
+        $this->createStatus('open', false);
+        $this->createPriorities();
+        $this->em->flush();
+
+        $result = $this->callTool('create_ticket', [
+            'organization' => $this->organization->getSlug(),
+            'title' => '  Le paiement échoue  ',
+            'description' => 'Erreur 500 au retour de la banque.',
+        ]);
+
+        $this->assertFalse($result['isError'] ?? false);
+        $data = $result['structuredContent'];
+        $this->assertSame('Le paiement échoue', $data['title']);
+        $this->assertSame('open', $data['status']);
+        $this->assertSame('Priority B', $data['priority'], 'Medium priority by default.');
+        $this->assertStringEndsWith('/tickets/'.$data['id'], $data['url']);
+
+        $this->em->clear();
+        $ticket = $this->em->getRepository(Ticket::class)->find($data['id']);
+        $this->assertSame('admin@example.com', $ticket->getCreatedBy()->getEmail());
+        $this->assertSame($this->organization->getId(), $ticket->getOrganization()->getId());
+
+        // Same notifications as from the website: everyone but the author.
+        $recipients = array_map(
+            static fn (Email $email) => $email->getTo()[0]->getAddress(),
+            array_filter($this->getMailerMessages(), static fn ($m) => $m instanceof Email),
+        );
+        $this->assertSame(['member@example.com'], array_values($recipients));
+    }
+
+    public function testCreateTicketOnBehalfOfAMember(): void
+    {
+        $this->createStatus('open', false);
+        $this->createPriorities();
+        $this->em->flush();
+
+        $data = $this->callTool('create_ticket', [
+            'organization' => $this->organization->getSlug(),
+            'title' => 'Urgent',
+            'priority' => 'A',
+            'requestedBy' => 'MEMBER@example.com',
+        ])['structuredContent'];
+
+        $this->assertSame('Priority A', $data['priority']);
+        $this->em->clear();
+        $ticket = $this->em->getRepository(Ticket::class)->find($data['id']);
+        $this->assertSame('member@example.com', $ticket->getCreatedBy()->getEmail());
+        $this->assertNull($ticket->getDescription());
+    }
+
+    public function testCreateTicketRefusesARequesterOutsideTheOrganization(): void
+    {
+        $this->createStatus('open', false);
+        $this->createPriorities();
+        $other = (new Organization())->setName('Other')->setIsActive(true);
+        $this->em->persist($other);
+        $this->em->persist((new User())->setEmail('outsider@example.com')->setRoles([])->setPassword('x')->setIsVerified(true)->setOrganization($other));
+        $this->em->flush();
+
+        $result = $this->callTool('create_ticket', [
+            'organization' => $this->organization->getSlug(),
+            'title' => 'Hello',
+            'requestedBy' => 'outsider@example.com',
+        ]);
+
+        $this->assertTrue($result['isError']);
+        $this->assertStringContainsString('No member of "'.$this->organization->getSlug().'"', $result['content'][0]['text']);
+        $this->assertSame(0, $this->em->getRepository(Ticket::class)->count([]));
+    }
+
+    public function testCreateTicketRejectsAnUnknownOrganization(): void
+    {
+        $result = $this->callTool('create_ticket', ['organization' => 'nope', 'title' => 'Hello']);
+
+        $this->assertTrue($result['isError']);
+        $this->assertStringContainsString('Unknown organization "nope"', $result['content'][0]['text']);
+    }
+
+    private function createPriorities(): void
+    {
+        foreach (['A' => 3, 'B' => 2, 'C' => 1] as $name => $level) {
+            $this->em->persist((new Priority())->setName('Priority '.$name)->setLevel($level));
+        }
     }
 
     /**
