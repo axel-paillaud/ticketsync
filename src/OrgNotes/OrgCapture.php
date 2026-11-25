@@ -101,10 +101,6 @@ final class OrgCapture
             if ($end->getTimestamp() - $start->getTimestamp() > 24 * 3600) {
                 throw new \InvalidArgumentException(sprintf('clocks[%d]: a clock entry cannot last more than 24 hours.', $i));
             }
-            // A few minutes of slack for "I stop now".
-            if ($end > $now->modify('+10 minutes')) {
-                throw new \InvalidArgumentException(sprintf('clocks[%d]: end is in the future (now is %s).', $i, $now->format('Y-m-d H:i')));
-            }
             $parsed[] = ['start' => $start, 'end' => $end];
         }
         // Org keeps the most recent clock first.

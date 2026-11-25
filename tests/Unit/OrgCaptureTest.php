@@ -53,6 +53,13 @@ class OrgCaptureTest extends TestCase
         $this->assertSame("* Idée\n:PROPERTIES:\n:ID:       ".self::ID."\n:CREATED:  [2026-11-21 sam. 14:10]\n:END:\n", $org);
     }
 
+    public function testAcceptsAClockEndingInTheFuture(): void
+    {
+        $org = $this->capture(clocks: [['start' => '2026-11-21T14:00', 'end' => '2026-11-21T18:00']])->toOrg();
+
+        $this->assertStringContainsString('CLOCK: [2026-11-21 sam. 14:00]--[2026-11-21 sam. 18:00] =>  4:00', $org);
+    }
+
     public function testLongClockDurationIsAligned(): void
     {
         $org = $this->capture(clocks: [['start' => '2026-11-20T08:00', 'end' => '2026-11-20T20:30']])->toOrg();
@@ -99,7 +106,6 @@ class OrgCaptureTest extends TestCase
         yield 'invalid date' => [['clocks' => [['start' => '2026-02-30T08:00', 'end' => '2026-02-30T09:00']]], 'invalid date'];
         yield 'end before start' => [['clocks' => [['start' => '2026-11-21T12:00', 'end' => '2026-11-21T08:00']]], 'end must be after start'];
         yield 'too long' => [['clocks' => [['start' => '2026-11-19T08:00', 'end' => '2026-11-20T09:00']]], 'more than 24 hours'];
-        yield 'in the future' => [['clocks' => [['start' => '2026-11-21T14:00', 'end' => '2026-11-21T18:00']]], 'in the future'];
     }
 
     /**
