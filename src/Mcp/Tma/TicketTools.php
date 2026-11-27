@@ -6,6 +6,7 @@ use App\Entity\Activity;
 use App\Entity\Attachment;
 use App\Entity\Comment;
 use App\Entity\Organization;
+use App\Entity\Status;
 use App\Entity\Ticket;
 use App\Entity\User;
 use App\Repository\OrganizationRepository;
@@ -199,6 +200,53 @@ final class TicketTools
         return $this->summarize($ticket) + [
             'description' => $ticket->getDescription(),
             'createdBy' => $author->getName(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[McpTool(
+        name: 'update_ticket_status',
+        description: 'Change the status of a ticket, e.g. "wait" when waiting for the client, '
+            .'"resolved" when the work is done. The client\'s members and the admins are emailed, '
+            .'as when the status is changed on the website. Nothing happens (no email) if the ticket '
+            .'already has this status.',
+        annotations: new ToolAnnotations(readOnlyHint: false, destructiveHint: false, idempotentHint: true),
+    )]
+    public function updateTicketStatus(
+        #[Schema(description: 'Ticket id, e.g. 48 for "ticket 48" or "#48".', minimum: 1)]
+        int $id,
+        #[Schema(description: 'Status slug, usually one of "open", "in-progress", "wait", "resolved". An unknown slug returns the list of configured ones.')]
+        string $status,
+    ): array {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
+            throw new ToolCallException('Changing the status of a ticket is admin-only.');
+        }
+
+        $ticket = $this->ticketRepository->find($id);
+        if ($ticket === null || !$this->security->isGranted('ORGANIZATION_ACCESS', $ticket->getOrganization())) {
+            throw new ToolCallException(sprintf('Ticket #%d not found.', $id));
+        }
+
+        $newStatus = $this->statusRepository->findOneBy(['slug' => strtolower(trim($status))]);
+        if ($newStatus === null) {
+            $slugs = array_map(
+                static fn (Status $s) => $s->getSlug(),
+                $this->statusRepository->findBy([], ['sortOrder' => 'ASC']),
+            );
+            throw new ToolCallException(sprintf('Unknown status "%s". Known slugs: %s.', $status, implode(', ', $slugs)));
+        }
+
+        $previous = $ticket->getStatus()->getSlug();
+        if ($ticket->getStatus() !== $newStatus) {
+            $ticket->setStatus($newStatus);
+            $this->entityManager->flush();
+        }
+
+        return $this->summarize($ticket) + [
+            'previousStatus' => $previous,
+            'changed' => $previous !== $newStatus->getSlug(),
         ];
     }
 

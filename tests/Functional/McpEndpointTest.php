@@ -266,6 +266,62 @@ class McpEndpointTest extends FunctionalTestCase
         $this->assertStringContainsString('Unknown organization "nope"', $result['content'][0]['text']);
     }
 
+    public function testUpdateTicketStatusNotifiesTheClient(): void
+    {
+        $ticket = $this->createTicket($this->member, $this->createStatus('open', false));
+        $this->createStatus('wait', false);
+        $this->em->flush();
+
+        $result = $this->callTool('update_ticket_status', ['id' => $ticket->getId(), 'status' => 'Wait']);
+
+        $this->assertFalse($result['isError'] ?? false);
+        $data = $result['structuredContent'];
+        $this->assertSame('wait', $data['status']);
+        $this->assertSame('open', $data['previousStatus']);
+        $this->assertTrue($data['changed']);
+
+        $this->em->clear();
+        $this->assertSame('wait', $this->em->getRepository(Ticket::class)->find($ticket->getId())->getStatus()->getSlug());
+
+        $recipients = array_map(
+            static fn (Email $email) => $email->getTo()[0]->getAddress(),
+            array_filter($this->getMailerMessages(), static fn ($m) => $m instanceof Email),
+        );
+        $this->assertSame(['member@example.com'], array_values($recipients));
+    }
+
+    public function testUpdateTicketStatusToTheSameStatusDoesNothing(): void
+    {
+        $ticket = $this->createTicket($this->member, $this->createStatus('wait', false));
+        $this->em->flush();
+
+        $data = $this->callTool('update_ticket_status', ['id' => $ticket->getId(), 'status' => 'wait'])['structuredContent'];
+
+        $this->assertFalse($data['changed']);
+        $this->assertCount(0, array_filter($this->getMailerMessages(), static fn ($m) => $m instanceof Email));
+    }
+
+    public function testUpdateTicketStatusRejectsAnUnknownStatus(): void
+    {
+        $ticket = $this->createTicket($this->member, $this->createStatus('open', false));
+        $this->createStatus('resolved', true);
+        $this->em->flush();
+
+        $result = $this->callTool('update_ticket_status', ['id' => $ticket->getId(), 'status' => 'done']);
+
+        $this->assertTrue($result['isError']);
+        $this->assertStringContainsString('Unknown status "done"', $result['content'][0]['text']);
+        $this->assertStringContainsString('resolved', $result['content'][0]['text']);
+    }
+
+    public function testUpdateTicketStatusOfAnUnknownTicket(): void
+    {
+        $result = $this->callTool('update_ticket_status', ['id' => 9999, 'status' => 'resolved']);
+
+        $this->assertTrue($result['isError']);
+        $this->assertStringContainsString('Ticket #9999 not found', $result['content'][0]['text']);
+    }
+
     private function createPriorities(): void
     {
         foreach (['A' => 3, 'B' => 2, 'C' => 1] as $name => $level) {

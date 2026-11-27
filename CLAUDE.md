@@ -57,7 +57,7 @@ Système de gestion de tickets pour gérer les demandes clients. Projet personne
 
 ### Serveurs MCP (Claude)
 - `/mcp` (serveur `default`, outils `App\Mcp\Tma\`) : tickets et activités, tokens de portée `tma`
-  - `list_tickets`, `get_ticket`, `create_ticket` (admin, statut `open`, `requestedBy` = e-mail d'un membre du client pour créer le ticket en son nom ; priorité retrouvée par `level`), `log_activity`
+  - `list_tickets`, `get_ticket`, `create_ticket` (admin, statut `open`, `requestedBy` = e-mail d'un membre du client pour créer le ticket en son nom ; priorité retrouvée par `level`), `log_activity`, `update_ticket_status` (admin, slug du statut, e-mail de changement de statut comme sur le site, rien si statut inchangé)
 - `/mcp/notes` (serveur `notes`, outils `App\Mcp\Notes\`) : notes org-mode personnelles, tokens de portée `notes`, voir `docs/org-notes.md`
 - Un token (`ApiToken.scope`) n'ouvre que le serveur de sa portée ; un client OAuth par connecteur claude.ai (`OAUTH_CLIENT_*`, `OAUTH_NOTES_CLIENT_*`)
 - `capture_note` : `OrgCapture` (rendu org, validation) + `OrgNotesGit` (un fichier par note dans `inbox/` du clone `ORG_NOTES_DIR`, dépôt dédié `org-inbox`, commit + push)
